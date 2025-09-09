@@ -80,7 +80,7 @@ const indoorFacilities = [
     available: 6,
     location: "C11-C12 block",
     nextSlot: "14:00 - 16:00",
-    image: "https://images.unsplash.com/photo-1625804803870-ca12de0875e8?w=400&h=300&fit=crop",
+    image: "/lovable-uploads/bf8cc990-c9ef-41ee-85fe-9fb459ca0ff6.png",
     status: 'available' as const,
     rating: 4.1,
     votes: 832

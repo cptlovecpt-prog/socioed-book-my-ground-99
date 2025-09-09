@@ -41,14 +41,14 @@ export const FacilityCard = ({
   };
 
   return (
-    <Card className="booking-card group cursor-pointer w-full max-w-[280px] h-72 overflow-hidden bg-card dark:bg-card" onClick={() => onBook(id)}>
+    <Card className="booking-card group cursor-pointer w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card" onClick={() => onBook(id)}>
       <div className="relative h-full">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${image})` }}
         />
         {/* Drop shadow overlay for text visibility */}
-        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[50px] bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         
         <div className="absolute top-2 left-2">
           {getStatusBadge()}
