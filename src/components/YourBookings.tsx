@@ -26,7 +26,25 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   
   if (!isSignedIn || bookings.length === 0) return null;
 
-  const visibleBookings = bookings.slice(0, 3);
+  // Sort bookings by latest first, prioritizing "Today" and "Tomorrow"
+  const sortedBookings = [...bookings].sort((a, b) => {
+    const dateOrder = { "Today": 0, "Tomorrow": 1 };
+    const aOrder = dateOrder[a.date as keyof typeof dateOrder] ?? 2;
+    const bOrder = dateOrder[b.date as keyof typeof dateOrder] ?? 2;
+    
+    if (aOrder !== bOrder) {
+      return aOrder - bOrder;
+    }
+    
+    // For same category, sort by date string (newest first for regular dates)
+    if (aOrder === 2 && bOrder === 2) {
+      return new Date(b.date) > new Date(a.date) ? 1 : -1;
+    }
+    
+    return 0;
+  });
+
+  const visibleBookings = sortedBookings.slice(0, 3);
   const currentBooking = visibleBookings[currentIndex];
 
   const nextBooking = () => {

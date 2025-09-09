@@ -24,6 +24,24 @@ const MyBookings = () => {
   
   const { bookings, removeBooking } = useBookings();
 
+  // Sort bookings by latest first, prioritizing "Today" and "Tomorrow"
+  const sortedBookings = [...bookings].sort((a, b) => {
+    const dateOrder = { "Today": 0, "Tomorrow": 1 };
+    const aOrder = dateOrder[a.date as keyof typeof dateOrder] ?? 2;
+    const bOrder = dateOrder[b.date as keyof typeof dateOrder] ?? 2;
+    
+    if (aOrder !== bOrder) {
+      return aOrder - bOrder;
+    }
+    
+    // For same category, sort by date string (newest first for regular dates)
+    if (aOrder === 2 && bOrder === 2) {
+      return new Date(b.date) > new Date(a.date) ? 1 : -1;
+    }
+    
+    return 0;
+  });
+
   const handleCancelClick = (bookingId: string) => {
     setBookingToCancel(bookingId);
     setShowCancelDialog(true);
@@ -59,11 +77,11 @@ const MyBookings = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Your Bookings</h1>
-          <p className="text-muted-foreground">You have {bookings.length} booking{bookings.length !== 1 ? 's' : ''}</p>
+          <p className="text-muted-foreground">You have {sortedBookings.length} booking{sortedBookings.length !== 1 ? 's' : ''}</p>
         </div>
 
         <div className="space-y-6">
-          {bookings.length === 0 ? (
+          {sortedBookings.length === 0 ? (
             <Card className="w-full">
               <CardContent className="p-12 text-center">
                 <p className="text-muted-foreground text-lg">No bookings found</p>
@@ -71,7 +89,7 @@ const MyBookings = () => {
               </CardContent>
             </Card>
           ) : (
-            bookings.map((booking) => (
+            sortedBookings.map((booking) => (
               <Card key={booking.id} className={`w-full relative ${booking.status === 'Completed' ? 'overflow-hidden' : ''}`}>
                 {booking.status === 'Completed' && (
                   <div className="absolute inset-0 bg-gray-500/90 z-10 flex items-center justify-center">
