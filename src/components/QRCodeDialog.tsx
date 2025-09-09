@@ -76,8 +76,8 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-center text-sm leading-tight px-2">
-            Show this QR Code at the entrance to get access to your booking
+          <DialogTitle className="sr-only">
+            QR Code for Booking Access
           </DialogTitle>
         </DialogHeader>
         
@@ -100,9 +100,13 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
           
           <div className="text-center space-y-2">
             <h3 className="font-medium">{booking.facilityName}</h3>
-            <p className="text-sm text-muted-foreground">{booking.sport}</p>
             <p className="text-sm text-muted-foreground">{booking.date} • {convertTo12HourFormat(booking.time)}</p>
             <p className="text-sm text-muted-foreground">{booking.participants} • {booking.facilitySize} sq mtrs.</p>
+          </div>
+          
+          <div className="text-center text-sm leading-tight px-4 py-3 bg-red-50 border border-red-200 rounded-lg">
+            <span className="text-red-600 font-bold">* </span>
+            <span className="text-red-800">Show this QR Code at the entrance to get access to your booked facility, window opens 10 mins before the booked slot to 20 mins after it</span>
           </div>
           
           <div className="space-y-3">
