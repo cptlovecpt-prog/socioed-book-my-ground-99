@@ -75,6 +75,7 @@ const HeroCarousel = () => {
         plugins={[
           Autoplay({
             delay: 3000,
+            stopOnInteraction: false,
           }),
         ]}
         opts={{
