@@ -39,7 +39,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const [isBooked, setIsBooked] = useState(false);
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
   const { toast } = useToast();
-  const { addBooking } = useBookings();
+  const { addBooking, bookings } = useBookings();
 
   const handleBook = () => {
     if (!selectedSlot) return;
@@ -48,6 +48,16 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       toast({
         title: "Please Sign-In to continue with booking",
         duration: 3000,
+      });
+      return;
+    }
+
+    // Check if user already has 4 upcoming bookings
+    const upcomingBookings = bookings.filter(booking => booking.status === 'Upcoming');
+    if (upcomingBookings.length >= 4) {
+      toast({
+        title: "You already have 4 upcoming bookings, please complete one booking before booking any more slots",
+        duration: 4000,
       });
       return;
     }
