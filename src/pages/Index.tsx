@@ -5,6 +5,7 @@ import { BookingModal } from "@/components/BookingModal";
 import { UserDashboard } from "@/components/UserDashboard";
 import Navigation from "@/components/Navigation";
 import HeroCarousel from "@/components/HeroCarousel";
+import Footer from "@/components/Footer";
 
 const indoorFacilities = [
   {
@@ -281,6 +282,8 @@ const Index = () => {
         onClose={() => setIsBookingModalOpen(false)}
         facility={selectedFacility}
       />
+      
+      <Footer />
     </div>
   );
 };
