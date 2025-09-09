@@ -48,7 +48,7 @@ export const FacilityCard = ({
           style={{ backgroundImage: `url(${image})` }}
         />
         {/* Drop shadow overlay for text visibility */}
-        <div className="absolute inset-x-0 bottom-0 h-[50px] bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[100px] bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         
         <div className="absolute top-2 left-2">
           {getStatusBadge()}
