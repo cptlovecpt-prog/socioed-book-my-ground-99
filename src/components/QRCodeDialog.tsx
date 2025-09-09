@@ -104,9 +104,15 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
             <p className="text-sm text-muted-foreground">{booking.participants} • {booking.facilitySize} sq mtrs.</p>
           </div>
           
-          <div className="text-center text-sm leading-tight px-4 py-3 bg-red-50 border border-red-200 rounded-lg">
-            <span className="text-red-600 font-bold">* </span>
-            <span className="text-red-800">Show this QR Code at the entrance to get access to your booked facility, window opens 10 mins before the booked slot to 20 mins after it</span>
+          <div className="text-center text-sm leading-tight px-4 py-3 bg-red-50 border border-red-200 rounded-lg space-y-1">
+            <div>
+              <span className="text-red-600 font-bold">* </span>
+              <span className="text-red-800">Show this QR Code at the entrance to get access to your booked facility</span>
+            </div>
+            <div>
+              <span className="text-red-600 font-bold">* </span>
+              <span className="text-red-800">QR Code is only valid from 10 mins before the booked slot to 20 mins after slot starts</span>
+            </div>
           </div>
           
           <div className="space-y-3">
