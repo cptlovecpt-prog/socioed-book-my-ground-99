@@ -69,9 +69,17 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
-    // Mix of available and unavailable slots
-    const isAvailable = Math.random() > 0.3; // 70% chance of being available
-    const available = isAvailable ? Math.floor(Math.random() * 10) + 1 : 0;
+    // Create different slot states: fully available, partially available, or full
+    const random = Math.random();
+    let available: number;
+    
+    if (random < 0.4) {
+      available = 15; // Fully available
+    } else if (random < 0.8) {
+      available = Math.floor(Math.random() * 8) + 3; // Partially available (3-10)
+    } else {
+      available = 0; // Full
+    }
     
     slots.push({
       id: id.toString(),
@@ -92,9 +100,17 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
-    // Mix of available and unavailable slots
-    const isAvailable = Math.random() > 0.3; // 70% chance of being available
-    const available = isAvailable ? Math.floor(Math.random() * 10) + 1 : 0;
+    // Create different slot states: fully available, partially available, or full
+    const random = Math.random();
+    let available: number;
+    
+    if (random < 0.4) {
+      available = 15; // Fully available
+    } else if (random < 0.8) {
+      available = Math.floor(Math.random() * 8) + 3; // Partially available (3-10)
+    } else {
+      available = 0; // Full
+    }
     
     slots.push({
       id: id.toString(),
@@ -416,12 +432,16 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                           <span className="font-medium">{slot.time}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {isAvailable ? (
+                          {slot.available === 0 ? (
+                            <Badge variant="destructive">Full</Badge>
+                          ) : slot.available === slot.capacity ? (
                             <Badge className="bg-green-500 text-white hover:bg-green-600">
                               Fully Available
                             </Badge>
                           ) : (
-                            <Badge variant="destructive">Unavailable</Badge>
+                            <Badge className="bg-yellow-500 text-black hover:bg-yellow-600">
+                              {slot.available}/{slot.capacity} spots
+                            </Badge>
                           )}
                         </div>
                       </div>
