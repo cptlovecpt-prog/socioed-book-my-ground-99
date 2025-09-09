@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Clock, Users, Share2, QrCode, ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
+import { Calendar, Clock, Users, Share2, QrCode, ChevronLeft, ChevronRight, X, Mail, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useBookings } from "@/contexts/BookingContext";
 import { format, addDays, isSameDay } from "date-fns";
+import QRCodeLib from "qrcode";
 
 interface TimeSlot {
   id: string;
@@ -142,6 +143,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const [sendEmailConfirmation, setSendEmailConfirmation] = useState<boolean>(false);
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const handleDialogClose = (open: boolean) => {
     if (!open && currentStep !== 'confirmation') {
       setShowExitConfirm(true);
@@ -293,6 +295,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`,
         facilitySize: getSizeForSport(facility.sport)
       });
+      
+      // Generate QR code
+      generateQRCode();
     }
     
     setCurrentStep('confirmation');
@@ -301,6 +306,23 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       description: "Your booking is confirmed. Check your e-mail for booking details",
       duration: 5000,
     });
+  };
+
+  const generateQRCode = async () => {
+    const shareUrl = `${window.location.origin}/join/${shareToken}`;
+    try {
+      const qrCodeDataUrl = await QRCodeLib.toDataURL(shareUrl, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      setQrCodeUrl(qrCodeDataUrl);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    }
   };
 
   const resetModal = () => {
@@ -333,6 +355,21 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     return sportImages[facility.sport] || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop';
   };
 
+  // Utility function to convert 24-hour time to AM/PM format
+  const convertTo12HourFormat = (timeRange: string) => {
+    const [startTime, endTime] = timeRange.split(' - ');
+    
+    const convertTime = (time: string) => {
+      const [hours, minutes] = time.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      return `${displayHour}:${minutes} ${ampm}`;
+    };
+    
+    return `${convertTime(startTime)} - ${convertTime(endTime)}`;
+  };
+
   const handleShare = () => {
     navigator.clipboard.writeText(`Join my booking: ${window.location.origin}/join/${shareToken}`);
     toast({
@@ -358,17 +395,25 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   };
 
   const handleShareWhatsApp = () => {
-    const message = `🏆 Sports Booking Confirmed!\n\nFacility: ${facility?.name}\nSport: ${facility?.sport}\nDate: ${format(selectedDate, 'MMM dd, yyyy')}\nTime: ${timeSlots.find(s => s.id === selectedSlot)?.time}\nParticipants: ${participantCount}\nShare Code: ${shareToken}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+    const dateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
+                       isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
+                       format(selectedDate, 'MMM dd, yyyy');
+    const timeDisplay = selectedTimeSlot ? convertTo12HourFormat(selectedTimeSlot.time) : '';
+    const shareText = `Join me for ${facility?.sport} at ${facility?.name}!\n📅 ${dateDisplay} at ${timeDisplay}\n📍 ${facility?.location}\n\nBooking ID: ${shareToken}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + '\n\n' + `${window.location.origin}/join/${shareToken}`)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleShareEmail = () => {
-    const participantEmails = participants.map(p => `${p.enrollmentId}@example.com`).join(',');
-    const subject = encodeURIComponent('Sports Booking Confirmation');
-    const body = encodeURIComponent(`Sports Booking Confirmed!\n\nFacility: ${facility?.name}\nSport: ${facility?.sport}\nDate: ${format(selectedDate, 'MMM dd, yyyy')}\nTime: ${timeSlots.find(s => s.id === selectedSlot)?.time}\nParticipants: ${participantCount}\nShare Code: ${shareToken}`);
-    const mailtoUrl = `mailto:${participantEmails}?subject=${subject}&body=${body}`;
-    window.open(mailtoUrl);
+    const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+    const dateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
+                       isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
+                       format(selectedDate, 'MMM dd, yyyy');
+    const timeDisplay = selectedTimeSlot ? convertTo12HourFormat(selectedTimeSlot.time) : '';
+    const shareText = `Join me for ${facility?.sport} at ${facility?.name}!\n📅 ${dateDisplay} at ${timeDisplay}\n📍 ${facility?.location}\n\nBooking ID: ${shareToken}`;
+    const emailUrl = `mailto:?subject=${encodeURIComponent(`Join me for ${facility?.sport}`)}&body=${encodeURIComponent(shareText + '\n\n' + `${window.location.origin}/join/${shareToken}`)}`;
+    window.open(emailUrl);
   };
 
   const getStepInfo = () => {
@@ -577,50 +622,67 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         );
 
       case 'confirmation':
+        const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+        const dateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
+                           isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
+                           format(selectedDate, 'MMM dd, yyyy');
+        const timeDisplay = selectedTimeSlot ? convertTo12HourFormat(selectedTimeSlot.time) : '';
+        
         return (
           <div className="space-y-6 py-4">
             <div className="text-center">
               <h3 className="text-lg font-semibold text-green-600 mb-2">Booking Confirmed!</h3>
             </div>
             
+            <div className="flex justify-center">
+              {qrCodeUrl ? (
+                <div className="p-4 bg-white rounded-lg border">
+                  <img 
+                    src={qrCodeUrl} 
+                    alt="QR Code" 
+                    className="w-48 h-48"
+                  />
+                </div>
+              ) : (
+                <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
+                  <QrCode className="h-12 w-12 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+            
             <div className="text-center space-y-2">
-              <div className="w-32 h-32 bg-gradient-primary rounded-xl mx-auto flex items-center justify-center">
-                <QrCode className="h-16 w-16 text-white" />
-              </div>
-              <p className="text-sm text-muted-foreground">Show this QR code at entry</p>
+              <h3 className="font-medium">{facility.name}</h3>
+              <p className="text-sm text-muted-foreground">{dateDisplay} • {timeDisplay}</p>
+              <p className="text-sm text-muted-foreground">{participantCount} participant{participantCount > 1 ? 's' : ''} • {getSizeForSport(facility.sport)} sq mtrs.</p>
             </div>
             
-            <div className="bg-muted rounded-lg p-4 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Facility:</span>
-                <span className="font-medium">{facility.name}</span>
+            <div className="text-center text-sm leading-tight px-4 py-3 bg-red-50 border border-red-200 rounded-lg space-y-1">
+              <div>
+                <span className="text-red-600 font-bold">* </span>
+                <span className="text-red-800">Show this QR Code at the entrance to get access to your booked facility</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Date:</span>
-                <span className="font-medium">{format(selectedDate, 'MMM dd, yyyy')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Time:</span>
-                <span className="font-medium">{timeSlots.find(s => s.id === selectedSlot)?.time}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Participants:</span>
-                <span className="font-medium">{participantCount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Share Code:</span>
-                <span className="font-mono font-medium">{shareToken}</span>
+              <div>
+                <span className="text-red-600 font-bold">* </span>
+                <span className="text-red-800">QR Code is only valid from 10 mins before the booked slot to 20 mins after slot starts</span>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={handleShareWhatsApp} variant="outline" className="flex items-center gap-2">
-                <Share2 className="w-4 h-4" />
+            <div className="space-y-3">
+              <Button
+                onClick={handleShareWhatsApp}
+                className="w-full flex items-center gap-2 h-12 bg-green-600 hover:bg-green-700"
+              >
+                <MessageCircle className="h-5 w-5" />
                 Share on WhatsApp
               </Button>
-              <Button onClick={handleShareEmail} variant="outline" className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Share on E-mail
+              
+              <Button
+                onClick={handleShareEmail}
+                variant="outline"
+                className="w-full flex items-center gap-2 h-12"
+              >
+                <Mail className="h-5 w-5" />
+                Share on Mail
               </Button>
             </div>
             
@@ -641,9 +703,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         <DialogContent className="w-[640px] h-[700px] max-w-none max-h-none flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {currentStep !== 'date-selection' && currentStep !== 'confirmation' && (
-                <Button variant="ghost" size="sm" onClick={handleGoBack}>
-                  <ChevronLeft className="h-4 w-4" />
+              {currentStep !== 'date-selection' && (
+                <Button variant="ghost" size="sm" onClick={currentStep === 'confirmation' ? resetModal : handleGoBack}>
+                  {currentStep === 'confirmation' ? <X className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
               )}
               Book {facility.name}
