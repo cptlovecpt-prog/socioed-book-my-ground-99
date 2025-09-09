@@ -174,7 +174,7 @@ const outdoorFacilities = [
     available: 25,
     location: "N block",
     nextSlot: "10:00 - 12:00",
-    image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.9,
     votes: 1474
