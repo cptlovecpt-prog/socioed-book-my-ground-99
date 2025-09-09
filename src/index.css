@@ -146,10 +146,14 @@
   }
   
   .facility-full {
-    @apply bg-red-500 text-white border-red-500 font-bold;
+    @apply !bg-red-500 !text-white !border-red-500 font-bold;
+  }
+  
+  .light .facility-full {
+    @apply !bg-red-500 !text-white !border-red-500 font-bold;
   }
   
   .dark .facility-full {
-    @apply bg-red-500 text-white border-red-500 font-bold;
+    @apply !bg-red-500 !text-white !border-red-500 font-bold;
   }
 }
