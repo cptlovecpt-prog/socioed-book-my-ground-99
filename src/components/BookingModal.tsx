@@ -439,7 +439,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                               Fully Available
                             </Badge>
                           ) : (
-                            <Badge className="bg-purple-500 text-white hover:bg-purple-600">
+                            <Badge className="slot-partial">
                               {slot.available}/{slot.capacity} Spots Available
                             </Badge>
                           )}

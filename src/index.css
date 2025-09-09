@@ -165,4 +165,10 @@
     border-color: #ed4545 !important;
     z-index: 50 !important;
   }
+  
+  .slot-partial {
+    @apply !text-white font-bold;
+    background-color: #9c25b3 !important;
+    border-color: #9c25b3 !important;
+  }
 }
