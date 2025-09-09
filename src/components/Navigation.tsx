@@ -4,7 +4,6 @@ import { Moon, Sun, User, Menu, ChevronDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bookMyGroundLogo from "@/assets/book-my-ground-logo.png";
 import SignInModal from "./SignInModal";
 import HelpSupportModal from "./HelpSupportModal";
 
@@ -41,12 +40,12 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo and Name */}
           <div className="flex items-center space-x-3 cursor-pointer" onClick={navigateToHome}>
-            <img src={bookMyGroundLogo} alt="Book My Ground" className="h-10 w-auto" />
+            <img src="/lovable-uploads/923283f5-8027-43fb-b25c-080ee8310656.png" alt="Book My Ground" className="h-12 w-auto" />
             <span className="text-xl font-bold hover:text-primary transition-colors">Book My Ground</span>
           </div>
 
