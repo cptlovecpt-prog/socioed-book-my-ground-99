@@ -145,8 +145,12 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const handleDialogClose = (open: boolean) => {
-    if (!open && currentStep !== 'confirmation') {
-      setShowExitConfirm(true);
+    if (!open) {
+      if (currentStep === 'confirmation') {
+        resetModal();
+      } else {
+        setShowExitConfirm(true);
+      }
     }
   };
 
@@ -357,6 +361,11 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
   // Utility function to convert 24-hour time to AM/PM format
   const convertTo12HourFormat = (timeRange: string) => {
+    // Check if the time already has AM/PM format
+    if (timeRange.includes('AM') || timeRange.includes('PM')) {
+      return timeRange; // Already formatted, return as is
+    }
+    
     const [startTime, endTime] = timeRange.split(' - ');
     
     const convertTime = (time: string) => {
