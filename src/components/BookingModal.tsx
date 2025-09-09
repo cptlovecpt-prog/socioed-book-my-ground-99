@@ -421,7 +421,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                               Fully Available
                             </Badge>
                           ) : (
-                            <Badge variant="destructive">Not Available</Badge>
+                            <Badge variant="destructive">Unavailable</Badge>
                           )}
                         </div>
                       </div>
