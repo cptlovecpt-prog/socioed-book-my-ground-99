@@ -12,6 +12,7 @@ import Navigation from "@/components/Navigation";
 import HeroCarousel from "@/components/HeroCarousel";
 import Footer from "@/components/Footer";
 import YourBookings from "@/components/YourBookings";
+import { useToast } from "@/hooks/use-toast";
 
 const indoorFacilities = [
   {
@@ -260,6 +261,7 @@ const Index = () => {
   const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
+  const { toast } = useToast();
 
   const allSports = [
     "Football", "Cricket", "Basketball", "Volleyball", "Tennis", 
@@ -296,6 +298,14 @@ const Index = () => {
   };
 
   const handleBooking = (facilityId: string) => {
+    if (!isSignedIn) {
+      toast({
+        title: "Please sign-in to continue your booking",
+        duration: 3000,
+      });
+      return;
+    }
+    
     const allFacilities = [...indoorFacilities, ...outdoorFacilities];
     const facility = allFacilities.find(f => f.id === facilityId);
     if (facility) {

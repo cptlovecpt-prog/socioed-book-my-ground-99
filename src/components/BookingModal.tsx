@@ -270,7 +270,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     toast({
       title: "Booking Confirmation",
       description: "Your booking is confirmed. Check your e-mail for booking details",
-      duration: 4000,
+      duration: 5000,
     });
   };
 
@@ -433,14 +433,14 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                         </div>
                         <div className="flex items-center gap-2">
                           {slot.available === 0 ? (
-                            <Badge variant="destructive">Full</Badge>
+                            <Badge variant="destructive">No Slots Available</Badge>
                           ) : slot.available === slot.capacity ? (
                             <Badge className="bg-green-500 text-white hover:bg-green-600">
                               Fully Available
                             </Badge>
                           ) : (
-                            <Badge className="bg-yellow-500 text-black hover:bg-yellow-600">
-                              {slot.available}/{slot.capacity} spots
+                            <Badge className="bg-purple-500 text-white hover:bg-purple-600">
+                              {slot.available}/{slot.capacity} Spots Available
                             </Badge>
                           )}
                         </div>
