@@ -13,7 +13,7 @@ const heroImages = [
   },
   {
     id: 2,
-    image: "/lovable-uploads/691656f8-b703-46bf-a786-c3ef0507018f.png",
+    image: "/lovable-uploads/78147606-33bf-41e6-9575-8f1950aff715.png",
     title: "Pickleball Courts",
     description: "Modern pickleball courts for competitive matches"
   },
