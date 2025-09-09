@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
 import { ShareDialog } from "@/components/ShareDialog";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Utility function to convert 24-hour time to AM/PM format
 const convertTo12HourFormat = (timeRange: string) => {
@@ -38,6 +39,7 @@ const MyBookings = () => {
   const [bookingForQRCode, setBookingForQRCode] = useState<any>(null);
   
   const { bookings, removeBooking } = useBookings();
+  const { toast } = useToast();
 
   // Sort bookings by latest first, prioritizing "Today" and "Tomorrow"
   const sortedBookings = [...bookings].sort((a, b) => {
@@ -75,6 +77,11 @@ const MyBookings = () => {
   const handleConfirmCancel = () => {
     if (bookingToCancel) {
       removeBooking(bookingToCancel);
+      toast({
+        title: "Alert",
+        description: "Your booking was canceled as requested, cancellation mail has been sent to all participants.",
+        duration: 4000,
+      });
     }
     setShowCancelDialog(false);
     setBookingToCancel(null);
@@ -105,14 +112,7 @@ const MyBookings = () => {
             </Card>
           ) : (
             sortedBookings.map((booking) => (
-              <Card key={booking.id} className={`w-full relative ${booking.status === 'Completed' ? 'overflow-hidden' : ''}`}>
-                {booking.status === 'Completed' && (
-                  <div className="absolute inset-0 bg-gray-500/90 z-10 flex items-center justify-center">
-                    <Badge variant="secondary" className="bg-gray-600 text-white border-gray-500 text-lg px-4 py-2">
-                      Expired
-                    </Badge>
-                  </div>
-                )}
+              <Card key={booking.id} className="w-full relative">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
