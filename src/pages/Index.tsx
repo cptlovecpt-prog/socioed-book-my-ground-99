@@ -148,7 +148,7 @@ const outdoorFacilities = [
     available: 20,
     location: "Near Gate No. 3",
     nextSlot: "12:00 - 14:00",
-    image: "/lovable-uploads/41b5b789-fdcc-40d9-a3d7-323838e4ea3f.png",
+    image: "/lovable-uploads/f5824fb2-7c1a-4759-89eb-628b108960b7.png",
     status: 'available' as const,
     rating: 4.4,
     votes: 960
