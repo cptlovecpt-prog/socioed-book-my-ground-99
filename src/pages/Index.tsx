@@ -122,7 +122,7 @@ const outdoorFacilities = [
     available: 18,
     location: "Old Ground",
     nextSlot: "10:00 - 12:00",
-    image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.8,
     votes: 7400
