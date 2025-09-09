@@ -15,7 +15,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   // Reset to first booking when bookings change (new booking added)
   useEffect(() => {
     setCurrentIndex(0);
-  }, [bookings.length]);
+  }, [bookings]);
   
   if (!isSignedIn || bookings.length === 0) return null;
 
