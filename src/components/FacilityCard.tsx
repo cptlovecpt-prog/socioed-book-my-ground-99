@@ -41,8 +41,8 @@ export const FacilityCard = ({
   };
 
   return (
-    <Card className="booking-card group cursor-pointer w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card relative" onClick={() => onBook(id)}>
-      <div className="relative h-full">
+    <Card className="booking-card group cursor-pointer w-[278px] overflow-hidden bg-card dark:bg-card relative" onClick={() => onBook(id)}>
+      <div className="relative h-[350px]">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${image})` }}
@@ -59,10 +59,14 @@ export const FacilityCard = ({
         </div>
         
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1 text-white z-30">
-          <p className="text-sm text-white/70">{capacity} persons</p>
-          <h3 className="font-bold text-lg leading-tight">{name}</h3>
-          <p className="text-sm text-white/70">{location}</p>
+          <p className="text-sm text-white/90">{capacity} persons</p>
+          <p className="text-sm text-white/90">{location}</p>
         </div>
+      </div>
+      
+      {/* Name below card */}
+      <div className="p-3 bg-card">
+        <h3 className="font-bold text-xl text-foreground">{name}</h3>
       </div>
     </Card>
   );
