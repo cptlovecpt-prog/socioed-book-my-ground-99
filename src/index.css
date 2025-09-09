@@ -138,7 +138,7 @@
   }
   
   .facility-available {
-    @apply !bg-green-500 !text-white !border-green-500 font-bold;
+    @apply !bg-green-800 !text-white !border-green-800 font-bold;
   }
   
   .facility-busy {
