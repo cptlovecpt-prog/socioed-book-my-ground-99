@@ -160,8 +160,9 @@
   }
   
   .slot-unavailable {
-    @apply !text-white font-bold;
+    @apply !text-white font-bold relative;
     background-color: #ed4545 !important;
     border-color: #ed4545 !important;
+    z-index: 50 !important;
   }
 }
