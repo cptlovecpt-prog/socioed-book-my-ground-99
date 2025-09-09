@@ -37,23 +37,24 @@ interface BookingModalProps {
   } | null;
 }
 
-// Sport configuration with max participants based on provided data
+// Sport configuration with max participants based on Excel data
 const sportConfig: { [key: string]: number } = {
   'Football': 22,
   'Cricket': 22,
-  'Basketball': 28,
-  'Volleyball': 24,
+  'Basketball': 20,
+  'Volleyball': 25,
   'Tennis': 8,
   'Badminton': 12,
   'Squash': 6,
   'Swimming': 35,
-  'Pickleball': 20,
+  'Pickleball': 40,
   'Gym': 40,
   'Field Court': 8,
   'Hockey': 10,
   'Table Tennis': 48,
   'Chess': 10,
-  'Padel': 4,
+  'Padel': 8,
+  'Padel Court': 8,
   'Basket Court': 12
 };
 
@@ -564,8 +565,10 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
       case 'participant-count':
         const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
-        const slotCapacity = selectedTimeSlot?.capacity || maxParticipants;
-        const slotAvailable = selectedTimeSlot?.available || maxParticipants;
+        // Use the sport's maximum capacity from sportConfig
+        const totalSpots = maxParticipants;
+        // Available spots based on the selected time slot
+        const availableSpots = selectedTimeSlot?.available || 0;
         
         return (
           <div className="space-y-6">
@@ -583,21 +586,21 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               </div>
               {selectedTimeSlot && (
                 <p className="text-sm text-muted-foreground mb-4">
-                  {slotAvailable} out of {slotCapacity} spots available
+                  {availableSpots} out of {totalSpots} spots available
                 </p>
               )}
             </div>
             
-            <div className="grid grid-cols-5 gap-2">
-              {Array.from({ length: Math.min(slotCapacity, 25) }, (_, i) => i + 1).map((count) => {
-                const isAvailable = count <= slotAvailable;
+            <div className="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto">
+              {Array.from({ length: totalSpots }, (_, i) => i + 1).map((count) => {
+                const isAvailable = count <= availableSpots;
                 const isSelected = participantCount === count;
                 
                 return (
                   <Button
                     key={count}
                     variant={isSelected ? "default" : "outline"}
-                    className={`h-12 ${!isAvailable ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground" : ""}`}
+                    className={`h-10 text-sm ${!isAvailable ? "opacity-40 cursor-not-allowed bg-muted/50 text-muted-foreground border-muted" : ""}`}
                     onClick={() => isAvailable ? handleParticipantCountSelect(count) : undefined}
                     disabled={!isAvailable}
                   >
@@ -607,29 +610,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               })}
             </div>
             
-            {slotCapacity > 25 && (
-              <div className="text-center">
-                <Label htmlFor="custom-count" className="text-sm text-muted-foreground">
-                  Or enter a number (up to {slotAvailable}):
-                </Label>
-                <Input
-                  id="custom-count"
-                  type="number"
-                  min="1"
-                  max={slotAvailable}
-                  className="w-24 mx-auto mt-2"
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    if (value >= 1 && value <= slotAvailable) {
-                      handleParticipantCountSelect(value);
-                    }
-                  }}
-                />
-              </div>
-            )}
-            
             <p className="text-sm text-muted-foreground text-center">
-              Maximum {maxParticipants} participants allowed for {facility.sport}
+              Maximum {totalSpots} participants allowed for {facility.sport}
             </p>
             
             <Button 
