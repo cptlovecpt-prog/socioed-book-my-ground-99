@@ -330,19 +330,14 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       case 'slot-selection':
         return (
           <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setCurrentStep('date-selection')}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{format(selectedDate, 'MMM dd, yyyy')}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4" />
-                  <span>{facility.sport}</span>
-                </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>{format(selectedDate, 'MMM dd, yyyy')}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                <span>{facility.sport}</span>
               </div>
             </div>
             
@@ -385,12 +380,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       case 'participant-count':
         return (
           <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setCurrentStep('slot-selection')}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <h3 className="font-medium">Select Number of Participants</h3>
-            </div>
+            <h3 className="font-medium">Select Number of Participants</h3>
             
             <div className="grid grid-cols-5 gap-3">
               {Array.from({ length: Math.min(maxParticipants, 20) }, (_, i) => i + 1).map((count) => (
@@ -414,12 +404,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       case 'participant-details':
         return (
           <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setCurrentStep('participant-count')}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <h3 className="font-medium">Enter Enrollment IDs</h3>
-            </div>
+            <h3 className="font-medium">Enter Enrollment IDs</h3>
             
             <div className="space-y-4 max-h-64 overflow-y-auto">
               {participants.map((participant, index) => (
@@ -516,30 +501,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     <Dialog open={isOpen} onOpenChange={resetModal}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {currentStep !== 'date-selection' && currentStep !== 'confirmation' && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => {
-                  if (currentStep === 'slot-selection') setCurrentStep('date-selection');
-                  else if (currentStep === 'participant-count') setCurrentStep('slot-selection');
-                  else if (currentStep === 'participant-details') setCurrentStep('participant-count');
-                }}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-            )}
-            Book {facility.name}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={resetModal}
-              className="ml-auto"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
+          <DialogTitle>Book {facility.name}</DialogTitle>
         </DialogHeader>
         
         {renderStepContent()}
