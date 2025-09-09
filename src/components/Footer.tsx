@@ -80,7 +80,7 @@ const Footer = () => {
         <DialogContent className="max-w-2xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">Privacy Policy</DialogTitle>
-            <p className="text-sm text-muted-foreground">Last updated: June 19, 2024</p>
+            <p className="text-sm text-muted-foreground">Last updated: Aug 31, 2025</p>
           </DialogHeader>
           
           <ScrollArea className="h-full pr-6">
