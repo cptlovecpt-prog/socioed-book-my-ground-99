@@ -69,7 +69,10 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
-    const available = Math.floor(Math.random() * 10) + 1;
+    // Mix of available and unavailable slots
+    const isAvailable = Math.random() > 0.3; // 70% chance of being available
+    const available = isAvailable ? Math.floor(Math.random() * 10) + 1 : 0;
+    
     slots.push({
       id: id.toString(),
       time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
@@ -89,7 +92,10 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
-    const available = Math.floor(Math.random() * 10) + 1;
+    // Mix of available and unavailable slots
+    const isAvailable = Math.random() > 0.3; // 70% chance of being available
+    const available = isAvailable ? Math.floor(Math.random() * 10) + 1 : 0;
+    
     slots.push({
       id: id.toString(),
       time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
@@ -393,7 +399,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               <div className="grid gap-2">
                 {timeSlots.map((slot) => {
                   const isAvailable = slot.available > 0;
-                  const hasHighAvailability = slot.available > 7;
                   
                   return (
                     <div
@@ -411,15 +416,13 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                           <span className="font-medium">{slot.time}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {hasHighAvailability && (
+                          {isAvailable ? (
                             <Badge className="bg-green-500 text-white hover:bg-green-600">
-                              Available
+                              Fully Available
                             </Badge>
+                          ) : (
+                            <Badge variant="destructive">Not Available</Badge>
                           )}
-                          <Badge variant={isAvailable ? "default" : "secondary"}>
-                            {slot.available}/{slot.capacity} spots
-                          </Badge>
-                          {!isAvailable && <Badge variant="destructive">Full</Badge>}
                         </div>
                       </div>
                     </div>
