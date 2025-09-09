@@ -138,7 +138,7 @@
   }
   
   .facility-available {
-    @apply bg-accent/10 text-accent-foreground border-accent/20;
+    @apply !bg-green-500 !text-white !border-green-500 font-bold;
   }
   
   .facility-busy {
