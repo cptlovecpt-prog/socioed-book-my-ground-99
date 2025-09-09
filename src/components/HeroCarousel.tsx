@@ -7,33 +7,33 @@ import { cn } from "@/lib/utils";
 const heroImages = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1200&h=400&fit=crop",
-    title: "Basketball Courts",
-    description: "Professional indoor basketball facilities"
+    image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=1200&h=400&fit=crop",
+    title: "Cricket Ground",
+    description: "Professional cricket grounds with world-class facilities"
   },
   {
     id: 2,
     image: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200&h=400&fit=crop",
-    title: "Tennis Courts",
-    description: "World-class tennis courts for all skill levels"
+    title: "Pickleball Courts",
+    description: "Modern pickleball courts for competitive matches"
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1200&h=400&fit=crop",
-    title: "Football Fields",
-    description: "Full-size football fields with premium turf"
+    image: "https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=1200&h=400&fit=crop",
+    title: "Table Tennis",
+    description: "Professional table tennis facilities for tournaments"
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=1200&h=400&fit=crop",
-    title: "Swimming Pools",
-    description: "Olympic-sized swimming pools and aquatic centers"
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=400&fit=crop",
+    title: "Gym & Swimming Pool",
+    description: "State-of-the-art gym and aquatic facilities"
   },
   {
     id: 5,
-    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&h=400&fit=crop",
-    title: "Indoor Sports",
-    description: "Badminton, Squash, Basketball and Open Chess"
+    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=1200&h=400&fit=crop",
+    title: "Badminton Courts",
+    description: "Professional badminton courts for competitive play"
   }
 ];
 
