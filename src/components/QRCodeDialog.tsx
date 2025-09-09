@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { QrCode, MessageCircle, Mail } from "lucide-react";
+import { QrCode, MessageCircle, Mail, X } from "lucide-react";
 import QRCodeLib from "qrcode";
 
 interface QRCodeDialogProps {
@@ -21,6 +21,7 @@ interface QRCodeDialogProps {
 
 export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [isFullScreenOpen, setIsFullScreenOpen] = useState(false);
   
   // Utility function to convert 24-hour time to AM/PM format
   const convertTo12HourFormat = (timeRange: string) => {
@@ -84,7 +85,10 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
         <div className="space-y-6 py-4">
           <div className="flex justify-center">
             {qrCodeUrl ? (
-              <div className="p-4 bg-white rounded-lg border">
+              <div 
+                className="p-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => setIsFullScreenOpen(true)}
+              >
                 <img 
                   src={qrCodeUrl} 
                   alt="QR Code" 
@@ -135,6 +139,29 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
           </div>
         </div>
       </DialogContent>
+      
+      {/* Full Screen QR Code View */}
+      {isFullScreenOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+          <div className="relative">
+            <Button
+              onClick={() => setIsFullScreenOpen(false)}
+              variant="outline"
+              size="icon"
+              className="absolute -top-12 -right-2 bg-white hover:bg-gray-100"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <div className="p-8 bg-white rounded-lg">
+              <img 
+                src={qrCodeUrl} 
+                alt="QR Code Full Screen" 
+                className="w-80 h-80"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </Dialog>
   );
 };
