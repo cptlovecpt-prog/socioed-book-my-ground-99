@@ -6,6 +6,7 @@ import { UserDashboard } from "@/components/UserDashboard";
 import Navigation from "@/components/Navigation";
 import HeroCarousel from "@/components/HeroCarousel";
 import Footer from "@/components/Footer";
+import YourBookings from "@/components/YourBookings";
 
 const indoorFacilities = [
   {
@@ -224,6 +225,7 @@ const outdoorFacilities = [
 const Index = () => {
   const [selectedFacility, setSelectedFacility] = useState<(typeof indoorFacilities[0]) | (typeof outdoorFacilities[0]) | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(true); // Set to true to show the Your Bookings section
 
   const handleBooking = (facilityId: string) => {
     const allFacilities = [...indoorFacilities, ...outdoorFacilities];
@@ -240,6 +242,9 @@ const Index = () => {
       
       {/* Hero Carousel */}
       <HeroCarousel />
+
+      {/* Your Bookings Section - shown when signed in */}
+      <YourBookings isSignedIn={isSignedIn} />
 
       {/* Facility Tabs */}
       <section className="py-8 px-4">
