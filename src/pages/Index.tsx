@@ -24,19 +24,6 @@ interface IndexProps {
 const indoorFacilities = [
   {
     id: "1",
-    name: "Basketball Court",
-    sport: "Basketball",
-    capacity: 20,
-    available: 15,
-    location: "Near K block",
-    nextSlot: "09:00 - 18:00",
-    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
-    status: 'available' as const,
-    rating: 4.4,
-    votes: 536
-  },
-  {
-    id: "2",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 12,
@@ -49,7 +36,33 @@ const indoorFacilities = [
     votes: 480
   },
   {
+    id: "2",
+    name: "Squash Court",
+    sport: "Squash",
+    capacity: 6,
+    available: 0,
+    location: "K block",
+    nextSlot: "12:00 - 14:00",
+    image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png",
+    status: 'full' as const,
+    rating: 4.2,
+    votes: 187
+  },
+  {
     id: "3",
+    name: "Basketball Court",
+    sport: "Basketball",
+    capacity: 20,
+    available: 15,
+    location: "K block",
+    nextSlot: "09:00 - 18:00",
+    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
+    status: 'available' as const,
+    rating: 4.4,
+    votes: 536
+  },
+  {
+    id: "4",
     name: "Gym",
     sport: "Gym",
     capacity: 40,
@@ -59,10 +72,10 @@ const indoorFacilities = [
     image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.6,
-    votes: 382
+    votes: 308
   },
   {
-    id: "4",
+    id: "5",
     name: "Gym",
     sport: "Gym",
     capacity: 40,
@@ -75,7 +88,7 @@ const indoorFacilities = [
     votes: 382
   },
   {
-    id: "5",
+    id: "6",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 10,
@@ -85,28 +98,28 @@ const indoorFacilities = [
     image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.2,
-    votes: 187
-  },
-  {
-    id: "6",
-    name: "Chess Room",
-    sport: "Chess",
-    capacity: 10,
-    available: 6,
-    location: "C12 Block",
-    nextSlot: "16:00 - 18:00",
-    image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png",
-    status: 'available' as const,
-    rating: 4.1,
-    votes: 1048
+    votes: 1120
   },
   {
     id: "7",
+    name: "Padel Court",
+    sport: "Padel",
+    capacity: 8,
+    available: 0,
+    location: "C11-C12 Block",
+    nextSlot: "14:00 - 16:00",
+    image: "/lovable-uploads/30c311d0-0531-4989-b2cf-446fa8a581ed.png",
+    status: 'full' as const,
+    rating: 4.1,
+    votes: 832
+  },
+  {
+    id: "8",
     name: "Table Tennis",
     sport: "Table Tennis",
     capacity: 48,
     available: 35,
-    location: "Hostel Block",
+    location: "Hostel Blocks",
     nextSlot: "18:00 - 20:00",
     image: "https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=400&h=300&fit=crop",
     status: 'available' as const,
