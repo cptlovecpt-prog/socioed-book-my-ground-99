@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Share, QrCode, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useBookings } from "@/contexts/BookingContext";
 
@@ -11,6 +12,8 @@ interface YourBookingsProps {
 const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const { bookings, removeBooking } = useBookings();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
   
   // Reset to first booking when bookings change (new booking added)
   useEffect(() => {
@@ -30,11 +33,20 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
     setCurrentIndex((prev) => (prev - 1 + visibleBookings.length) % visibleBookings.length);
   };
 
-  const handleCancel = (bookingId: string) => {
-    removeBooking(bookingId);
-    if (currentIndex >= visibleBookings.length - 1) {
-      setCurrentIndex(Math.max(0, visibleBookings.length - 2));
+  const handleCancelClick = (bookingId: string) => {
+    setBookingToCancel(bookingId);
+    setShowCancelDialog(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (bookingToCancel) {
+      removeBooking(bookingToCancel);
+      if (currentIndex >= visibleBookings.length - 1) {
+        setCurrentIndex(Math.max(0, visibleBookings.length - 2));
+      }
     }
+    setShowCancelDialog(false);
+    setBookingToCancel(null);
   };
 
   return (
@@ -104,7 +116,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
                 variant="outline" 
                 size="sm" 
                 className="flex items-center space-x-1 text-destructive hover:text-white hover:bg-destructive border-destructive"
-                onClick={() => handleCancel(currentBooking.id)}
+                onClick={() => handleCancelClick(currentBooking.id)}
               >
                 <X className="h-4 w-4" />
                 <span className="hidden sm:inline">Cancel</span>
@@ -113,6 +125,23 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
           </Card>
         </div>
       </div>
+      
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Alert</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel your reservation?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmCancel}>
+              Yes, Cancel Reservation
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 };

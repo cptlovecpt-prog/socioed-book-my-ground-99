@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Clock, MapPin, Users, Share, QrCode, X } from "lucide-react";
 import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
@@ -12,11 +13,22 @@ const MyBookings = () => {
     name: "John Doe",
     email: "john@example.com"
   });
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
   
   const { bookings, removeBooking } = useBookings();
 
-  const handleCancel = (bookingId: string) => {
-    removeBooking(bookingId);
+  const handleCancelClick = (bookingId: string) => {
+    setBookingToCancel(bookingId);
+    setShowCancelDialog(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (bookingToCancel) {
+      removeBooking(bookingToCancel);
+    }
+    setShowCancelDialog(false);
+    setBookingToCancel(null);
   };
 
   return (
@@ -104,7 +116,7 @@ const MyBookings = () => {
                         variant="outline" 
                         size="sm" 
                         className="flex items-center gap-2 text-destructive hover:text-white hover:bg-destructive border-destructive"
-                        onClick={() => handleCancel(booking.id)}
+                        onClick={() => handleCancelClick(booking.id)}
                       >
                         <X className="h-4 w-4" />
                         <span className="hidden sm:inline">Cancel</span>
@@ -117,6 +129,23 @@ const MyBookings = () => {
           )}
         </div>
       </main>
+      
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Alert</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel your reservation?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmCancel}>
+              Yes, Cancel Reservation
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
