@@ -70,7 +70,7 @@ const HelpSupportModal = ({ isOpen, onClose }: HelpSupportModalProps) => {
           </div>
 
           <div className="text-center text-sm text-muted-foreground">
-            Our support team is available 24/7 to help you with any questions or issues.
+            Please contact admin for any support at the above credentials
           </div>
         </div>
       </DialogContent>
