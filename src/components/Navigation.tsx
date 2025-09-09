@@ -32,6 +32,8 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
   const handleSignOut = () => {
     setIsSignedIn(false);
     setUserData(null);
+    // Reload page to ensure user returns to default home page state
+    window.location.reload();
   };
 
   const openSignInModal = () => {
