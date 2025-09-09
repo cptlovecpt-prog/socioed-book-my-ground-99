@@ -110,6 +110,18 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const [participants, setParticipants] = useState<ParticipantData[]>([{ enrollmentId: '' }]);
   const [sendEmailConfirmation, setSendEmailConfirmation] = useState<boolean>(false);
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const handleDialogClose = (open: boolean) => {
+    if (!open && currentStep !== 'confirmation') {
+      setShowExitConfirm(true);
+    }
+  };
+
+  const handleConfirmExit = () => {
+    setShowExitConfirm(false);
+    resetModal();
+  };
+  
   const { toast } = useToast();
   const { addBooking, bookings } = useBookings();
   
@@ -544,8 +556,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   };
 
   return (
-    <AlertDialog>
-      <Dialog open={isOpen} onOpenChange={(open) => !open && currentStep !== 'confirmation'}>
+    <>
+      <Dialog open={isOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -555,13 +567,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 </Button>
               )}
               Book {facility.name}
-              {currentStep !== 'confirmation' && (
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="ml-auto">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-              )}
             </DialogTitle>
           </DialogHeader>
           
@@ -569,18 +574,20 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         </DialogContent>
       </Dialog>
       
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Alert</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to exit the booking process?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={resetModal}>Exit</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <AlertDialog open={showExitConfirm} onOpenChange={setShowExitConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Alert</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to exit the booking process?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmExit}>Exit</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
