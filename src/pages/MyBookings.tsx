@@ -25,12 +25,14 @@ const convertTo12HourFormat = (timeRange: string) => {
   return `${convertTime(startTime)} - ${convertTime(endTime)}`;
 };
 
-const MyBookings = () => {
-  const [isSignedIn, setIsSignedIn] = useState(true); // Assume signed in to access this page
-  const [userData, setUserData] = useState<{ name: string; email: string } | null>({
-    name: "John Doe",
-    email: "john@example.com"
-  });
+interface MyBookingsProps {
+  isSignedIn: boolean;
+  setIsSignedIn: (value: boolean) => void;
+  userData: { name: string; email: string } | null;
+  setUserData: (data: { name: string; email: string } | null) => void;
+}
+
+const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBookingsProps) => {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);

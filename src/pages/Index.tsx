@@ -14,6 +14,13 @@ import Footer from "@/components/Footer";
 import YourBookings from "@/components/YourBookings";
 import { useToast } from "@/hooks/use-toast";
 
+interface IndexProps {
+  isSignedIn: boolean;
+  setIsSignedIn: (value: boolean) => void;
+  userData: { name: string; email: string } | null;
+  setUserData: (data: { name: string; email: string } | null) => void;
+}
+
 const indoorFacilities = [
   {
     id: "1",
@@ -254,11 +261,9 @@ const outdoorFacilities = [
   }
 ];
 
-const Index = () => {
+const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps) => {
   const [selectedFacility, setSelectedFacility] = useState<(typeof indoorFacilities[0]) | (typeof outdoorFacilities[0]) | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false); // Default to false - user needs to sign in
-  const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
   const { toast } = useToast();
