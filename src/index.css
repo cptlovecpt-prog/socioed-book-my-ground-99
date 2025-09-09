@@ -158,4 +158,10 @@
   .dark .facility-full {
     @apply !bg-red-500 !text-white !border-red-500 font-bold;
   }
+  
+  .slot-unavailable {
+    @apply !text-white font-bold;
+    background-color: #ed4545 !important;
+    border-color: #ed4545 !important;
+  }
 }
