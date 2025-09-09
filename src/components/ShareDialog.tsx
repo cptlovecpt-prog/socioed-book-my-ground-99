@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Copy, MessageCircle, Share2, Twitter, Facebook, Mail } from "lucide-react";
+import { Copy, MessageCircle, Share2, Twitter, Facebook } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ShareDialogProps {
@@ -54,10 +54,6 @@ export const ShareDialog = ({ isOpen, onClose, booking }: ShareDialogProps) => {
     window.open(facebookUrl, '_blank');
   };
 
-  const handleEmail = () => {
-    const emailUrl = `mailto:?subject=${encodeURIComponent(`Join me for ${booking.sport}`)}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
-    window.open(emailUrl);
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -80,13 +76,12 @@ export const ShareDialog = ({ isOpen, onClose, booking }: ShareDialogProps) => {
           <div className="space-y-4">
             <h4 className="font-medium text-sm">Share via:</h4>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <Button
-                variant="outline"
                 onClick={handleWhatsApp}
-                className="flex items-center gap-2 h-12"
+                className="flex items-center gap-2 h-12 bg-[#25D366] hover:bg-[#128C7E] text-white border-0"
               >
-                <MessageCircle className="h-5 w-5 text-green-600" />
+                <MessageCircle className="h-5 w-5" />
                 <span>WhatsApp</span>
               </Button>
               
@@ -106,15 +101,6 @@ export const ShareDialog = ({ isOpen, onClose, booking }: ShareDialogProps) => {
               >
                 <Facebook className="h-5 w-5 text-blue-600" />
                 <span>Facebook</span>
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={handleEmail}
-                className="flex items-center gap-2 h-12"
-              >
-                <Mail className="h-5 w-5 text-gray-600" />
-                <span>Email</span>
               </Button>
             </div>
             
