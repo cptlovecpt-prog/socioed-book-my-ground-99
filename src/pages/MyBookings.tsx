@@ -3,10 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Clock, MapPin, Users, Share, QrCode, X, Building } from "lucide-react";
+import { Clock, MapPin, Users, QrCode, X, Building } from "lucide-react";
 import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
-import { ShareDialog } from "@/components/ShareDialog";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
 import { useToast } from "@/hooks/use-toast";
 
@@ -34,10 +33,8 @@ interface MyBookingsProps {
 
 const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBookingsProps) => {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
   const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
-  const [bookingToShare, setBookingToShare] = useState<any>(null);
   const [bookingForQRCode, setBookingForQRCode] = useState<any>(null);
   
   const { bookings, cancelBooking } = useBookings();
@@ -64,11 +61,6 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
   const handleCancelClick = (bookingId: string) => {
     setBookingToCancel(bookingId);
     setShowCancelDialog(true);
-  };
-
-  const handleShareClick = (booking: any) => {
-    setBookingToShare(booking);
-    setShowShareDialog(true);
   };
 
   const handleQRCodeClick = (booking: any) => {
@@ -161,10 +153,6 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
                   </div>
 
                   <div className="flex gap-3">
-                    <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={() => handleShareClick(booking)}>
-                      <Share className="h-4 w-4" />
-                      <span className="hidden sm:inline">Share</span>
-                    </Button>
                     <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={() => handleQRCodeClick(booking)}>
                       <QrCode className="h-4 w-4" />
                       <span className="hidden sm:inline">QR Code</span>
@@ -187,17 +175,6 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
           )}
         </div>
       </main>
-      
-      {bookingToShare && (
-        <ShareDialog
-          isOpen={showShareDialog}
-          onClose={() => {
-            setShowShareDialog(false);
-            setBookingToShare(null);
-          }}
-          booking={bookingToShare}
-        />
-      )}
       
       {bookingForQRCode && (
         <QRCodeDialog

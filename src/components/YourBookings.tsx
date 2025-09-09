@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Share, QrCode, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { QrCode, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useBookings } from "@/contexts/BookingContext";
-import { ShareDialog } from "./ShareDialog";
 import { QRCodeDialog } from "./QRCodeDialog";
 
 interface YourBookingsProps {
@@ -30,7 +29,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const { bookings, cancelBooking } = useBookings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
+  
   const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
   
@@ -76,10 +75,6 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const handleCancelClick = (bookingId: string) => {
     setBookingToCancel(bookingId);
     setShowCancelDialog(true);
-  };
-
-  const handleShareClick = () => {
-    setShowShareDialog(true);
   };
 
   const handleQRCodeClick = () => {
@@ -153,10 +148,6 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
             
             {/* Action Buttons */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-              <Button variant="outline" size="sm" className="flex items-center space-x-1" onClick={handleShareClick}>
-                <Share className="h-4 w-4" />
-                <span className="hidden sm:inline">Share</span>
-              </Button>
               <Button variant="outline" size="sm" className="flex items-center space-x-1" onClick={handleQRCodeClick}>
                 <QrCode className="h-4 w-4" />
                 <span className="hidden sm:inline">QR Code</span>
@@ -175,13 +166,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
         </div>
       </div>
       
-      <ShareDialog
-        isOpen={showShareDialog}
-        onClose={() => setShowShareDialog(false)}
-        booking={currentBooking}
-      />
-      
-      <QRCodeDialog
+        <QRCodeDialog
         isOpen={showQRCodeDialog}
         onClose={() => setShowQRCodeDialog(false)}
         booking={currentBooking}
