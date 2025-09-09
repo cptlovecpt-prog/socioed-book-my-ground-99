@@ -1,7 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Clock, Users, MapPin } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface FacilityCardProps {
   id: string;
@@ -13,6 +12,8 @@ interface FacilityCardProps {
   nextSlot: string;
   image: string;
   status: 'available' | 'busy' | 'full';
+  rating: number;
+  votes: number;
   onBook: (facilityId: string) => void;
 }
 
@@ -26,6 +27,8 @@ export const FacilityCard = ({
   nextSlot, 
   image, 
   status,
+  rating,
+  votes,
   onBook 
 }: FacilityCardProps) => {
   const getStatusBadge = () => {
@@ -40,49 +43,28 @@ export const FacilityCard = ({
   };
 
   return (
-    <Card className="booking-card group cursor-pointer" onClick={() => onBook(id)}>
-      <div 
-        className="h-48 bg-cover bg-center rounded-t-xl"
-        style={{ backgroundImage: `url(${image})` }}
-      >
-        <div className="h-full bg-gradient-to-t from-black/60 to-transparent rounded-t-xl flex items-end p-4">
-          <div className="text-white">
-            <h3 className="font-bold text-lg">{name}</h3>
-            <p className="text-sm opacity-90">{sport}</p>
-          </div>
+    <Card className="booking-card group cursor-pointer w-full max-w-[280px]" onClick={() => onBook(id)}>
+      <div className="relative">
+        <div 
+          className="h-64 bg-cover bg-center rounded-t-lg"
+          style={{ backgroundImage: `url(${image})` }}
+        />
+        <div className="absolute top-2 left-2">
+          {getStatusBadge()}
         </div>
       </div>
       
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">{name}</CardTitle>
-          {getStatusBadge()}
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-3">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+      <CardContent className="p-4 space-y-2">
+        <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
-            <span>{available}/{capacity}</span>
+            <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+            <span className="text-sm font-medium">{rating}/10</span>
           </div>
-          <div className="flex items-center gap-1">
-            <MapPin className="h-4 w-4" />
-            <span>{location}</span>
-          </div>
+          <span className="text-xs text-muted-foreground">{votes.toLocaleString()} Votes</span>
         </div>
         
-        <div className="flex items-center gap-2 text-sm">
-          <Clock className="h-4 w-4 text-accent" />
-          <span className="text-accent font-medium">Next: {nextSlot}</span>
-        </div>
-        
-        <Button 
-          className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300" 
-          disabled={status === 'full'}
-        >
-          {status === 'full' ? 'Fully Booked' : 'Book Now'}
-        </Button>
+        <h3 className="font-semibold text-lg leading-tight">{name}</h3>
+        <p className="text-sm text-muted-foreground">{sport}</p>
       </CardContent>
     </Card>
   );
