@@ -231,12 +231,10 @@ const Index = () => {
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <Tabs defaultValue="outdoor" className="space-y-6">
-            <div className="flex justify-center mb-8">
-              <TabsList className="grid grid-cols-2 bg-muted/50 backdrop-blur-sm rounded-lg p-1 w-72">
-                <TabsTrigger value="outdoor" className="text-lg font-bold">Outdoor</TabsTrigger>
-                <TabsTrigger value="indoor" className="text-lg font-bold">Indoor</TabsTrigger>
-              </TabsList>
-            </div>
+            <TabsList className="grid w-full grid-cols-2 max-w-md">
+              <TabsTrigger value="outdoor" className="text-lg font-bold">Outdoor</TabsTrigger>
+              <TabsTrigger value="indoor" className="text-lg font-bold">Indoor</TabsTrigger>
+            </TabsList>
             
             <TabsContent value="outdoor">
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
