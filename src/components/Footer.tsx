@@ -2,11 +2,37 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Target, Eye, Heart, Users } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-const Footer = () => {
+interface FooterProps {
+  isSignedIn: boolean;
+}
+
+const Footer = ({ isSignedIn }: FooterProps) => {
   const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
   const [isTermsOfServiceOpen, setIsTermsOfServiceOpen] = useState(false);
   const [isAboutUsOpen, setIsAboutUsOpen] = useState(false);
+  const { toast } = useToast();
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleMyBookingsClick = () => {
+    if (isSignedIn) {
+      scrollToSection('your-bookings-section');
+    } else {
+      // Scroll to top and show toast
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      toast({
+        title: "Please Sign-In to view your bookings",
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <>
@@ -26,19 +52,20 @@ const Footer = () => {
               <h4 className="text-base font-medium text-foreground mb-4">Features</h4>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <button 
+                    onClick={() => scrollToSection('book-your-sport-section')}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                  >
                     Facility Booking
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Real-time Availability
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <button 
+                    onClick={handleMyBookingsClick}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                  >
                     My Bookings
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>

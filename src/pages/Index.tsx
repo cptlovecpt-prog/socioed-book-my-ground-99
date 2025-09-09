@@ -317,10 +317,12 @@ const Index = () => {
       <HeroCarousel />
 
       {/* Your Bookings Section - shown when signed in */}
-      <YourBookings isSignedIn={isSignedIn} />
+      <div id="your-bookings-section">
+        <YourBookings isSignedIn={isSignedIn} />
+      </div>
 
       {/* Book Your Sport Section */}
-      <section className="py-8 px-4">
+      <section id="book-your-sport-section" className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-foreground mb-8">Book Your Sport</h2>
           
@@ -462,7 +464,7 @@ const Index = () => {
         isSignedIn={isSignedIn}
       />
       
-      <Footer />
+      <Footer isSignedIn={isSignedIn} />
     </div>
   );
 };
