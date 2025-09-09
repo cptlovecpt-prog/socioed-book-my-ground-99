@@ -10,6 +10,7 @@ export interface Booking {
   image: string;
   status: 'Upcoming' | 'Completed' | 'Cancelled';
   participants: string;
+  facilitySize: number;
 }
 
 interface BookingContextType {
@@ -43,7 +44,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       location: "Near K block",
       participants: "18/22 joined",
       status: "Upcoming",
-      image: "/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png"
+      image: "/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png",
+      facilitySize: 8968
     },
     {
       id: "BK-XYZ789",
@@ -54,7 +56,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       location: "Near K block",
       participants: "3/8 joined",
       status: "Upcoming",
-      image: "/lovable-uploads/fdffe92f-f5b1-4ab3-9e26-bf822ff29b7e.png"
+      image: "/lovable-uploads/fdffe92f-f5b1-4ab3-9e26-bf822ff29b7e.png",
+      facilitySize: 1338
     },
     {
       id: "BK-DEF456",
@@ -65,7 +68,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       location: "N block",
       participants: "12/35 joined",
       status: "Upcoming",
-      image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop"
+      image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
+      facilitySize: 1474
     },
     {
       id: "BK-EXP001",
@@ -76,7 +80,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       location: "Near K block",
       participants: "8/20 joined",
       status: "Completed",
-      image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png"
+      image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
+      facilitySize: 536
     },
     {
       id: "BK-EXP002",
@@ -87,7 +92,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       location: "K block",
       participants: "6/12 joined",
       status: "Completed",
-      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop",
+      facilitySize: 480
     },
     {
       id: "BK-EXP003",
@@ -98,7 +104,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       location: "K block",
       participants: "4/6 joined",
       status: "Completed",
-      image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png"
+      image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png",
+      facilitySize: 187
     }
   ]);
 

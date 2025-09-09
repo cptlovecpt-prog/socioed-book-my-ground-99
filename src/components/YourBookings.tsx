@@ -11,6 +11,21 @@ interface YourBookingsProps {
   isSignedIn: boolean;
 }
 
+// Utility function to convert 24-hour time to AM/PM format
+const convertTo12HourFormat = (timeRange: string) => {
+  const [startTime, endTime] = timeRange.split(' - ');
+  
+  const convertTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+  
+  return `${convertTime(startTime)} - ${convertTime(endTime)}`;
+};
+
 const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const { bookings, removeBooking } = useBookings();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -129,7 +144,8 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-foreground truncate">{currentBooking.facilityName}</h3>
               <p className="text-sm text-muted-foreground">{currentBooking.location}</p>
-              <p className="text-sm text-muted-foreground">{currentBooking.date} • {currentBooking.time}</p>
+              <p className="text-sm text-muted-foreground">{currentBooking.participants} • {currentBooking.facilitySize} sq mtrs.</p>
+              <p className="text-sm text-muted-foreground">{currentBooking.date} • {convertTo12HourFormat(currentBooking.time)}</p>
             </div>
             
             {/* Action Buttons */}

@@ -3,11 +3,26 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Clock, MapPin, Users, Share, QrCode, X } from "lucide-react";
+import { Clock, MapPin, Users, Share, QrCode, X, Building } from "lucide-react";
 import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
 import { ShareDialog } from "@/components/ShareDialog";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
+
+// Utility function to convert 24-hour time to AM/PM format
+const convertTo12HourFormat = (timeRange: string) => {
+  const [startTime, endTime] = timeRange.split(' - ');
+  
+  const convertTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+  
+  return `${convertTime(startTime)} - ${convertTime(endTime)}`;
+};
 
 const MyBookings = () => {
   const [isSignedIn, setIsSignedIn] = useState(true); // Assume signed in to access this page
@@ -119,10 +134,10 @@ const MyBookings = () => {
                     <span className="text-sm text-muted-foreground font-mono">{booking.id}</span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-green-600" />
-                      <span className="text-sm">{booking.date} • {booking.time}</span>
+                      <span className="text-sm">{booking.date} • {convertTo12HourFormat(booking.time)}</span>
                     </div>
                     
                     <div className="flex items-center gap-2">
@@ -133,6 +148,11 @@ const MyBookings = () => {
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">{booking.participants}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Building className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{booking.facilitySize} sq mtrs.</span>
                     </div>
                   </div>
 

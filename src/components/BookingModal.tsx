@@ -227,6 +227,25 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     setParticipants(updatedParticipants);
   };
 
+  const getSizeForSport = (sport: string) => {
+    const sizes: { [key: string]: number } = {
+      'Football': 8968,
+      'Cricket': 7400,
+      'Volleyball': 960,
+      'Tennis': 1338,
+      'Badminton': 480,
+      'Squash': 187,
+      'Basketball': 536,
+      'Swimming': 1474,
+      'Pickleball': 736,
+      'Gym': 382,
+      'Padel': 832,
+      'Table Tennis': 1200,
+      'Chess': 1048
+    };
+    return sizes[sport] || 500;
+  };
+
   const handleConfirmBooking = () => {
     if (!selectedSlot || !facility) return;
     
@@ -271,7 +290,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               format(selectedDate, 'MMM dd, yyyy'),
         time: selectedTimeSlot.time,
         image: getImageForFacility(facility),
-        participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`
+        participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`,
+        facilitySize: getSizeForSport(facility.sport)
       });
     }
     
