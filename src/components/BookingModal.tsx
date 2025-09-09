@@ -23,7 +23,7 @@ interface ParticipantData {
   enrollmentId: string;
 }
 
-type BookingStep = 'date-selection' | 'slot-selection' | 'participant-count' | 'participant-details' | 'confirmation';
+type BookingStep = 'date-slot-selection' | 'participant-count' | 'participant-details' | 'confirmation';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -135,7 +135,7 @@ const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
 };
 
 export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingModalProps) => {
-  const [currentStep, setCurrentStep] = useState<BookingStep>('date-selection');
+  const [currentStep, setCurrentStep] = useState<BookingStep>('date-slot-selection');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [participantCount, setParticipantCount] = useState<number>(1);
@@ -210,7 +210,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    setCurrentStep('slot-selection');
+    // Don't change step, just update the selected date and show slots
   };
 
   const handleSlotSelect = (slotId: string) => {
@@ -330,7 +330,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   };
 
   const resetModal = () => {
-    setCurrentStep('date-selection');
+    setCurrentStep('date-slot-selection');
     setSelectedDate(new Date());
     setSelectedSlot(null);
     setParticipantCount(1);
@@ -389,11 +389,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
   const handleGoBack = () => {
     switch (currentStep) {
-      case 'slot-selection':
-        setCurrentStep('date-selection');
-        break;
       case 'participant-count':
-        setCurrentStep('slot-selection');
+        setCurrentStep('date-slot-selection');
         break;
       case 'participant-details':
         setCurrentStep('participant-count');
@@ -427,18 +424,16 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
   const getStepInfo = () => {
     switch (currentStep) {
-      case 'date-selection':
-        return { current: 1, total: 4, label: 'Select Date' };
-      case 'slot-selection':
-        return { current: 2, total: 4, label: 'Choose Time' };
+      case 'date-slot-selection':
+        return { current: 1, total: 3, label: 'Select Date & Time' };
       case 'participant-count':
-        return { current: 3, total: 4, label: 'Participants' };
+        return { current: 2, total: 3, label: 'Participants' };
       case 'participant-details':
-        return { current: 4, total: 4, label: 'Details & Confirm' };
+        return { current: 3, total: 3, label: 'Details & Confirm' };
       case 'confirmation':
-        return { current: 4, total: 4, label: 'Confirmed' };
+        return { current: 3, total: 3, label: 'Confirmed' };
       default:
-        return { current: 1, total: 4, label: 'Select Date' };
+        return { current: 1, total: 3, label: 'Select Date & Time' };
     }
   };
 
@@ -448,7 +443,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case 'date-selection':
+      case 'date-slot-selection':
         return (
           <div className="space-y-6">
             <div>
@@ -495,23 +490,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 </Button>
               </div>
             </div>
-          </div>
-        );
-
-      case 'slot-selection':
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span>{format(selectedDate, 'MMM dd, yyyy')}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Users className="h-4 w-4" />
-                <span>{facility.sport}</span>
-              </div>
-            </div>
             
+            {/* Available Time Slots */}
             <div>
               <h3 className="font-medium mb-3">Available Time Slots</h3>
               <div className="grid gap-2">
@@ -523,9 +503,11 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                       key={slot.id}
                       onClick={() => isAvailable && handleSlotSelect(slot.id)}
                       className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                        isAvailable 
-                          ? 'border-border hover:border-primary/50' 
-                          : 'border-border bg-muted cursor-not-allowed opacity-50'
+                        selectedSlot === slot.id
+                          ? 'border-primary bg-primary/5'
+                          : isAvailable 
+                            ? 'border-border hover:border-primary/50' 
+                            : 'border-border bg-muted cursor-not-allowed opacity-50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -546,11 +528,25 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                               Slot Unavailable
                             </Badge>
                           ) : slot.available === slot.capacity ? (
-                            <Badge className="text-white font-bold" style={{ backgroundColor: '#02a35d', borderColor: '#02a35d' }}>
+                            <Badge 
+                              className="text-white font-bold relative"
+                              style={{ 
+                                backgroundColor: '#10b981', 
+                                borderColor: '#10b981',
+                                zIndex: 50 
+                              }}
+                            >
                               Fully Available
                             </Badge>
                           ) : (
-                            <Badge className="slot-partial">
+                            <Badge 
+                              className="text-white font-bold relative"
+                              style={{ 
+                                backgroundColor: '#8b5cf6', 
+                                borderColor: '#8b5cf6',
+                                zIndex: 50 
+                              }}
+                            >
                               {slot.available}/{slot.capacity} Spots Available
                             </Badge>
                           )}
@@ -565,6 +561,65 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         );
 
       case 'participant-count':
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="font-medium mb-3">Select Number of Participants</h3>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>{format(selectedDate, 'MMM dd, yyyy')}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  <span>{timeSlots.find(s => s.id === selectedSlot)?.time}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-5 gap-2">
+              {Array.from({ length: Math.min(maxParticipants, 25) }, (_, i) => i + 1).map((count) => (
+                <Button
+                  key={count}
+                  variant={participantCount === count ? "default" : "outline"}
+                  className="h-12"
+                  onClick={() => handleParticipantCountSelect(count)}
+                >
+                  {count}
+                </Button>
+              ))}
+            </div>
+            
+            {maxParticipants > 25 && (
+              <div className="text-center">
+                <Label htmlFor="custom-count" className="text-sm text-muted-foreground">
+                  Or enter a number (up to {maxParticipants}):
+                </Label>
+                <Input
+                  id="custom-count"
+                  type="number"
+                  min="1"
+                  max={maxParticipants}
+                  className="w-24 mx-auto mt-2"
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (value >= 1 && value <= maxParticipants) {
+                      handleParticipantCountSelect(value);
+                    }
+                  }}
+                />
+              </div>
+            )}
+            
+            <Button 
+              onClick={() => setCurrentStep('participant-details')} 
+              className="w-full"
+              disabled={!selectedSlot || participantCount < 1}
+            >
+              Continue
+            </Button>
+          </div>
+        );
         return (
           <div className="space-y-6">
             <h3 className="font-medium">Select Number of Participants</h3>
@@ -712,7 +767,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         <DialogContent className="w-[640px] h-[700px] max-w-none max-h-none flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {currentStep !== 'date-selection' && (
+              {currentStep !== 'date-slot-selection' && (
                 <Button variant="ghost" size="sm" onClick={currentStep === 'confirmation' ? resetModal : handleGoBack}>
                   {currentStep === 'confirmation' ? <X className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
