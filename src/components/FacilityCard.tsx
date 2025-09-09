@@ -53,7 +53,8 @@ export const FacilityCard = ({
       'Pickleball': 736,
       'Gym': 382,
       'Padel': 832,
-      'Table Tennis': 1200
+      'Table Tennis': 1200,
+      'Chess': 1048
     };
     return sizes[sport] || 500;
   };

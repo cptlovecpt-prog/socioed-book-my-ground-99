@@ -39,7 +39,7 @@ const indoorFacilities = [
     id: "3",
     name: "Basketball Court",
     sport: "Basketball",
-    capacity: 8,
+    capacity: 10,
     available: 5,
     location: "K block",
     nextSlot: "09:00 - 18:00",
@@ -72,7 +72,7 @@ const indoorFacilities = [
     image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.2,
-    votes: 1370
+    votes: 187
   },
   {
     id: "6",
@@ -111,7 +111,7 @@ const indoorFacilities = [
     image: "/lovable-uploads/7db2248d-16a0-4a56-bae5-8a61c1a607e7.png",
     status: 'available' as const,
     rating: 4.1,
-    votes: 234
+    votes: 1048
   }
 ];
 
@@ -208,7 +208,7 @@ const outdoorFacilities = [
     votes: 736
   },
   {
-    id: "17",
+    id: "16",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 12,
@@ -221,12 +221,25 @@ const outdoorFacilities = [
     votes: 261
   },
   {
-    id: "16",
+    id: "17",
+    name: "Badminton Court",
+    sport: "Badminton",
+    capacity: 8,
+    available: 6,
+    location: "C & D block",
+    nextSlot: "14:00 - 16:00",
+    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop",
+    status: 'available' as const,
+    rating: 4.1,
+    votes: 174
+  },
+  {
+    id: "18",
     name: "Half Basketball Court",
     sport: "Basketball",
     capacity: 12,
     available: 10,
-    location: "C8-D block",
+    location: "C & D block",
     nextSlot: "14:00 - 16:00",
     image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
     status: 'available' as const,
