@@ -28,7 +28,7 @@ const indoorFacilities = [
     available: 0,
     location: "K block",
     nextSlot: "12:00 - 14:00",
-    image: "https://images.unsplash.com/photo-1552667466-07770ae110d0?w=400&h=300&fit=crop",
+    image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png",
     status: 'full' as const,
     rating: 4.2,
     votes: 187
