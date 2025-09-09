@@ -351,7 +351,24 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     window.open(mailtoUrl);
   };
 
-  if (!facility) return null;
+  const getStepInfo = () => {
+    switch (currentStep) {
+      case 'date-selection':
+        return { current: 1, total: 4, label: 'Select Date' };
+      case 'slot-selection':
+        return { current: 2, total: 4, label: 'Choose Time' };
+      case 'participant-count':
+        return { current: 3, total: 4, label: 'Participants' };
+      case 'participant-details':
+        return { current: 4, total: 4, label: 'Details & Confirm' };
+      case 'confirmation':
+        return { current: 4, total: 4, label: 'Confirmed' };
+      default:
+        return { current: 1, total: 4, label: 'Select Date' };
+    }
+  };
+
+  const stepInfo = getStepInfo();
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -599,7 +616,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleDialogClose}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="w-[640px] h-[700px] max-w-none max-h-none flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {currentStep !== 'date-selection' && currentStep !== 'confirmation' && (
@@ -611,7 +628,25 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
             </DialogTitle>
           </DialogHeader>
           
-          {renderStepContent()}
+          <div className="flex-1 overflow-y-auto px-1">
+            {renderStepContent()}
+          </div>
+          
+          {/* Progress Indicator */}
+          {currentStep !== 'confirmation' && (
+            <div className="border-t pt-4 mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted-foreground">{stepInfo.label}</span>
+                <span className="text-sm font-medium">{stepInfo.current}/{stepInfo.total}</span>
+              </div>
+              <div className="w-full bg-secondary rounded-full h-2">
+                <div 
+                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(stepInfo.current / stepInfo.total) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
       
