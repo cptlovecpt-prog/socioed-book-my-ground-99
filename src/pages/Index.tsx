@@ -41,7 +41,7 @@ const indoorFacilities = [
     available: 5,
     location: "K block",
     nextSlot: "09:00 - 18:00",
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
     status: 'available' as const,
     rating: 4.4,
     votes: 536
@@ -135,7 +135,7 @@ const outdoorFacilities = [
     available: 0,
     location: "Near K block",
     nextSlot: "16:00 - 18:00",
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
     status: 'full' as const,
     rating: 4.5,
     votes: 1252
@@ -213,7 +213,7 @@ const outdoorFacilities = [
     available: 10,
     location: "C8-D block",
     nextSlot: "14:00 - 16:00",
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
     status: 'available' as const,
     rating: 4.4,
     votes: 480
