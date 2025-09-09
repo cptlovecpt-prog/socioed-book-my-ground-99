@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Share, QrCode, X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,6 +11,11 @@ interface YourBookingsProps {
 const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const { bookings, removeBooking } = useBookings();
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Reset to first booking when bookings change (new booking added)
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [bookings.length]);
   
   if (!isSignedIn || bookings.length === 0) return null;
 
