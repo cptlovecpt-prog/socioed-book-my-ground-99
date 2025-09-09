@@ -41,20 +41,24 @@ export const FacilityCard = ({
   };
 
   return (
-    <Card className="booking-card group cursor-pointer w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card" onClick={() => onBook(id)}>
+    <Card className="booking-card group cursor-pointer w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card relative" onClick={() => onBook(id)}>
       <div className="relative h-full">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${image})` }}
         />
+        {/* Gray overlay for full status */}
+        {status === 'full' && (
+          <div className="absolute inset-0 bg-gray-500/60 z-10" />
+        )}
         {/* Drop shadow overlay for text visibility */}
-        <div className="absolute inset-x-0 bottom-0 h-[175px] bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[175px] bg-gradient-to-t from-black/95 via-black/70 to-transparent z-20" />
         
-        <div className="absolute top-2 left-2">
+        <div className="absolute top-2 left-2 z-30">
           {getStatusBadge()}
         </div>
         
-        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1 text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1 text-white z-30">
           <p className="text-sm text-white/70">{capacity} persons</p>
           <h3 className="font-bold text-lg leading-tight">{name}</h3>
           <p className="text-sm text-white/70">{location}</p>
