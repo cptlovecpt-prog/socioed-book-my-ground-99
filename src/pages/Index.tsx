@@ -250,7 +250,7 @@ const Index = () => {
             </TabsList>
             
             <TabsContent value="outdoor">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                 {outdoorFacilities.map((facility) => (
                   <FacilityCard
                     key={facility.id}
@@ -262,7 +262,7 @@ const Index = () => {
             </TabsContent>
             
             <TabsContent value="indoor">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                 {indoorFacilities.map((facility) => (
                   <FacilityCard
                     key={facility.id}

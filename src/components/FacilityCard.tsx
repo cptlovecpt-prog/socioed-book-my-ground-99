@@ -59,8 +59,8 @@ export const FacilityCard = ({
   };
 
   return (
-    <div className="w-[278px] h-[417px]">
-      <Card className="booking-card group cursor-pointer overflow-hidden bg-card dark:bg-card relative h-[350px]" onClick={() => onBook(id)}>
+    <div className="w-[278px]">
+      <Card className="booking-card group cursor-pointer w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card relative" onClick={() => onBook(id)}>
         <div className="relative h-full">
           <div 
             className="absolute inset-0 bg-cover bg-center"
@@ -84,8 +84,8 @@ export const FacilityCard = ({
         </div>
       </Card>
       
-      {/* Sport name and size below card as separate text */}
-      <div className="mt-3 space-y-1 h-[67px] flex flex-col justify-start">
+      {/* Sport name and size below card - outside the 278x417 dimension */}
+      <div className="mt-3 space-y-1">
         <p className="text-lg font-semibold text-foreground">{sport}</p>
         <p className="text-sm text-muted-foreground">{getSizeForSport(sport)} sq mtrs.</p>
       </div>
