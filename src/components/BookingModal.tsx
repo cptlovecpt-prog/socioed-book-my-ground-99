@@ -42,15 +42,16 @@ const sportConfig: { [key: string]: number } = {
   'Cricket': 22,
   'Basketball': 10,
   'Volleyball': 12,
-  'Tennis': 4,
+  'Tennis': 8,
   'Badminton': 4,
   'Table Tennis': 4,
-  'Swimming': 20,
-  'Chess': 2,
+  'Swimming': 35,
+  'Chess': 10,
   'Padel': 4,
-  'Squash': 2,
-  'Gym': 15,
-  'Pickleball': 4
+  'Squash': 6,
+  'Gym': 40,
+  'Pickleball': 4,
+  'Basket Court': 18
 };
 
 // Generate 45-minute slots for morning (6:30 AM - 9:30 AM) and evening (5:30 PM - 10:00 PM)
