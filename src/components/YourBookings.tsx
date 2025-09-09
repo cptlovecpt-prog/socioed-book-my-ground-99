@@ -43,8 +43,8 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
       style={{ backgroundColor: "hsl(var(--primary) / 0.08)" }}
     >
       <div className="max-w-6xl mx-auto px-4 py-6 h-full">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-foreground">Your Bookings</h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-foreground">Your Bookings</h2>
           {visibleBookings.length > 1 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
