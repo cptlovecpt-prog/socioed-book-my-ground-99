@@ -7,12 +7,17 @@ import { useNavigate } from "react-router-dom";
 import SignInModal from "./SignInModal";
 import HelpSupportModal from "./HelpSupportModal";
 
-const Navigation = () => {
+interface NavigationProps {
+  isSignedIn: boolean;
+  setIsSignedIn: (value: boolean) => void;
+  userData: { name: string; email: string } | null;
+  setUserData: (data: { name: string; email: string } | null) => void;
+}
+
+const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: NavigationProps) => {
   const { theme, setTheme } = useTheme();
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isHelpSupportModalOpen, setIsHelpSupportModalOpen] = useState(false);
-  const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
   const navigate = useNavigate();
 
   const toggleTheme = () => {
@@ -103,9 +108,11 @@ const Navigation = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate("/my-bookings")}>
-                  My Bookings
-                </DropdownMenuItem>
+                {isSignedIn && (
+                  <DropdownMenuItem onClick={() => navigate("/my-bookings")}>
+                    My Bookings
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => setIsHelpSupportModalOpen(true)}>
                   Help & Support
                 </DropdownMenuItem>

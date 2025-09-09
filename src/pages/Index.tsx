@@ -225,7 +225,8 @@ const outdoorFacilities = [
 const Index = () => {
   const [selectedFacility, setSelectedFacility] = useState<(typeof indoorFacilities[0]) | (typeof outdoorFacilities[0]) | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(true); // Set to true to show the Your Bookings section
+  const [isSignedIn, setIsSignedIn] = useState(false); // Default to false - user needs to sign in
+  const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
 
   const handleBooking = (facilityId: string) => {
     const allFacilities = [...indoorFacilities, ...outdoorFacilities];
@@ -238,7 +239,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Navigation 
+        isSignedIn={isSignedIn}
+        setIsSignedIn={setIsSignedIn}
+        userData={userData}
+        setUserData={setUserData}
+      />
       
       {/* Hero Carousel */}
       <HeroCarousel />

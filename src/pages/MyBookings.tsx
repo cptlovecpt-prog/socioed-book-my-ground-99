@@ -3,8 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, MapPin, Users, Share, QrCode } from "lucide-react";
+import { useState } from "react";
 
 const MyBookings = () => {
+  const [isSignedIn, setIsSignedIn] = useState(true); // Assume signed in to access this page
+  const [userData, setUserData] = useState<{ name: string; email: string } | null>({
+    name: "John Doe",
+    email: "john@example.com"
+  });
   const bookings = [
     {
       id: "BK-ABC123",
@@ -30,7 +36,12 @@ const MyBookings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Navigation 
+        isSignedIn={isSignedIn}
+        setIsSignedIn={setIsSignedIn}
+        userData={userData}
+        setUserData={setUserData}
+      />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
