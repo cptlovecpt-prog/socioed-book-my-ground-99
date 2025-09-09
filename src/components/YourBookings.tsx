@@ -1,21 +1,35 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Share, QrCode, X } from "lucide-react";
+import { Share, QrCode, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useBookings } from "@/contexts/BookingContext";
 
 interface YourBookingsProps {
   isSignedIn: boolean;
 }
 
 const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
-  if (!isSignedIn) return null;
+  const { bookings, removeBooking } = useBookings();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  if (!isSignedIn || bookings.length === 0) return null;
 
-  // Mock booking data - in real app this would come from API
-  const currentBooking = {
-    facility: "Football Ground",
-    location: "Near K block",
-    date: "Today",
-    time: "14:00 - 16:00",
-    image: "/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png"
+  const visibleBookings = bookings.slice(0, 3);
+  const currentBooking = visibleBookings[currentIndex];
+
+  const nextBooking = () => {
+    setCurrentIndex((prev) => (prev + 1) % visibleBookings.length);
+  };
+
+  const prevBooking = () => {
+    setCurrentIndex((prev) => (prev - 1 + visibleBookings.length) % visibleBookings.length);
+  };
+
+  const handleCancel = (bookingId: string) => {
+    removeBooking(bookingId);
+    if (currentIndex >= visibleBookings.length - 1) {
+      setCurrentIndex(Math.max(0, visibleBookings.length - 2));
+    }
   };
 
   return (
@@ -26,6 +40,31 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
       <div className="max-w-6xl mx-auto px-4 py-6 h-full">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-foreground">Your Bookings</h2>
+          {visibleBookings.length > 1 && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {currentIndex + 1} of {visibleBookings.length}
+              </span>
+              <div className="flex gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={prevBooking}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={nextBooking}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="flex items-center h-full max-h-[180px]">
@@ -34,14 +73,14 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
             <div className="relative w-24 h-20 rounded-lg overflow-hidden flex-shrink-0">
               <img 
                 src={currentBooking.image} 
-                alt={currentBooking.facility}
+                alt={currentBooking.facilityName}
                 className="w-full h-full object-cover"
               />
             </div>
             
             {/* Booking Details */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-foreground truncate">{currentBooking.facility}</h3>
+              <h3 className="font-semibold text-foreground truncate">{currentBooking.facilityName}</h3>
               <p className="text-sm text-muted-foreground">{currentBooking.location}</p>
               <p className="text-sm text-muted-foreground">{currentBooking.date} • {currentBooking.time}</p>
             </div>
@@ -56,7 +95,12 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
                 <QrCode className="h-4 w-4" />
                 <span className="hidden sm:inline">QR Code</span>
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center space-x-1 text-destructive hover:text-destructive">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center space-x-1 text-destructive hover:text-destructive"
+                onClick={() => handleCancel(currentBooking.id)}
+              >
                 <X className="h-4 w-4" />
                 <span className="hidden sm:inline">Cancel</span>
               </Button>

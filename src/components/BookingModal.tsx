@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Users, Share2, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useBookings } from "@/contexts/BookingContext";
 
 interface TimeSlot {
   id: string;
@@ -38,6 +39,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const [isBooked, setIsBooked] = useState(false);
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
   const { toast } = useToast();
+  const { addBooking } = useBookings();
 
   const handleBook = () => {
     if (!selectedSlot) return;
@@ -49,12 +51,46 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       });
       return;
     }
+
+    const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+    if (facility && selectedTimeSlot) {
+      // Add the booking to context
+      addBooking({
+        facilityName: facility.name,
+        sport: facility.sport,
+        location: facility.location,
+        date: "Today",
+        time: selectedTimeSlot.time,
+        image: getImageForFacility(facility),
+        participants: `${selectedTimeSlot.available}/${selectedTimeSlot.capacity} joined`
+      });
+    }
     
     setIsBooked(true);
     toast({
       title: "Booking Confirmed!",
       description: `Your spot at ${facility?.name} has been reserved. Share with friends!`,
     });
+  };
+
+  const getImageForFacility = (facility: any) => {
+    // Map facility types to their images - this could be improved with proper image mapping
+    const sportImages: { [key: string]: string } = {
+      'Football': '/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png',
+      'Cricket': '/lovable-uploads/ab1aee87-6cbc-4ad4-ab3e-a52aae6cf731.png',
+      'Tennis': '/lovable-uploads/fdffe92f-f5b1-4ab3-9e26-bf822ff29b7e.png',
+      'Basketball': '/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png',
+      'Volleyball': '/lovable-uploads/f5824fb2-7c1a-4759-89eb-628b108960b7.png',
+      'Swimming': 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop',
+      'Badminton': 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop',
+      'Chess': '/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png',
+      'Padel': '/lovable-uploads/30c311d0-0531-4989-b2cf-446fa8a581ed.png',
+      'Squash': '/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png',
+      'Table Tennis': 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=400&h=300&fit=crop',
+      'Gym': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+      'Pickleball': '/lovable-uploads/75efefc8-6f39-47ce-b08c-18e3336f2ada.png'
+    };
+    return sportImages[facility.sport] || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop';
   };
 
   const handleShare = () => {
