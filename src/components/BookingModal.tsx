@@ -424,7 +424,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                       <span className="text-sm">
                         {format(date, 'dd')}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs">
                         {format(date, 'MMM')}
                       </span>
                     </Button>
