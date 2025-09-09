@@ -1,22 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, User, Menu } from "lucide-react";
+import { Moon, Sun, User, Menu, ChevronDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bookMyGroundLogo from "@/assets/book-my-ground-logo.png";
+import SignInModal from "./SignInModal";
 
 const Navigation = () => {
   const { theme, setTheme } = useTheme();
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
   const navigate = useNavigate();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const toggleSignIn = () => {
-    setIsSignedIn(!isSignedIn);
+  const handleSignIn = (data: { name: string; email: string }) => {
+    setUserData(data);
+    setIsSignedIn(true);
+  };
+
+  const handleSignOut = () => {
+    setIsSignedIn(false);
+    setUserData(null);
+  };
+
+  const openSignInModal = () => {
+    if (!isSignedIn) {
+      setIsSignInModalOpen(true);
+    }
   };
 
   const navigateToHome = () => {
@@ -49,15 +64,35 @@ const Navigation = () => {
               )}
             </Button>
 
-            {/* User sign-in toggle */}
-            <Button
-              variant={isSignedIn ? "default" : "outline"}
-              onClick={toggleSignIn}
-              className="flex items-center space-x-2"
-            >
-              <User className="h-4 w-4" />
-              <span>{isSignedIn ? "Sign Out" : "Sign In"}</span>
-            </Button>
+            {/* User sign-in/profile */}
+            {isSignedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>{userData?.name}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={openSignInModal}
+                className="flex items-center space-x-2"
+              >
+                <User className="h-4 w-4" />
+                <span>Sign In</span>
+              </Button>
+            )}
 
             {/* Hamburger Menu */}
             <DropdownMenu>
@@ -73,15 +108,17 @@ const Navigation = () => {
                 <DropdownMenuItem>
                   Help & Support
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  Log-Out
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
       </div>
+      
+      <SignInModal
+        isOpen={isSignInModalOpen}
+        onClose={() => setIsSignInModalOpen(false)}
+        onSignIn={handleSignIn}
+      />
     </nav>
   );
 };
