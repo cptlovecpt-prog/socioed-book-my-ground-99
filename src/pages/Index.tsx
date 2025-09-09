@@ -305,9 +305,11 @@ const Index = () => {
       {/* Your Bookings Section - shown when signed in */}
       <YourBookings isSignedIn={isSignedIn} />
 
-      {/* Facility Tabs */}
+      {/* Book Your Sport Section */}
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-8">Book Your Sport</h2>
+          
           <Tabs defaultValue="outdoor" className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <TabsList className="grid w-full grid-cols-2 max-w-md">
