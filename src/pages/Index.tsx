@@ -99,9 +99,9 @@ const Index = () => {
       <section className="py-16 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <Tabs defaultValue="facilities" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-              <TabsTrigger value="facilities">Browse Facilities</TabsTrigger>
-              <TabsTrigger value="bookings">My Bookings</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 max-w-md">
+              <TabsTrigger value="facilities">Outdoor</TabsTrigger>
+              <TabsTrigger value="bookings">Indoor</TabsTrigger>
             </TabsList>
             
             <TabsContent value="facilities" className="space-y-6">
@@ -124,7 +124,12 @@ const Index = () => {
             </TabsContent>
             
             <TabsContent value="bookings">
-              <UserDashboard />
+              <div className="text-center space-y-2">
+                <h2 className="text-3xl font-bold">Indoor Facilities</h2>
+                <p className="text-muted-foreground">
+                  Indoor sports and recreational facilities
+                </p>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
