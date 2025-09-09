@@ -15,7 +15,7 @@ const indoorFacilities = [
     available: 8,
     location: "K block",
     nextSlot: "10:00 - 12:00",
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1708345693020-VRqmHMYMq1c?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.3,
     votes: 480
@@ -67,7 +67,7 @@ const indoorFacilities = [
     available: 7,
     location: "German House",
     nextSlot: "16:00 - 18:00",
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1708345693020-VRqmHMYMq1c?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.2,
     votes: 1370
@@ -200,7 +200,7 @@ const outdoorFacilities = [
     available: 8,
     location: "C10-C11 block",
     nextSlot: "16:00 - 18:00",
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1708345693020-VRqmHMYMq1c?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.2,
     votes: 261
