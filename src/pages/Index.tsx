@@ -318,6 +318,7 @@ const Index = () => {
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
         facility={selectedFacility}
+        isSignedIn={isSignedIn}
       />
       
       <Footer />

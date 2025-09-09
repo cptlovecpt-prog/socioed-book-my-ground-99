@@ -15,6 +15,7 @@ interface TimeSlot {
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isSignedIn: boolean;
   facility: {
     id: string;
     name: string;
@@ -32,7 +33,7 @@ const timeSlots: TimeSlot[] = [
   { id: "6", time: "18:00 - 20:00", available: 5, capacity: 10 },
 ];
 
-export const BookingModal = ({ isOpen, onClose, facility }: BookingModalProps) => {
+export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingModalProps) => {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [isBooked, setIsBooked] = useState(false);
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
@@ -40,6 +41,14 @@ export const BookingModal = ({ isOpen, onClose, facility }: BookingModalProps) =
 
   const handleBook = () => {
     if (!selectedSlot) return;
+    
+    if (!isSignedIn) {
+      toast({
+        title: "Please Sign-In to continue with booking",
+        duration: 3000,
+      });
+      return;
+    }
     
     setIsBooked(true);
     toast({
