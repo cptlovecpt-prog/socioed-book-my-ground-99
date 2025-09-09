@@ -68,7 +68,7 @@ export const FacilityCard = ({
           />
           {/* Gray overlay for full status */}
           {status === 'full' && (
-            <div className="absolute inset-0 bg-gray-500/60 z-10" />
+            <div className="absolute inset-0 bg-gray-500/80 z-10" />
           )}
           {/* Drop shadow overlay for text visibility */}
           <div className="absolute inset-x-0 bottom-0 h-[175px] bg-gradient-to-t from-black/95 via-black/70 to-transparent z-20" />
