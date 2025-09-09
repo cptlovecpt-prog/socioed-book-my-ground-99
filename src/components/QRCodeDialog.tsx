@@ -14,14 +14,31 @@ interface QRCodeDialogProps {
     date: string;
     time: string;
     location: string;
+    participants: string;
+    facilitySize: number;
   };
 }
 
 export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   
+  // Utility function to convert 24-hour time to AM/PM format
+  const convertTo12HourFormat = (timeRange: string) => {
+    const [startTime, endTime] = timeRange.split(' - ');
+    
+    const convertTime = (time: string) => {
+      const [hours, minutes] = time.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      return `${displayHour}:${minutes} ${ampm}`;
+    };
+    
+    return `${convertTime(startTime)} - ${convertTime(endTime)}`;
+  };
+  
   const shareUrl = `${window.location.origin}/join/${booking.id}`;
-  const shareText = `Join me for ${booking.sport} at ${booking.facilityName}!\n📅 ${booking.date} at ${booking.time}\n📍 ${booking.location}\n\nBooking ID: ${booking.id}`;
+  const shareText = `Join me for ${booking.sport} at ${booking.facilityName}!\n📅 ${booking.date} at ${convertTo12HourFormat(booking.time)}\n📍 ${booking.location}\n\nBooking ID: ${booking.id}`;
 
   useEffect(() => {
     if (isOpen) {
@@ -59,9 +76,8 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-center justify-center">
-            <QrCode className="h-5 w-5" />
-            QR Code
+          <DialogTitle className="text-center text-sm leading-tight px-2">
+            Show this QR Code at the entrance to get access to your booking
           </DialogTitle>
         </DialogHeader>
         
@@ -85,7 +101,8 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
           <div className="text-center space-y-2">
             <h3 className="font-medium">{booking.facilityName}</h3>
             <p className="text-sm text-muted-foreground">{booking.sport}</p>
-            <p className="text-sm text-muted-foreground">{booking.date} • {booking.time}</p>
+            <p className="text-sm text-muted-foreground">{booking.date} • {convertTo12HourFormat(booking.time)}</p>
+            <p className="text-sm text-muted-foreground">{booking.participants} • {booking.facilitySize} sq mtrs.</p>
           </div>
           
           <div className="space-y-3">
