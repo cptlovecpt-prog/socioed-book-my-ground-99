@@ -102,7 +102,7 @@ const Navigation = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/my-bookings")}>
                   My Bookings
                 </DropdownMenuItem>
                 <DropdownMenuItem>

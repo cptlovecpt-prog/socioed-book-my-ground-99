@@ -1,7 +1,8 @@
-import { useEffect } from "react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { cn } from "@/lib/utils";
 
 const heroImages = [
   {
@@ -37,9 +38,25 @@ const heroImages = [
 ];
 
 const HeroCarousel = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <section className="relative h-[350px] w-full overflow-hidden">
       <Carousel
+        setApi={setApi}
         plugins={[
           Autoplay({
             delay: 5000,
@@ -75,9 +92,24 @@ const HeroCarousel = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-4" />
-        <CarouselNext className="right-4" />
       </Carousel>
+      
+      {/* Dot indicators */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {heroImages.map((_, index) => (
+          <button
+            key={index}
+            className={cn(
+              "w-3 h-3 rounded-full transition-all duration-200",
+              current === index 
+                ? "bg-white" 
+                : "bg-white/50 hover:bg-white/75"
+            )}
+            onClick={() => api?.scrollTo(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </section>
   );
 };

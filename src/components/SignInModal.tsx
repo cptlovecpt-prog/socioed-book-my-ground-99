@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X } from "lucide-react";
+
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 
@@ -28,8 +28,8 @@ const SignInModal = ({ isOpen, onClose, onSignIn }: SignInModalProps) => {
       onSignIn({ name, email });
       
       toast({
-        title: "Signed-In successfully",
-        description: `Welcome back, ${name}!`,
+        title: "Welcome to Book My Ground",
+        description: "You have successfully signed in.",
       });
       
       onClose();
@@ -42,16 +42,8 @@ const SignInModal = ({ isOpen, onClose, onSignIn }: SignInModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader className="relative">
+        <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">Sign In</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-0 top-0 h-6 w-6"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
         
         <form onSubmit={handleSignIn} className="space-y-4 mt-4">
