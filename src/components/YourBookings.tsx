@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Share, QrCode, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useBookings } from "@/contexts/BookingContext";
+import { ShareDialog } from "./ShareDialog";
 
 interface YourBookingsProps {
   isSignedIn: boolean;
@@ -13,6 +14,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const { bookings, removeBooking } = useBookings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
   
   // Reset to first booking when bookings change (new booking added)
@@ -36,6 +38,10 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const handleCancelClick = (bookingId: string) => {
     setBookingToCancel(bookingId);
     setShowCancelDialog(true);
+  };
+
+  const handleShareClick = () => {
+    setShowShareDialog(true);
   };
 
   const handleConfirmCancel = () => {
@@ -104,7 +110,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
             
             {/* Action Buttons */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-              <Button variant="outline" size="sm" className="flex items-center space-x-1">
+              <Button variant="outline" size="sm" className="flex items-center space-x-1" onClick={handleShareClick}>
                 <Share className="h-4 w-4" />
                 <span className="hidden sm:inline">Share</span>
               </Button>
@@ -125,6 +131,12 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
           </Card>
         </div>
       </div>
+      
+      <ShareDialog
+        isOpen={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        booking={currentBooking}
+      />
       
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent>

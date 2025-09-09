@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Clock, MapPin, Users, Share, QrCode, X } from "lucide-react";
 import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
+import { ShareDialog } from "@/components/ShareDialog";
 
 const MyBookings = () => {
   const [isSignedIn, setIsSignedIn] = useState(true); // Assume signed in to access this page
@@ -14,13 +15,20 @@ const MyBookings = () => {
     email: "john@example.com"
   });
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
+  const [bookingToShare, setBookingToShare] = useState<any>(null);
   
   const { bookings, removeBooking } = useBookings();
 
   const handleCancelClick = (bookingId: string) => {
     setBookingToCancel(bookingId);
     setShowCancelDialog(true);
+  };
+
+  const handleShareClick = (booking: any) => {
+    setBookingToShare(booking);
+    setShowShareDialog(true);
   };
 
   const handleConfirmCancel = () => {
@@ -103,7 +111,7 @@ const MyBookings = () => {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={() => handleShareClick(booking)}>
                       <Share className="h-4 w-4" />
                       <span className="hidden sm:inline">Share</span>
                     </Button>
@@ -129,6 +137,17 @@ const MyBookings = () => {
           )}
         </div>
       </main>
+      
+      {bookingToShare && (
+        <ShareDialog
+          isOpen={showShareDialog}
+          onClose={() => {
+            setShowShareDialog(false);
+            setBookingToShare(null);
+          }}
+          booking={bookingToShare}
+        />
+      )}
       
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent>
