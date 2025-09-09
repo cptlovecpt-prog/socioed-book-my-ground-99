@@ -24,6 +24,19 @@ interface IndexProps {
 const indoorFacilities = [
   {
     id: "1",
+    name: "Basketball Court",
+    sport: "Basketball",
+    capacity: 20,
+    available: 15,
+    location: "Near K block",
+    nextSlot: "09:00 - 18:00",
+    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
+    status: 'available' as const,
+    rating: 4.4,
+    votes: 536
+  },
+  {
+    id: "2",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 12,
@@ -36,42 +49,29 @@ const indoorFacilities = [
     votes: 480
   },
   {
-    id: "2",
-    name: "Squash Court",
-    sport: "Squash",
-    capacity: 6,
-    available: 0,
-    location: "K block",
-    nextSlot: "12:00 - 14:00",
-    image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png",
-    status: 'full' as const,
-    rating: 4.2,
-    votes: 187
-  },
-  {
     id: "3",
-    name: "Basketball Court",
-    sport: "Basketball",
-    capacity: 10,
-    available: 5,
-    location: "K block",
-    nextSlot: "09:00 - 18:00",
-    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
+    name: "Gym",
+    sport: "Gym",
+    capacity: 40,
+    available: 25,
+    location: "DG",
+    nextSlot: "06:00 - 22:00",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
     status: 'available' as const,
-    rating: 4.4,
-    votes: 536
+    rating: 4.6,
+    votes: 382
   },
   {
     id: "4",
     name: "Gym",
     sport: "Gym",
     capacity: 40,
-    available: 25,
+    available: 30,
     location: "K block",
     nextSlot: "06:00 - 22:00",
     image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
     status: 'available' as const,
-    rating: 4.6,
+    rating: 4.5,
     votes: 382
   },
   {
@@ -89,16 +89,16 @@ const indoorFacilities = [
   },
   {
     id: "6",
-    name: "Padel Court",
-    sport: "Padel",
-    capacity: 8,
-    available: 0,
-    location: "C11-C12 block",
-    nextSlot: "14:00 - 16:00",
-    image: "/lovable-uploads/30c311d0-0531-4989-b2cf-446fa8a581ed.png",
-    status: 'full' as const,
+    name: "Chess Room",
+    sport: "Chess",
+    capacity: 10,
+    available: 6,
+    location: "C12 Block",
+    nextSlot: "16:00 - 18:00",
+    image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png",
+    status: 'available' as const,
     rating: 4.1,
-    votes: 832
+    votes: 1048
   },
   {
     id: "7",
@@ -106,31 +106,18 @@ const indoorFacilities = [
     sport: "Table Tennis",
     capacity: 48,
     available: 35,
-    location: "Hostel Blocks",
+    location: "Hostel Block",
     nextSlot: "18:00 - 20:00",
     image: "https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.5,
     votes: 1200
-  },
-  {
-    id: "8",
-    name: "Chess Room",
-    sport: "Chess",
-    capacity: 10,
-    available: 6,
-    location: "K block",
-    nextSlot: "16:00 - 18:00",
-    image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png",
-    status: 'available' as const,
-    rating: 4.1,
-    votes: 1048
   }
 ];
 
 const outdoorFacilities = [
   {
-    id: "9",
+    id: "8",
     name: "Football Ground",
     sport: "Football",
     capacity: 22,
@@ -143,7 +130,7 @@ const outdoorFacilities = [
     votes: 8968
   },
   {
-    id: "10",
+    id: "9",
     name: "Cricket Ground",
     sport: "Cricket",
     capacity: 22,
@@ -156,7 +143,7 @@ const outdoorFacilities = [
     votes: 7400
   },
   {
-    id: "11",
+    id: "10",
     name: "Basketball Court",
     sport: "Basketball",
     capacity: 20,
@@ -166,10 +153,10 @@ const outdoorFacilities = [
     image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
     status: 'full' as const,
     rating: 4.5,
-    votes: 1252
+    votes: 1292
   },
   {
-    id: "12",
+    id: "11",
     name: "Volleyball Court",
     sport: "Volleyball",
     capacity: 24,
@@ -182,7 +169,7 @@ const outdoorFacilities = [
     votes: 960
   },
   {
-    id: "13",
+    id: "12",
     name: "Tennis Court",
     sport: "Tennis",
     capacity: 8,
@@ -195,12 +182,12 @@ const outdoorFacilities = [
     votes: 1338
   },
   {
-    id: "14",
+    id: "13",
     name: "Swimming Pool",
     sport: "Swimming",
     capacity: 35,
     available: 25,
-    location: "N block",
+    location: "K block",
     nextSlot: "10:00 - 12:00",
     image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
     status: 'available' as const,
@@ -208,7 +195,7 @@ const outdoorFacilities = [
     votes: 1474
   },
   {
-    id: "15",
+    id: "14",
     name: "Pickleball Courts",
     sport: "Pickleball",
     capacity: 40,
@@ -221,7 +208,7 @@ const outdoorFacilities = [
     votes: 736
   },
   {
-    id: "16",
+    id: "15",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 12,
@@ -234,7 +221,7 @@ const outdoorFacilities = [
     votes: 261
   },
   {
-    id: "17",
+    id: "16",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 8,
@@ -247,7 +234,7 @@ const outdoorFacilities = [
     votes: 174
   },
   {
-    id: "18",
+    id: "17",
     name: "Half Basketball Court",
     sport: "Basketball",
     capacity: 12,
@@ -286,7 +273,19 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
     setShowOnlyAvailable(false);
   };
 
-  const filterFacilities = (facilities: typeof indoorFacilities) => {
+  const filterFacilities = (facilities: Array<{
+    id: string;
+    name: string;
+    sport: string;
+    capacity: number;
+    available: number;
+    location: string;
+    nextSlot: string;
+    image: string;
+    status: 'available' | 'full';
+    rating: number;
+    votes: number;
+  }>) => {
     let filtered = facilities;
     
     // Filter by selected sports
