@@ -111,7 +111,7 @@ const outdoorFacilities = [
     available: 18,
     location: "Near K block",
     nextSlot: "14:00 - 18:00",
-    image: "/lovable-uploads/13f55e31-dbbf-4013-9810-91c3cbb90e0a.png",
+    image: "/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png",
     status: 'available' as const,
     rating: 4.7,
     votes: 8968

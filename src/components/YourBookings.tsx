@@ -15,7 +15,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
     location: "Near K block",
     date: "Today",
     time: "14:00 - 16:00",
-    image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=300&h=200&fit=crop"
+    image: "/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png"
   };
 
   return (
