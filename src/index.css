@@ -146,6 +146,10 @@
   }
   
   .facility-full {
-    @apply bg-destructive/10 text-destructive border-destructive/20;
+    @apply bg-red-50 text-red-700 border-red-200;
+  }
+  
+  .dark .facility-full {
+    @apply bg-red-950/50 text-red-400 border-red-800/50;
   }
 }
