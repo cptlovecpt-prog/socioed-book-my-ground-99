@@ -49,7 +49,7 @@ const indoorFacilities = [
   {
     id: "4",
     name: "Gym",
-    sport: "Fitness",
+    sport: "Gym",
     capacity: 40,
     available: 25,
     location: "K block",
@@ -93,7 +93,7 @@ const indoorFacilities = [
     available: 35,
     location: "Hostel Blocks",
     nextSlot: "18:00 - 20:00",
-    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1721839952275-Rkp9e8EJZC0?w=400&h=300&fit=crop",
     status: 'available' as const,
     rating: 4.5,
     votes: 1200

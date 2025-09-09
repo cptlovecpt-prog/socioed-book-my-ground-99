@@ -51,7 +51,7 @@ export const FacilityCard = ({
       'Basketball': 536,
       'Swimming': 1474,
       'Pickleball': 736,
-      'Fitness': 382,
+      'Gym': 382,
       'Padel': 832,
       'Table Tennis': 1200
     };
