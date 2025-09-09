@@ -36,10 +36,12 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   // Filter to only show upcoming bookings
   const upcomingBookings = bookings.filter(booking => booking.status === 'Upcoming');
   
-  // Reset to first booking when bookings change (new booking added)
+  // Reset currentIndex if it exceeds the available bookings
   useEffect(() => {
-    setCurrentIndex(0);
-  }, [upcomingBookings]);
+    if (currentIndex >= upcomingBookings.length && upcomingBookings.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [upcomingBookings.length, currentIndex]);
   
   if (!isSignedIn || upcomingBookings.length === 0) return null;
 
@@ -61,7 +63,9 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
     return 0;
   });
 
-  const currentBooking = sortedBookings[currentIndex];
+  // Ensure currentIndex is within bounds
+  const safeCurrentIndex = Math.min(currentIndex, sortedBookings.length - 1);
+  const currentBooking = sortedBookings[safeCurrentIndex];
 
   const nextBooking = () => {
     setCurrentIndex((prev) => (prev + 1) % sortedBookings.length);
@@ -102,7 +106,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
           {sortedBookings.length > 1 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                {currentIndex + 1} of {sortedBookings.length}
+                {safeCurrentIndex + 1} of {sortedBookings.length}
               </span>
               <div className="flex gap-1">
                 <Button
