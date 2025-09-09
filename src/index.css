@@ -115,9 +115,17 @@
 
 @layer components {
   .booking-card {
-    @apply bg-gradient-to-b from-card to-[hsl(332_40%_99%)] border border-border rounded-xl p-6;
+    @apply border border-border rounded-xl;
     box-shadow: var(--shadow-card);
     transition: var(--transition-smooth);
+  }
+  
+  .light .booking-card {
+    @apply bg-gradient-to-b from-card to-[hsl(332_40%_99%)];
+  }
+  
+  .dark .booking-card {
+    @apply bg-card;
   }
   
   .booking-card:hover {
