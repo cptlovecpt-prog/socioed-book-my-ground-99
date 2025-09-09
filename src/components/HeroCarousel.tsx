@@ -19,21 +19,21 @@ const heroImages = [
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1200&h=400&fit=crop",
     title: "Football Fields",
     description: "Full-size football fields with premium turf"
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=1200&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=1200&h=400&fit=crop",
     title: "Swimming Pools",
     description: "Olympic-sized swimming pools and aquatic centers"
   },
   {
     id: 5,
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1200&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&h=400&fit=crop",
     title: "Indoor Sports",
-    description: "Badminton, volleyball, and more indoor activities"
+    description: "Badminton, Squash, Basketball and Open Chess"
   }
 ];
 
