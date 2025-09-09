@@ -55,9 +55,18 @@ const sportConfig: { [key: string]: number } = {
 };
 
 // Generate 45-minute slots for morning (6:30 AM - 9:30 AM) and evening (5:30 PM - 10:00 PM)
-const generateTimeSlots = (): TimeSlot[] => {
+const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
   const slots: TimeSlot[] = [];
   let id = 1;
+  
+  // Create a seed based on the selected date to ensure consistent availability for each date
+  const dateSeed = selectedDate.getFullYear() * 10000 + selectedDate.getMonth() * 100 + selectedDate.getDate();
+  
+  // Simple seeded random function to ensure consistency
+  const seededRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
 
   // Morning slots: 6:30 AM to 9:30 AM
   const morningStart = new Date();
@@ -69,14 +78,14 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
-    // Create different slot states: fully available, partially available, or full
-    const random = Math.random();
+    // Create different slot states based on seeded random for consistency
+    const random = seededRandom(dateSeed + id);
     let available: number;
     
     if (random < 0.4) {
       available = 15; // Fully available
     } else if (random < 0.8) {
-      available = Math.floor(Math.random() * 8) + 3; // Partially available (3-10)
+      available = Math.floor(seededRandom(dateSeed + id + 1000) * 8) + 3; // Partially available (3-10)
     } else {
       available = 0; // Full
     }
@@ -100,14 +109,14 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
-    // Create different slot states: fully available, partially available, or full
-    const random = Math.random();
+    // Create different slot states based on seeded random for consistency
+    const random = seededRandom(dateSeed + id);
     let available: number;
     
     if (random < 0.4) {
       available = 15; // Fully available
     } else if (random < 0.8) {
-      available = Math.floor(Math.random() * 8) + 3; // Partially available (3-10)
+      available = Math.floor(seededRandom(dateSeed + id + 1000) * 8) + 3; // Partially available (3-10)
     } else {
       available = 0; // Full
     }
@@ -147,7 +156,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const { toast } = useToast();
   const { addBooking, bookings } = useBookings();
   
-  const timeSlots = generateTimeSlots();
+  const timeSlots = generateTimeSlots(selectedDate);
   const maxParticipants = facility ? sportConfig[facility.sport] || 10 : 10;
 
   // Generate dates for the next week initially
