@@ -4,6 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Footer = () => {
   const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
+  const [isTermsOfServiceOpen, setIsTermsOfServiceOpen] = useState(false);
 
   return (
     <>
@@ -58,9 +59,12 @@ const Footer = () => {
                   </button>
                 </li>
                 <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <button 
+                    onClick={() => setIsTermsOfServiceOpen(true)}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                  >
                     Terms of Service
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -122,6 +126,60 @@ const Footer = () => {
                 <h3 className="text-lg font-semibold text-foreground mb-3">Contact Us</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   If you have any questions about this Privacy Policy, please contact us at privacy@socioed.com.
+                </p>
+              </section>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Terms of Service Modal */}
+      <Dialog open={isTermsOfServiceOpen} onOpenChange={setIsTermsOfServiceOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Terms of Service</DialogTitle>
+            <p className="text-sm text-muted-foreground">Last updated: Aug 31, 2025</p>
+          </DialogHeader>
+          
+          <ScrollArea className="h-full pr-6">
+            <div className="space-y-6 py-4">
+              {/* Acceptance of Terms */}
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Acceptance of Terms</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  By accessing and using SocioEd, you accept and agree to be bound by the terms and provision of this agreement.
+                </p>
+              </section>
+
+              {/* Use License */}
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Use License</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Permission is granted to temporarily download one copy of SocioEd materials for personal, non-commercial transitory viewing only.
+                </p>
+              </section>
+
+              {/* Disclaimer */}
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Disclaimer</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  The materials on SocioEd are provided on an "as is" basis. SocioEd makes no warranties, expressed or implied.
+                </p>
+              </section>
+
+              {/* Limitations */}
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Limitations</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  In no event shall SocioEd or its suppliers be liable for any damages arising out of the use or inability to use the materials.
+                </p>
+              </section>
+
+              {/* Contact Information */}
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Contact Information</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  If you have any questions about these Terms of Service, please contact us at legal@socioed.com.
                 </p>
               </section>
             </div>
