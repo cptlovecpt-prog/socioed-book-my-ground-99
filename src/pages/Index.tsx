@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FacilityCard } from "@/components/FacilityCard";
 import { BookingModal } from "@/components/BookingModal";
 import { UserDashboard } from "@/components/UserDashboard";
 import Navigation from "@/components/Navigation";
-import { Calendar } from "lucide-react";
-import sportsHero from "@/assets/sports-hero.jpg";
+import HeroCarousel from "@/components/HeroCarousel";
 
 const facilities = [
   {
@@ -93,32 +91,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="relative h-[70vh] bg-cover bg-center" style={{ backgroundImage: `url(${sportsHero})` }}>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
-        <div className="relative h-full flex items-center justify-center text-center text-white">
-          <div className="max-w-4xl px-4 space-y-6">
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-              Book Sports Facilities
-              <span className="block text-transparent bg-gradient-to-r from-primary-glow to-accent bg-clip-text">
-                Instantly
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto">
-              Reserve courts, pools, and fields at your university. Share with friends and check-in with QR codes.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <Button size="lg" className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
-                <Calendar className="w-5 h-5 mr-2" />
-                Book Now
-              </Button>
-              <Button size="lg" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                View Facilities
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Carousel */}
+      <HeroCarousel />
 
 
       {/* Main Content */}
