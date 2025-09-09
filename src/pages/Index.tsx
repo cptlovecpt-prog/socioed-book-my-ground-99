@@ -108,7 +108,7 @@ const indoorFacilities = [
     available: 6,
     location: "K block",
     nextSlot: "16:00 - 18:00",
-    image: "/lovable-uploads/7db2248d-16a0-4a56-bae5-8a61c1a607e7.png",
+    image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png",
     status: 'available' as const,
     rating: 4.1,
     votes: 1048
