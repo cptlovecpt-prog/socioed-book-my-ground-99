@@ -138,7 +138,9 @@
   }
   
   .facility-available {
-    @apply !bg-green-400 !text-white !border-green-400 font-bold;
+    @apply !text-white font-bold;
+    background-color: #02a35d !important;
+    border-color: #02a35d !important;
   }
   
   .facility-busy {
