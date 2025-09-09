@@ -61,15 +61,14 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
     return 0;
   });
 
-  const visibleBookings = sortedBookings.slice(0, 3);
-  const currentBooking = visibleBookings[currentIndex];
+  const currentBooking = sortedBookings[currentIndex];
 
   const nextBooking = () => {
-    setCurrentIndex((prev) => (prev + 1) % visibleBookings.length);
+    setCurrentIndex((prev) => (prev + 1) % sortedBookings.length);
   };
 
   const prevBooking = () => {
-    setCurrentIndex((prev) => (prev - 1 + visibleBookings.length) % visibleBookings.length);
+    setCurrentIndex((prev) => (prev - 1 + sortedBookings.length) % sortedBookings.length);
   };
 
   const handleCancelClick = (bookingId: string) => {
@@ -84,8 +83,8 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   const handleConfirmCancel = () => {
     if (bookingToCancel) {
       cancelBooking(bookingToCancel);
-      if (currentIndex >= visibleBookings.length - 1) {
-        setCurrentIndex(Math.max(0, visibleBookings.length - 2));
+      if (currentIndex >= sortedBookings.length - 1) {
+        setCurrentIndex(Math.max(0, sortedBookings.length - 2));
       }
     }
     setShowCancelDialog(false);
@@ -100,10 +99,10 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
       <div className="max-w-6xl mx-auto px-4 py-6 h-full">
         <div className="flex items-center justify-between mb-0.5">
           <h2 className="text-3xl font-bold text-foreground">Your Bookings</h2>
-          {visibleBookings.length > 1 && (
+          {sortedBookings.length > 1 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                {currentIndex + 1} of {visibleBookings.length}
+                {currentIndex + 1} of {sortedBookings.length}
               </span>
               <div className="flex gap-1">
                 <Button
