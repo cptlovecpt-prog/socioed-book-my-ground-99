@@ -388,6 +388,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     }
   };
 
+  if (!facility) return null;
+
   const stepInfo = getStepInfo();
 
   const renderStepContent = () => {
