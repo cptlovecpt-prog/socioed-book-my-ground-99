@@ -40,7 +40,7 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
   const [bookingToShare, setBookingToShare] = useState<any>(null);
   const [bookingForQRCode, setBookingForQRCode] = useState<any>(null);
   
-  const { bookings, removeBooking } = useBookings();
+  const { bookings, cancelBooking } = useBookings();
   const { toast } = useToast();
 
   // Sort bookings by latest first, prioritizing "Today" and "Tomorrow"
@@ -78,7 +78,7 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
 
   const handleConfirmCancel = () => {
     if (bookingToCancel) {
-      removeBooking(bookingToCancel);
+      cancelBooking(bookingToCancel);
       toast({
         title: "Alert",
         description: "Your booking was canceled as requested, cancellation mail has been sent to all participants.",
@@ -125,6 +125,8 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
                           className={
                             booking.status === 'Upcoming' 
                               ? "bg-green-100 text-green-800 border-green-200" 
+                              : booking.status === 'Cancelled'
+                              ? "bg-red-100 text-red-800 border-red-200"
                               : "bg-gray-100 text-gray-800 border-gray-200"
                           }
                         >

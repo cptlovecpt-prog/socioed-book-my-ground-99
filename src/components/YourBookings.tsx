@@ -27,22 +27,25 @@ const convertTo12HourFormat = (timeRange: string) => {
 };
 
 const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
-  const { bookings, removeBooking } = useBookings();
+  const { bookings, cancelBooking } = useBookings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
   
+  // Filter to only show upcoming bookings
+  const upcomingBookings = bookings.filter(booking => booking.status === 'Upcoming');
+  
   // Reset to first booking when bookings change (new booking added)
   useEffect(() => {
     setCurrentIndex(0);
-  }, [bookings]);
+  }, [upcomingBookings]);
   
-  if (!isSignedIn || bookings.length === 0) return null;
+  if (!isSignedIn || upcomingBookings.length === 0) return null;
 
   // Sort bookings by latest first, prioritizing "Today" and "Tomorrow"
-  const sortedBookings = [...bookings].sort((a, b) => {
+  const sortedBookings = [...upcomingBookings].sort((a, b) => {
     const dateOrder = { "Today": 0, "Tomorrow": 1 };
     const aOrder = dateOrder[a.date as keyof typeof dateOrder] ?? 2;
     const bOrder = dateOrder[b.date as keyof typeof dateOrder] ?? 2;
@@ -85,7 +88,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
 
   const handleConfirmCancel = () => {
     if (bookingToCancel) {
-      removeBooking(bookingToCancel);
+      cancelBooking(bookingToCancel);
       if (currentIndex >= visibleBookings.length - 1) {
         setCurrentIndex(Math.max(0, visibleBookings.length - 2));
       }
