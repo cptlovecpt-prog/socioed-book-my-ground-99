@@ -2,9 +2,13 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Users, Share2, QrCode } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar, Clock, Users, Share2, QrCode, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useBookings } from "@/contexts/BookingContext";
+import { format, addDays, isSameDay } from "date-fns";
 
 interface TimeSlot {
   id: string;
@@ -12,6 +16,12 @@ interface TimeSlot {
   available: number;
   capacity: number;
 }
+
+interface ParticipantData {
+  enrollmentId: string;
+}
+
+type BookingStep = 'date-selection' | 'slot-selection' | 'participant-count' | 'participant-details' | 'confirmation';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -25,24 +35,152 @@ interface BookingModalProps {
   } | null;
 }
 
-const timeSlots: TimeSlot[] = [
-  { id: "1", time: "08:00 - 10:00", available: 8, capacity: 10 },
-  { id: "2", time: "10:00 - 12:00", available: 3, capacity: 10 },
-  { id: "3", time: "12:00 - 14:00", available: 0, capacity: 10 },
-  { id: "4", time: "14:00 - 16:00", available: 7, capacity: 10 },
-  { id: "5", time: "16:00 - 18:00", available: 2, capacity: 10 },
-  { id: "6", time: "18:00 - 20:00", available: 5, capacity: 10 },
-];
+// Sport configuration with max participants
+const sportConfig: { [key: string]: number } = {
+  'Football': 22,
+  'Cricket': 22,
+  'Basketball': 10,
+  'Volleyball': 12,
+  'Tennis': 4,
+  'Badminton': 4,
+  'Table Tennis': 4,
+  'Swimming': 20,
+  'Chess': 2,
+  'Padel': 4,
+  'Squash': 2,
+  'Gym': 15,
+  'Pickleball': 4
+};
+
+// Generate 45-minute slots for morning (6:30 AM - 9:30 AM) and evening (5:30 PM - 10:00 PM)
+const generateTimeSlots = (): TimeSlot[] => {
+  const slots: TimeSlot[] = [];
+  let id = 1;
+
+  // Morning slots: 6:30 AM to 9:30 AM
+  const morningStart = new Date();
+  morningStart.setHours(6, 30, 0, 0);
+  
+  for (let i = 0; i < 4; i++) {
+    const startTime = new Date(morningStart);
+    startTime.setMinutes(startTime.getMinutes() + (i * 45));
+    const endTime = new Date(startTime);
+    endTime.setMinutes(endTime.getMinutes() + 45);
+    
+    slots.push({
+      id: id.toString(),
+      time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
+      available: Math.floor(Math.random() * 10) + 1,
+      capacity: 15
+    });
+    id++;
+  }
+
+  // Evening slots: 5:30 PM to 10:00 PM
+  const eveningStart = new Date();
+  eveningStart.setHours(17, 30, 0, 0);
+  
+  for (let i = 0; i < 6; i++) {
+    const startTime = new Date(eveningStart);
+    startTime.setMinutes(startTime.getMinutes() + (i * 45));
+    const endTime = new Date(startTime);
+    endTime.setMinutes(endTime.getMinutes() + 45);
+    
+    slots.push({
+      id: id.toString(),
+      time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
+      available: Math.floor(Math.random() * 10) + 1,
+      capacity: 15
+    });
+    id++;
+  }
+
+  return slots;
+};
 
 export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingModalProps) => {
+  const [currentStep, setCurrentStep] = useState<BookingStep>('date-selection');
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [isBooked, setIsBooked] = useState(false);
+  const [participantCount, setParticipantCount] = useState<number>(1);
+  const [participants, setParticipants] = useState<ParticipantData[]>([{ enrollmentId: '' }]);
+  const [sendEmailConfirmation, setSendEmailConfirmation] = useState<boolean>(false);
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
   const { toast } = useToast();
   const { addBooking, bookings } = useBookings();
+  
+  const timeSlots = generateTimeSlots();
+  const maxParticipants = facility ? sportConfig[facility.sport] || 10 : 10;
 
-  const handleBook = () => {
-    if (!selectedSlot) return;
+  // Generate dates for the next week initially
+  const [dateRange, setDateRange] = useState(() => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      dates.push(addDays(new Date(), i));
+    }
+    return dates;
+  });
+
+  const canNavigateForward = dateRange[dateRange.length - 1] < addDays(new Date(), 59);
+  const canNavigateBackward = dateRange[0] > new Date();
+
+  const navigateDatesForward = () => {
+    if (canNavigateForward) {
+      const newDates = [];
+      for (let i = 7; i < 14; i++) {
+        const date = addDays(dateRange[0], i);
+        if (date <= addDays(new Date(), 59)) {
+          newDates.push(date);
+        }
+      }
+      if (newDates.length > 0) {
+        setDateRange(newDates);
+      }
+    }
+  };
+
+  const navigateDatesBackward = () => {
+    if (canNavigateBackward) {
+      const newDates = [];
+      for (let i = -7; i < 0; i++) {
+        const date = addDays(dateRange[6], i);
+        if (date >= new Date()) {
+          newDates.push(date);
+        }
+      }
+      if (newDates.length > 0) {
+        setDateRange(newDates);
+      }
+    }
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    setCurrentStep('slot-selection');
+  };
+
+  const handleSlotSelect = (slotId: string) => {
+    setSelectedSlot(slotId);
+    setCurrentStep('participant-count');
+  };
+
+  const handleParticipantCountSelect = (count: number) => {
+    setParticipantCount(count);
+    const newParticipants = Array.from({ length: count }, (_, i) => 
+      participants[i] || { enrollmentId: '' }
+    );
+    setParticipants(newParticipants);
+    setCurrentStep('participant-details');
+  };
+
+  const handleEnrollmentIdChange = (index: number, value: string) => {
+    const updatedParticipants = [...participants];
+    updatedParticipants[index].enrollmentId = value;
+    setParticipants(updatedParticipants);
+  };
+
+  const handleConfirmBooking = () => {
+    if (!selectedSlot || !facility) return;
     
     if (!isSignedIn) {
       toast({
@@ -62,25 +200,49 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       return;
     }
 
+    // Validate enrollment IDs
+    const hasEmptyIds = participants.some(p => !p.enrollmentId.trim());
+    if (hasEmptyIds) {
+      toast({
+        title: "Please enter all enrollment IDs",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
     const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
-    if (facility && selectedTimeSlot) {
+    if (selectedTimeSlot) {
       // Add the booking to context
       addBooking({
         facilityName: facility.name,
         sport: facility.sport,
         location: facility.location,
-        date: "Today",
+        date: isSameDay(selectedDate, new Date()) ? "Today" : 
+              isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
+              format(selectedDate, 'MMM dd, yyyy'),
         time: selectedTimeSlot.time,
         image: getImageForFacility(facility),
-        participants: `${selectedTimeSlot.available}/${selectedTimeSlot.capacity} joined`
+        participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`
       });
     }
     
-    setIsBooked(true);
+    setCurrentStep('confirmation');
     toast({
-      title: "Booking Confirmed!",
-      description: `Your spot at ${facility?.name} has been reserved. Share with friends!`,
+      title: "Booking Confirmation",
+      description: "Your booking has been confirmed, you can view details under Your Bookings section",
+      duration: 4000,
     });
+  };
+
+  const resetModal = () => {
+    setCurrentStep('date-selection');
+    setSelectedDate(new Date());
+    setSelectedSlot(null);
+    setParticipantCount(1);
+    setParticipants([{ enrollmentId: '' }]);
+    setSendEmailConfirmation(false);
+    onClose();
   };
 
   const getImageForFacility = (facility: any) => {
@@ -113,15 +275,196 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
   if (!facility) return null;
 
-  if (isBooked) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center">Booking Confirmed!</DialogTitle>
-          </DialogHeader>
-          
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 'date-selection':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-medium mb-4">Select Date</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={navigateDatesBackward}
+                  disabled={!canNavigateBackward}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex-1 grid grid-cols-7 gap-1">
+                  {dateRange.map((date) => (
+                    <Button
+                      key={date.toISOString()}
+                      variant={isSameDay(date, selectedDate) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleDateSelect(date)}
+                      className="flex flex-col p-2 h-auto"
+                    >
+                      <span className="text-xs font-medium">
+                        {format(date, 'EEE')}
+                      </span>
+                      <span className="text-sm">
+                        {format(date, 'dd')}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {format(date, 'MMM')}
+                      </span>
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={navigateDatesForward}
+                  disabled={!canNavigateForward}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'slot-selection':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setCurrentStep('date-selection')}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>{format(selectedDate, 'MMM dd, yyyy')}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Users className="h-4 w-4" />
+                  <span>{facility.sport}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-3">Available Time Slots</h3>
+              <div className="grid gap-2">
+                {timeSlots.map((slot) => {
+                  const isAvailable = slot.available > 0;
+                  
+                  return (
+                    <div
+                      key={slot.id}
+                      onClick={() => isAvailable && handleSlotSelect(slot.id)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                        isAvailable 
+                          ? 'border-border hover:border-primary/50' 
+                          : 'border-border bg-muted cursor-not-allowed opacity-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Clock className="h-4 w-4" />
+                          <span className="font-medium">{slot.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={isAvailable ? "default" : "secondary"}>
+                            {slot.available}/{slot.capacity} spots
+                          </Badge>
+                          {!isAvailable && <Badge variant="destructive">Full</Badge>}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'participant-count':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setCurrentStep('slot-selection')}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <h3 className="font-medium">Select Number of Participants</h3>
+            </div>
+            
+            <div className="grid grid-cols-5 gap-3">
+              {Array.from({ length: Math.min(maxParticipants, 20) }, (_, i) => i + 1).map((count) => (
+                <Button
+                  key={count}
+                  variant={participantCount === count ? "default" : "outline"}
+                  onClick={() => handleParticipantCountSelect(count)}
+                  className="aspect-square"
+                >
+                  {count}
+                </Button>
+              ))}
+            </div>
+            
+            <p className="text-sm text-muted-foreground">
+              Maximum {maxParticipants} participants allowed for {facility.sport}
+            </p>
+          </div>
+        );
+
+      case 'participant-details':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setCurrentStep('participant-count')}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <h3 className="font-medium">Enter Enrollment IDs</h3>
+            </div>
+            
+            <div className="space-y-4 max-h-64 overflow-y-auto">
+              {participants.map((participant, index) => (
+                <div key={index}>
+                  <Label htmlFor={`enrollment-${index}`}>
+                    Participant {index + 1} Enrollment ID
+                  </Label>
+                  <Input
+                    id={`enrollment-${index}`}
+                    value={participant.enrollmentId}
+                    onChange={(e) => handleEnrollmentIdChange(index, e.target.value)}
+                    placeholder="Enter enrollment ID"
+                    className="mt-1"
+                  />
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="email-confirmation"
+                checked={sendEmailConfirmation}
+                onCheckedChange={(checked) => setSendEmailConfirmation(checked as boolean)}
+              />
+              <Label htmlFor="email-confirmation" className="text-sm">
+                Send mail confirmation
+              </Label>
+            </div>
+            
+            <Button 
+              onClick={handleConfirmBooking}
+              className="w-full bg-gradient-primary"
+            >
+              Confirm Booking
+            </Button>
+          </div>
+        );
+
+      case 'confirmation':
+        return (
           <div className="space-y-6 py-4">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-green-600 mb-2">Booking Confirmed!</h3>
+            </div>
+            
             <div className="text-center space-y-2">
               <div className="w-32 h-32 bg-gradient-primary rounded-xl mx-auto flex items-center justify-center">
                 <QrCode className="h-16 w-16 text-white" />
@@ -135,8 +478,16 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 <span className="font-medium">{facility.name}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Date:</span>
+                <span className="font-medium">{format(selectedDate, 'MMM dd, yyyy')}</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Time:</span>
                 <span className="font-medium">{timeSlots.find(s => s.id === selectedSlot)?.time}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Participants:</span>
+                <span className="font-medium">{participantCount}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Share Code:</span>
@@ -149,85 +500,49 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 <Share2 className="w-4 h-4 mr-2" />
                 Share
               </Button>
-              <Button onClick={onClose} className="flex-1">
+              <Button onClick={resetModal} className="flex-1">
                 Done
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={resetModal}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Book {facility.name}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            {currentStep !== 'date-selection' && currentStep !== 'confirmation' && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  if (currentStep === 'slot-selection') setCurrentStep('date-selection');
+                  else if (currentStep === 'participant-count') setCurrentStep('slot-selection');
+                  else if (currentStep === 'participant-details') setCurrentStep('participant-count');
+                }}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+            Book {facility.name}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetModal}
+              className="ml-auto"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              <span>Today</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              <span>{facility.sport}</span>
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-3">Available Time Slots</h3>
-            <div className="grid gap-2">
-              {timeSlots.map((slot) => {
-                const isAvailable = slot.available > 0;
-                const isSelected = selectedSlot === slot.id;
-                
-                return (
-                  <div
-                    key={slot.id}
-                    onClick={() => isAvailable && setSelectedSlot(slot.id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      isSelected 
-                        ? 'border-primary bg-primary/5' 
-                        : isAvailable 
-                          ? 'border-border hover:border-primary/50' 
-                          : 'border-border bg-muted cursor-not-allowed opacity-50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-4 w-4" />
-                        <span className="font-medium">{slot.time}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={isAvailable ? "default" : "secondary"}>
-                          {slot.available}/{slot.capacity} spots
-                        </Badge>
-                        {!isAvailable && <Badge variant="destructive">Full</Badge>}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose} className="flex-1">
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleBook} 
-              disabled={!selectedSlot}
-              className="flex-1 bg-gradient-primary"
-            >
-              Confirm Booking
-            </Button>
-          </div>
-        </div>
+        {renderStepContent()}
       </DialogContent>
     </Dialog>
   );
