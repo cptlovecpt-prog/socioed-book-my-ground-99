@@ -435,7 +435,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                           {slot.available === 0 ? (
                             <Badge className="bg-red-500 text-white hover:bg-red-600">Slot Unavailable</Badge>
                           ) : slot.available === slot.capacity ? (
-                            <Badge className="bg-green-500 text-white hover:bg-green-600">
+                            <Badge className="text-white font-bold" style={{ backgroundColor: '#02a35d', borderColor: '#02a35d' }}>
                               Fully Available
                             </Badge>
                           ) : (
