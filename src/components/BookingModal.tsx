@@ -83,7 +83,7 @@ const generateTimeSlots = (): TimeSlot[] => {
     
     slots.push({
       id: id.toString(),
-      time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
+      time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
       capacity: 15
     });
@@ -114,7 +114,7 @@ const generateTimeSlots = (): TimeSlot[] => {
     
     slots.push({
       id: id.toString(),
-      time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
+      time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
       capacity: 15
     });
