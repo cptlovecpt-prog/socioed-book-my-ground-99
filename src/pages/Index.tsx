@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Filter, X } from "lucide-react";
 import { FacilityCard } from "@/components/FacilityCard";
 import { BookingModal } from "@/components/BookingModal";
 import { UserDashboard } from "@/components/UserDashboard";
@@ -253,6 +257,29 @@ const Index = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false); // Default to false - user needs to sign in
   const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
+  const [selectedSports, setSelectedSports] = useState<string[]>([]);
+
+  const allSports = [
+    "Football", "Cricket", "Basketball", "Volleyball", "Tennis", 
+    "Badminton", "Squash", "Swimming", "Pickleball", "Gym", "Chess", "Padel"
+  ];
+
+  const handleSportToggle = (sport: string) => {
+    setSelectedSports(prev => 
+      prev.includes(sport) 
+        ? prev.filter(s => s !== sport)
+        : [...prev, sport]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedSports([]);
+  };
+
+  const filterFacilities = (facilities: typeof indoorFacilities) => {
+    if (selectedSports.length === 0) return facilities;
+    return facilities.filter(facility => selectedSports.includes(facility.sport));
+  };
 
   const handleBooking = (facilityId: string) => {
     const allFacilities = [...indoorFacilities, ...outdoorFacilities];
@@ -282,14 +309,86 @@ const Index = () => {
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <Tabs defaultValue="outdoor" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 max-w-md">
-              <TabsTrigger value="outdoor" className="text-lg font-bold">Outdoor</TabsTrigger>
-              <TabsTrigger value="indoor" className="text-lg font-bold">Indoor</TabsTrigger>
-            </TabsList>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <TabsList className="grid w-full grid-cols-2 max-w-md">
+                <TabsTrigger value="outdoor" className="text-lg font-bold">Outdoor</TabsTrigger>
+                <TabsTrigger value="indoor" className="text-lg font-bold">Indoor</TabsTrigger>
+              </TabsList>
+              
+              {/* Sports Filter */}
+              <div className="flex items-center gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Filter className="h-4 w-4" />
+                      Sports Filter
+                      {selectedSports.length > 0 && (
+                        <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">
+                          {selectedSports.length}
+                        </span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56" align="end">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium">Filter by Sports</h4>
+                        {selectedSports.length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="h-6 px-2 text-xs"
+                          >
+                            Clear
+                          </Button>
+                        )}
+                      </div>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {allSports.map((sport) => (
+                          <div key={sport} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={sport}
+                              checked={selectedSports.includes(sport)}
+                              onCheckedChange={() => handleSportToggle(sport)}
+                            />
+                            <label
+                              htmlFor={sport}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                              {sport}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {selectedSports.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {selectedSports.map((sport) => (
+                      <span
+                        key={sport}
+                        className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-md"
+                      >
+                        {sport}
+                        <button
+                          onClick={() => handleSportToggle(sport)}
+                          className="hover:bg-primary/20 rounded-full p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
             
             <TabsContent value="outdoor">
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                {outdoorFacilities.map((facility) => (
+                {filterFacilities(outdoorFacilities).map((facility) => (
                   <FacilityCard
                     key={facility.id}
                     {...facility}
@@ -297,11 +396,16 @@ const Index = () => {
                   />
                 ))}
               </div>
+              {filterFacilities(outdoorFacilities).length === 0 && selectedSports.length > 0 && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No outdoor facilities found for selected sports.</p>
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="indoor">
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                {indoorFacilities.map((facility) => (
+                {filterFacilities(indoorFacilities).map((facility) => (
                   <FacilityCard
                     key={facility.id}
                     {...facility}
@@ -309,6 +413,11 @@ const Index = () => {
                   />
                 ))}
               </div>
+              {filterFacilities(indoorFacilities).length === 0 && selectedSports.length > 0 && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No indoor facilities found for selected sports.</p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
