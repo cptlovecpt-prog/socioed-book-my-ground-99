@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FacilityCard } from "@/components/FacilityCard";
 import { BookingModal } from "@/components/BookingModal";
 import { UserDashboard } from "@/components/UserDashboard";
+import Navigation from "@/components/Navigation";
 import { Calendar } from "lucide-react";
 import sportsHero from "@/assets/sports-hero.jpg";
 
@@ -90,6 +91,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
+      
       {/* Hero Section */}
       <section className="relative h-[70vh] bg-cover bg-center" style={{ backgroundImage: `url(${sportsHero})` }}>
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
