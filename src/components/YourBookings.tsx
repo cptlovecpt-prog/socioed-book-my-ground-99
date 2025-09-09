@@ -98,7 +98,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex items-center space-x-1 text-destructive hover:text-destructive"
+                className="flex items-center space-x-1 text-destructive hover:text-white hover:bg-destructive border-destructive"
                 onClick={() => handleCancel(currentBooking.id)}
               >
                 <X className="h-4 w-4" />

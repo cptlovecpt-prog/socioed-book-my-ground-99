@@ -66,6 +66,39 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       participants: "12/35 joined",
       status: "Upcoming",
       image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop"
+    },
+    {
+      id: "BK-EXP001",
+      facilityName: "Basketball Court",
+      sport: "Basketball",
+      date: "Dec 8",
+      time: "16:00 - 18:00",
+      location: "Near K block",
+      participants: "8/20 joined",
+      status: "Completed",
+      image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png"
+    },
+    {
+      id: "BK-EXP002",
+      facilityName: "Badminton Court",
+      sport: "Badminton",
+      date: "Dec 7",
+      time: "18:00 - 20:00",
+      location: "K block",
+      participants: "6/12 joined",
+      status: "Completed",
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
+    },
+    {
+      id: "BK-EXP003",
+      facilityName: "Squash Court",
+      sport: "Squash",
+      date: "Dec 6",
+      time: "14:00 - 16:00",
+      location: "K block",
+      participants: "4/6 joined",
+      status: "Completed",
+      image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png"
     }
   ]);
 
