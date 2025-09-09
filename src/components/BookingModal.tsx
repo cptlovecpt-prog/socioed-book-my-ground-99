@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Clock, Users, Share2, QrCode, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Calendar, Clock, Users, Share2, QrCode, ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useBookings } from "@/contexts/BookingContext";
 import { format, addDays, isSameDay } from "date-fns";
@@ -67,10 +68,11 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
+    const available = Math.floor(Math.random() * 10) + 1;
     slots.push({
       id: id.toString(),
       time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
-      available: Math.floor(Math.random() * 10) + 1,
+      available: available,
       capacity: 15
     });
     id++;
@@ -86,10 +88,11 @@ const generateTimeSlots = (): TimeSlot[] => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
+    const available = Math.floor(Math.random() * 10) + 1;
     slots.push({
       id: id.toString(),
       time: `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`,
-      available: Math.floor(Math.random() * 10) + 1,
+      available: available,
       capacity: 15
     });
     id++;
@@ -142,8 +145,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const navigateDatesBackward = () => {
     if (canNavigateBackward) {
       const newDates = [];
-      for (let i = -7; i < 0; i++) {
-        const date = addDays(dateRange[6], i);
+      const startDate = addDays(dateRange[0], -7);
+      for (let i = 0; i < 7; i++) {
+        const date = addDays(startDate, i);
         if (date >= new Date()) {
           newDates.push(date);
         }
@@ -230,7 +234,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     setCurrentStep('confirmation');
     toast({
       title: "Booking Confirmation",
-      description: "Your booking has been confirmed, you can view details under Your Bookings section",
+      description: "Your booking is confirmed. Check your e-mail for booking details",
       duration: 4000,
     });
   };
@@ -271,6 +275,36 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       title: "Share Link Copied!",
       description: "Your friends can now join your booking using this link.",
     });
+  };
+
+  const handleGoBack = () => {
+    switch (currentStep) {
+      case 'slot-selection':
+        setCurrentStep('date-selection');
+        break;
+      case 'participant-count':
+        setCurrentStep('slot-selection');
+        break;
+      case 'participant-details':
+        setCurrentStep('participant-count');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleShareWhatsApp = () => {
+    const message = `🏆 Sports Booking Confirmed!\n\nFacility: ${facility?.name}\nSport: ${facility?.sport}\nDate: ${format(selectedDate, 'MMM dd, yyyy')}\nTime: ${timeSlots.find(s => s.id === selectedSlot)?.time}\nParticipants: ${participantCount}\nShare Code: ${shareToken}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleShareEmail = () => {
+    const participantEmails = participants.map(p => `${p.enrollmentId}@example.com`).join(',');
+    const subject = encodeURIComponent('Sports Booking Confirmation');
+    const body = encodeURIComponent(`Sports Booking Confirmed!\n\nFacility: ${facility?.name}\nSport: ${facility?.sport}\nDate: ${format(selectedDate, 'MMM dd, yyyy')}\nTime: ${timeSlots.find(s => s.id === selectedSlot)?.time}\nParticipants: ${participantCount}\nShare Code: ${shareToken}`);
+    const mailtoUrl = `mailto:${participantEmails}?subject=${subject}&body=${body}`;
+    window.open(mailtoUrl);
   };
 
   if (!facility) return null;
@@ -346,6 +380,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               <div className="grid gap-2">
                 {timeSlots.map((slot) => {
                   const isAvailable = slot.available > 0;
+                  const hasHighAvailability = slot.available > 7;
                   
                   return (
                     <div
@@ -363,6 +398,11 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                           <span className="font-medium">{slot.time}</span>
                         </div>
                         <div className="flex items-center gap-2">
+                          {hasHighAvailability && (
+                            <Badge className="bg-green-500 text-white hover:bg-green-600">
+                              Available
+                            </Badge>
+                          )}
                           <Badge variant={isAvailable ? "default" : "secondary"}>
                             {slot.available}/{slot.capacity} spots
                           </Badge>
@@ -480,15 +520,20 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               </div>
             </div>
             
-            <div className="flex gap-2">
-              <Button onClick={handleShare} variant="outline" className="flex-1">
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={handleShareWhatsApp} variant="outline" className="flex items-center gap-2">
+                <Share2 className="w-4 h-4" />
+                Share on WhatsApp
               </Button>
-              <Button onClick={resetModal} className="flex-1">
-                Done
+              <Button onClick={handleShareEmail} variant="outline" className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Share on E-mail
               </Button>
             </div>
+            
+            <Button onClick={resetModal} className="w-full">
+              Done
+            </Button>
           </div>
         );
 
@@ -498,14 +543,43 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={resetModal}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Book {facility.name}</DialogTitle>
-        </DialogHeader>
-        
-        {renderStepContent()}
-      </DialogContent>
-    </Dialog>
+    <AlertDialog>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && currentStep !== 'confirmation'}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {currentStep !== 'date-selection' && currentStep !== 'confirmation' && (
+                <Button variant="ghost" size="sm" onClick={handleGoBack}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              )}
+              Book {facility.name}
+              {currentStep !== 'confirmation' && (
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="ml-auto">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {renderStepContent()}
+        </DialogContent>
+      </Dialog>
+      
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Alert</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to exit the booking process?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={resetModal}>Exit</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
