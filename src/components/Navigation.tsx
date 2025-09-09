@@ -32,8 +32,12 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
   const handleSignOut = () => {
     setIsSignedIn(false);
     setUserData(null);
-    // Reload page to ensure user returns to default home page state
-    window.location.reload();
+    // Navigate to home page if on My Bookings page, otherwise reload
+    if (window.location.pathname === '/my-bookings') {
+      navigate('/');
+    } else {
+      window.location.reload();
+    }
   };
 
   const openSignInModal = () => {
