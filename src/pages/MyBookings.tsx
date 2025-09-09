@@ -7,6 +7,7 @@ import { Clock, MapPin, Users, Share, QrCode, X } from "lucide-react";
 import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
 import { ShareDialog } from "@/components/ShareDialog";
+import { QRCodeDialog } from "@/components/QRCodeDialog";
 
 const MyBookings = () => {
   const [isSignedIn, setIsSignedIn] = useState(true); // Assume signed in to access this page
@@ -16,8 +17,10 @@ const MyBookings = () => {
   });
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
   const [bookingToShare, setBookingToShare] = useState<any>(null);
+  const [bookingForQRCode, setBookingForQRCode] = useState<any>(null);
   
   const { bookings, removeBooking } = useBookings();
 
@@ -29,6 +32,11 @@ const MyBookings = () => {
   const handleShareClick = (booking: any) => {
     setBookingToShare(booking);
     setShowShareDialog(true);
+  };
+
+  const handleQRCodeClick = (booking: any) => {
+    setBookingForQRCode(booking);
+    setShowQRCodeDialog(true);
   };
 
   const handleConfirmCancel = () => {
@@ -115,7 +123,7 @@ const MyBookings = () => {
                       <Share className="h-4 w-4" />
                       <span className="hidden sm:inline">Share</span>
                     </Button>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={() => handleQRCodeClick(booking)}>
                       <QrCode className="h-4 w-4" />
                       <span className="hidden sm:inline">QR Code</span>
                     </Button>
@@ -146,6 +154,17 @@ const MyBookings = () => {
             setBookingToShare(null);
           }}
           booking={bookingToShare}
+        />
+      )}
+      
+      {bookingForQRCode && (
+        <QRCodeDialog
+          isOpen={showQRCodeDialog}
+          onClose={() => {
+            setShowQRCodeDialog(false);
+            setBookingForQRCode(null);
+          }}
+          booking={bookingForQRCode}
         />
       )}
       
