@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Target, Eye, Heart, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface FooterProps {
@@ -113,67 +112,47 @@ const Footer = ({ isSignedIn }: FooterProps) => {
 
       {/* About Us Modal */}
       <Dialog open={isAboutUsOpen} onOpenChange={setIsAboutUsOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh]">
+        <DialogContent className="max-w-2xl max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle className="text-3xl font-bold mb-2">About Book My Ground</DialogTitle>
-            <p className="text-muted-foreground text-base leading-relaxed">
+            <DialogTitle className="text-2xl font-bold">About Book My Ground</DialogTitle>
+            <p className="text-muted-foreground text-sm leading-relaxed">
               We're transforming sports facility booking through innovative technology that enhances playing experiences for both facility managers and sports enthusiasts.
             </p>
           </DialogHeader>
           
           <ScrollArea className="h-full pr-6">
-            <div className="grid md:grid-cols-2 gap-6 py-6">
+            <div className="space-y-6 py-4">
               {/* Our Mission */}
-              <div className="bg-blue-50 dark:bg-blue-950/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <Target className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Our Mission</h3>
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Our Mission</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   To democratize access to sports facilities and make playing more convenient, accessible, and enjoyable for everyone in the community.
                 </p>
-              </div>
+              </section>
 
               {/* Our Vision */}
-              <div className="bg-green-50 dark:bg-green-950/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                    <Eye className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Our Vision</h3>
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Our Vision</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   A world where every sports enthusiast has seamless access to quality facilities that promote active lifestyles and community engagement.
                 </p>
-              </div>
+              </section>
 
               {/* Our Values */}
-              <div className="bg-red-50 dark:bg-red-950/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
-                    <Heart className="h-6 w-6 text-red-600 dark:text-red-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Our Values</h3>
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Our Values</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   Innovation, accessibility, user-centric design, and a commitment to promoting healthy lifestyles and community sports worldwide.
                 </p>
-              </div>
+              </section>
 
               {/* Our Team */}
-              <div className="bg-purple-50 dark:bg-purple-950/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                    <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Our Team</h3>
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Our Team</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   A diverse group of athletes, technologists, and designers passionate about creating innovative solutions for the sports community.
                 </p>
-              </div>
+              </section>
             </div>
           </ScrollArea>
         </DialogContent>
