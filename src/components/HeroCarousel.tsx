@@ -51,6 +51,21 @@ const HeroCarousel = () => {
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap());
     });
+
+    // Add keyboard navigation
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        api.scrollPrev();
+      } else if (event.key === "ArrowRight") {
+        api.scrollNext();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [api]);
 
   return (

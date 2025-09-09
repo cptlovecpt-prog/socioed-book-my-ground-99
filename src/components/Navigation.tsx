@@ -6,11 +6,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bookMyGroundLogo from "@/assets/book-my-ground-logo.png";
 import SignInModal from "./SignInModal";
+import HelpSupportModal from "./HelpSupportModal";
 
 const Navigation = () => {
   const { theme, setTheme } = useTheme();
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [isHelpSupportModalOpen, setIsHelpSupportModalOpen] = useState(false);
   const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
   const navigate = useNavigate();
 
@@ -105,7 +107,7 @@ const Navigation = () => {
                 <DropdownMenuItem onClick={() => navigate("/my-bookings")}>
                   My Bookings
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsHelpSupportModalOpen(true)}>
                   Help & Support
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -118,6 +120,11 @@ const Navigation = () => {
         isOpen={isSignInModalOpen}
         onClose={() => setIsSignInModalOpen(false)}
         onSignIn={handleSignIn}
+      />
+      
+      <HelpSupportModal
+        isOpen={isHelpSupportModalOpen}
+        onClose={() => setIsHelpSupportModalOpen(false)}
       />
     </nav>
   );
