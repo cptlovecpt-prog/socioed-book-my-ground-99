@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FacilityCard } from "@/components/FacilityCard";
 import { BookingModal } from "@/components/BookingModal";
 import { UserDashboard } from "@/components/UserDashboard";
-import { Calendar, Users, Shield, QrCode } from "lucide-react";
+import { Calendar } from "lucide-react";
 import sportsHero from "@/assets/sports-hero.jpg";
 
 const facilities = [
@@ -117,49 +117,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-3xl font-bold">Why Choose Our Booking System?</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Designed specifically for university sports facilities with features that make booking and sharing easy.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="booking-card text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold">Share with Friends</h3>
-              <p className="text-muted-foreground">
-                Invite friends to join your booking using shareable links. Up to 4 bookings per week.
-              </p>
-            </div>
-            
-            <div className="booking-card text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
-                <QrCode className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold">QR Check-in</h3>
-              <p className="text-muted-foreground">
-                Show your QR code at the facility entrance for quick and contactless check-in.
-              </p>
-            </div>
-            
-            <div className="booking-card text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold">University SSO</h3>
-              <p className="text-muted-foreground">
-                Secure login with your university credentials. No need for additional accounts.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Main Content */}
       <section className="py-16 px-4 bg-muted/30">
