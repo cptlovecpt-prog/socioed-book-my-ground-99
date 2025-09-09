@@ -37,22 +37,24 @@ interface BookingModalProps {
   } | null;
 }
 
-// Sport configuration with max participants
+// Sport configuration with max participants based on provided data
 const sportConfig: { [key: string]: number } = {
   'Football': 22,
   'Cricket': 22,
-  'Basketball': 10,
-  'Volleyball': 12,
+  'Basketball': 28,
+  'Volleyball': 24,
   'Tennis': 8,
-  'Badminton': 4,
-  'Table Tennis': 4,
+  'Badminton': 12,
+  'Squash': 6,
   'Swimming': 35,
+  'Pickleball': 20,
+  'Gym': 40,
+  'Field Court': 8,
+  'Hockey': 10,
+  'Table Tennis': 48,
   'Chess': 10,
   'Padel': 4,
-  'Squash': 6,
-  'Gym': 40,
-  'Pickleball': 4,
-  'Basket Court': 18
+  'Basket Court': 12
 };
 
 // Generate 45-minute slots for morning (6:30 AM - 9:30 AM) and evening (5:30 PM - 10:00 PM)
@@ -561,6 +563,10 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         );
 
       case 'participant-count':
+        const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+        const slotCapacity = selectedTimeSlot?.capacity || maxParticipants;
+        const slotAvailable = selectedTimeSlot?.available || maxParticipants;
+        
         return (
           <div className="space-y-6">
             <div className="text-center">
@@ -572,44 +578,59 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  <span>{timeSlots.find(s => s.id === selectedSlot)?.time}</span>
+                  <span>{selectedTimeSlot?.time}</span>
                 </div>
               </div>
+              {selectedTimeSlot && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  {slotAvailable} out of {slotCapacity} spots available
+                </p>
+              )}
             </div>
             
             <div className="grid grid-cols-5 gap-2">
-              {Array.from({ length: Math.min(maxParticipants, 25) }, (_, i) => i + 1).map((count) => (
-                <Button
-                  key={count}
-                  variant={participantCount === count ? "default" : "outline"}
-                  className="h-12"
-                  onClick={() => handleParticipantCountSelect(count)}
-                >
-                  {count}
-                </Button>
-              ))}
+              {Array.from({ length: Math.min(slotCapacity, 25) }, (_, i) => i + 1).map((count) => {
+                const isAvailable = count <= slotAvailable;
+                const isSelected = participantCount === count;
+                
+                return (
+                  <Button
+                    key={count}
+                    variant={isSelected ? "default" : "outline"}
+                    className={`h-12 ${!isAvailable ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground" : ""}`}
+                    onClick={() => isAvailable ? handleParticipantCountSelect(count) : undefined}
+                    disabled={!isAvailable}
+                  >
+                    {count}
+                  </Button>
+                );
+              })}
             </div>
             
-            {maxParticipants > 25 && (
+            {slotCapacity > 25 && (
               <div className="text-center">
                 <Label htmlFor="custom-count" className="text-sm text-muted-foreground">
-                  Or enter a number (up to {maxParticipants}):
+                  Or enter a number (up to {slotAvailable}):
                 </Label>
                 <Input
                   id="custom-count"
                   type="number"
                   min="1"
-                  max={maxParticipants}
+                  max={slotAvailable}
                   className="w-24 mx-auto mt-2"
                   onChange={(e) => {
                     const value = parseInt(e.target.value);
-                    if (value >= 1 && value <= maxParticipants) {
+                    if (value >= 1 && value <= slotAvailable) {
                       handleParticipantCountSelect(value);
                     }
                   }}
                 />
               </div>
             )}
+            
+            <p className="text-sm text-muted-foreground text-center">
+              Maximum {maxParticipants} participants allowed for {facility.sport}
+            </p>
             
             <Button 
               onClick={() => setCurrentStep('participant-details')} 
@@ -686,11 +707,11 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         );
 
       case 'confirmation':
-        const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+        const confirmationTimeSlot = timeSlots.find(s => s.id === selectedSlot);
         const dateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
                            isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
                            format(selectedDate, 'MMM dd, yyyy');
-        const timeDisplay = selectedTimeSlot ? convertTo12HourFormat(selectedTimeSlot.time) : '';
+        const timeDisplay = confirmationTimeSlot ? convertTo12HourFormat(confirmationTimeSlot.time) : '';
         
         return (
           <div className="space-y-6 py-4">
