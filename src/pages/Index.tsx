@@ -7,7 +7,6 @@ import Navigation from "@/components/Navigation";
 import HeroCarousel from "@/components/HeroCarousel";
 import Footer from "@/components/Footer";
 import YourBookings from "@/components/YourBookings";
-import { BookingProvider } from "@/contexts/BookingContext";
 
 const indoorFacilities = [
   {
@@ -265,67 +264,65 @@ const Index = () => {
   };
 
   return (
-    <BookingProvider>
-      <div className="min-h-screen bg-background">
-        <Navigation 
-          isSignedIn={isSignedIn}
-          setIsSignedIn={setIsSignedIn}
-          userData={userData}
-          setUserData={setUserData}
-        />
-        
-        {/* Hero Carousel */}
-        <HeroCarousel />
+    <div className="min-h-screen bg-background">
+      <Navigation 
+        isSignedIn={isSignedIn}
+        setIsSignedIn={setIsSignedIn}
+        userData={userData}
+        setUserData={setUserData}
+      />
+      
+      {/* Hero Carousel */}
+      <HeroCarousel />
 
-        {/* Your Bookings Section - shown when signed in */}
-        <YourBookings isSignedIn={isSignedIn} />
+      {/* Your Bookings Section - shown when signed in */}
+      <YourBookings isSignedIn={isSignedIn} />
 
-        {/* Facility Tabs */}
-        <section className="py-8 px-4">
-          <div className="max-w-6xl mx-auto">
-            <Tabs defaultValue="outdoor" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 max-w-md">
-                <TabsTrigger value="outdoor" className="text-lg font-bold">Outdoor</TabsTrigger>
-                <TabsTrigger value="indoor" className="text-lg font-bold">Indoor</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="outdoor">
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                  {outdoorFacilities.map((facility) => (
-                    <FacilityCard
-                      key={facility.id}
-                      {...facility}
-                      onBook={handleBooking}
-                    />
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="indoor">
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                  {indoorFacilities.map((facility) => (
-                    <FacilityCard
-                      key={facility.id}
-                      {...facility}
-                      onBook={handleBooking}
-                    />
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </section>
+      {/* Facility Tabs */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <Tabs defaultValue="outdoor" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2 max-w-md">
+              <TabsTrigger value="outdoor" className="text-lg font-bold">Outdoor</TabsTrigger>
+              <TabsTrigger value="indoor" className="text-lg font-bold">Indoor</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="outdoor">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+                {outdoorFacilities.map((facility) => (
+                  <FacilityCard
+                    key={facility.id}
+                    {...facility}
+                    onBook={handleBooking}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="indoor">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+                {indoorFacilities.map((facility) => (
+                  <FacilityCard
+                    key={facility.id}
+                    {...facility}
+                    onBook={handleBooking}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </section>
 
-        <BookingModal
-          isOpen={isBookingModalOpen}
-          onClose={() => setIsBookingModalOpen(false)}
-          facility={selectedFacility}
-          isSignedIn={isSignedIn}
-        />
-        
-        <Footer />
-      </div>
-    </BookingProvider>
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        facility={selectedFacility}
+        isSignedIn={isSignedIn}
+      />
+      
+      <Footer />
+    </div>
   );
 };
 
