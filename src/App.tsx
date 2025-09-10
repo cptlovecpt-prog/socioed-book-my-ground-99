@@ -9,6 +9,10 @@ import { useState } from "react";
 import Index from "./pages/Index";
 import MyBookings from "./pages/MyBookings";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageFacilities from "./pages/admin/ManageFacilities";
+import ManageBookings from "./pages/admin/ManageBookings";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +49,31 @@ const App = () => {
                       userData={userData}
                       setUserData={setUserData}
                     />
+                  } 
+                />
+                {/* Admin Routes */}
+                <Route 
+                  path="/admin" 
+                  element={
+                    <AdminLayout>
+                      <AdminDashboard />
+                    </AdminLayout>
+                  } 
+                />
+                <Route 
+                  path="/admin/facilities" 
+                  element={
+                    <AdminLayout>
+                      <ManageFacilities />
+                    </AdminLayout>
+                  } 
+                />
+                <Route 
+                  path="/admin/bookings" 
+                  element={
+                    <AdminLayout>
+                      <ManageBookings />
+                    </AdminLayout>
                   } 
                 />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
