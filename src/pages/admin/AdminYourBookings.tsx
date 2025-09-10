@@ -8,64 +8,8 @@ import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
 import { useToast } from "@/hooks/use-toast";
-import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
-import { isWithinOneHourOfEvent, isQRCodeAvailable } from "@/utils/timeUtils";
-
-// Utility function to check if cancellation is allowed (more than 1 hour before event)
-const isCancellationAllowed = (date: string, time: string): boolean => {
-  try {
-    const now = new Date();
-    let bookingDate: Date;
-    
-    // Parse the date
-    if (date === "Today") {
-      bookingDate = new Date();
-    } else if (date === "Tomorrow") {
-      bookingDate = addDays(new Date(), 1);
-    } else {
-      // Try to parse date formats like "Dec 12" or "Dec 12, 2024"
-      const currentYear = new Date().getFullYear();
-      const dateWithYear = date.includes(',') ? date : `${date}, ${currentYear}`;
-      bookingDate = parse(dateWithYear, 'MMM dd, yyyy', new Date());
-    }
-    
-    // Parse the start time (we only care about start time for cancellation)
-    const startTime = time.split(' - ')[0];
-    const [hours, minutes] = startTime.split(':').map(Number);
-    
-    // Set the booking time
-    bookingDate.setHours(hours, minutes, 0, 0);
-    
-    // Check if current time is more than 1 hour before booking time
-    const oneHourBeforeBooking = addHours(bookingDate, -1);
-    
-    return isBefore(now, oneHourBeforeBooking);
-  } catch (error) {
-    console.error('Error parsing booking time:', error);
-    // If parsing fails, allow cancellation to be safe
-    return true;
-  }
-};
-
-// Utility function to convert 24-hour time to AM/PM format
-const convertTo12HourFormat = (timeRange: string) => {
-  // Check if time already has AM/PM format
-  if (timeRange.includes('AM') || timeRange.includes('PM')) {
-    return timeRange; // Already formatted, return as is
-  }
-  
-  const [startTime, endTime] = timeRange.split(' - ');
-  
-  const convertTime = (time: string) => {
-    const [hours, minutes] = time.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
-  
-  return `${convertTime(startTime)} - ${convertTime(endTime)}`;
-};
+import { isQRCodeAvailable } from "@/utils/timeUtils";
+import { isCancellationAllowed, convertTo12HourFormat } from "@/utils/bookingUtils";
 
 export default function AdminYourBookings() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
