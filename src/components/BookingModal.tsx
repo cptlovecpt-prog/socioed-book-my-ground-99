@@ -705,7 +705,12 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                     value={participant.enrollmentId}
                     onChange={(e) => handleEnrollmentIdChange(index, e.target.value)}
                     placeholder="Enter enrollment ID"
-                    className="mt-1 focus:outline-none focus:ring-0 border-input"
+                    className="mt-1 w-full max-w-full focus:outline-none focus:ring-0 focus:border-input border-input shadow-none focus:shadow-none"
+                    style={{ 
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                      maxWidth: '100%'
+                    }}
                   />
                 </div>
               ))}
