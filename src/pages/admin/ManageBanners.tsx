@@ -294,7 +294,7 @@ export default function ManageBanners() {
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Maximum image size allowed is 50kb in .jpeg, .jpg or .png format only. Recommended size: 1200x400px
+                Maximum image size allowed is 100kb in .jpeg, .jpg or .png format only. Recommended size: 1200x400px
               </p>
             </div>
 
@@ -363,7 +363,7 @@ export default function ManageBanners() {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                Maximum image size allowed is 50kb in .jpeg, .jpg or .png format only. Recommended size: 1200x400px
+                Maximum image size allowed is 100kb in .jpeg, .jpg or .png format only. Recommended size: 1200x400px
               </p>
             </div>
 
