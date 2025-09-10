@@ -19,6 +19,7 @@ interface TimeSlot {
   available: number;
   capacity: number;
   isExpired?: boolean;
+  unavailableReason?: 'expired' | 'booked' | 'blocked' | 'maintenance';
 }
 
 interface ParticipantData {
@@ -100,17 +101,26 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
     // Create different slot states based on seeded random for consistency
     const random = seededRandom(dateSeed + id);
     let available: number;
+    let unavailableReason: 'expired' | 'booked' | 'blocked' | 'maintenance' | undefined;
     
     // If slot is expired, set available to 0
     if (isExpired) {
       available = 0;
+      unavailableReason = 'expired';
     } else if (random < 0.3) {
       available = facilityCapacity; // Fully available
-    } else if (random < 0.8) {
+    } else if (random < 0.6) {
       // Partially available - generate X where X < facilityCapacity
       available = Math.floor(seededRandom(dateSeed + id + 1000) * (facilityCapacity - 1)) + 1;
+    } else if (random < 0.8) {
+      available = 0; // Slot unavailable - booked
+      unavailableReason = 'booked';
+    } else if (random < 0.9) {
+      available = 0; // Blocked by admin
+      unavailableReason = 'blocked';
     } else {
-      available = 0; // Slot unavailable
+      available = 0; // Down for maintenance
+      unavailableReason = 'maintenance';
     }
     
     slots.push({
@@ -118,7 +128,8 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
       capacity: facilityCapacity,
-      isExpired: isExpired
+      isExpired: isExpired,
+      unavailableReason: unavailableReason
     });
     id++;
   }
@@ -139,17 +150,26 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
     // Create different slot states based on seeded random for consistency
     const random = seededRandom(dateSeed + id);
     let available: number;
+    let unavailableReason: 'expired' | 'booked' | 'blocked' | 'maintenance' | undefined;
     
     // If slot is expired, set available to 0
     if (isExpired) {
       available = 0;
+      unavailableReason = 'expired';
     } else if (random < 0.3) {
       available = facilityCapacity; // Fully available
-    } else if (random < 0.8) {
+    } else if (random < 0.6) {
       // Partially available - generate X where X < facilityCapacity
       available = Math.floor(seededRandom(dateSeed + id + 1000) * (facilityCapacity - 1)) + 1;
+    } else if (random < 0.8) {
+      available = 0; // Slot unavailable - booked
+      unavailableReason = 'booked';
+    } else if (random < 0.9) {
+      available = 0; // Blocked by admin
+      unavailableReason = 'blocked';
     } else {
-      available = 0; // Slot unavailable
+      available = 0; // Down for maintenance
+      unavailableReason = 'maintenance';
     }
     
     slots.push({
@@ -157,7 +177,8 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
       capacity: facilityCapacity,
-      isExpired: isExpired
+      isExpired: isExpired,
+      unavailableReason: unavailableReason
     });
     id++;
   }
@@ -595,40 +616,66 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                            <span className="font-medium">{slot.time}</span>
                          </div>
                          <div className="flex items-center gap-2">
-                           {slot.isExpired || slot.available === 0 ? (
-                             <Badge 
-                               className="text-white font-bold relative"
-                               style={{ 
-                                 backgroundColor: '#ef4444', 
-                                 borderColor: '#ef4444',
-                                 zIndex: 50 
-                               }}
-                             >
-                               Slot Unavailable
-                             </Badge>
-                           ) : slot.available === slot.capacity ? (
-                             <Badge 
-                               className="text-white font-bold relative"
-                               style={{ 
-                                 backgroundColor: '#10b981', 
-                                 borderColor: '#10b981',
-                                 zIndex: 50 
-                               }}
-                             >
-                               Fully Available
-                             </Badge>
-                           ) : (
-                             <Badge 
-                               className="text-white font-bold relative"
-                               style={{ 
-                                 backgroundColor: '#8b5cf6', 
-                                 borderColor: '#8b5cf6',
-                                 zIndex: 50 
-                               }}
-                             >
-                               {slot.available}/{slot.capacity} Spots Available
-                             </Badge>
-                           )}
+                            {slot.isExpired || slot.available === 0 ? (
+                              slot.unavailableReason === 'blocked' ? (
+                                <Badge 
+                                  className="font-bold relative"
+                                  style={{ 
+                                    backgroundColor: '#d8d4d4', 
+                                    borderColor: '#d8d4d4',
+                                    color: '#000000',
+                                    zIndex: 50 
+                                  }}
+                                >
+                                  Blocked by Admin
+                                </Badge>
+                              ) : slot.unavailableReason === 'maintenance' ? (
+                                <Badge 
+                                  className="font-bold relative"
+                                  style={{ 
+                                    backgroundColor: '#9c7464', 
+                                    borderColor: '#9c7464',
+                                    color: '#663c2e',
+                                    zIndex: 50 
+                                  }}
+                                >
+                                  Down for Maintenance
+                                </Badge>
+                              ) : (
+                                <Badge 
+                                  className="text-white font-bold relative"
+                                  style={{ 
+                                    backgroundColor: '#ef4444', 
+                                    borderColor: '#ef4444',
+                                    zIndex: 50 
+                                  }}
+                                >
+                                  No Spots Available
+                                </Badge>
+                              )
+                            ) : slot.available === slot.capacity ? (
+                              <Badge 
+                                className="text-white font-bold relative"
+                                style={{ 
+                                  backgroundColor: '#10b981', 
+                                  borderColor: '#10b981',
+                                  zIndex: 50 
+                                }}
+                              >
+                                {slot.available}/{slot.capacity} Available
+                              </Badge>
+                            ) : (
+                              <Badge 
+                                className="text-white font-bold relative"
+                                style={{ 
+                                  backgroundColor: '#8b5cf6', 
+                                  borderColor: '#8b5cf6',
+                                  zIndex: 50 
+                                }}
+                              >
+                                {slot.available}/{slot.capacity} Spots Available
+                              </Badge>
+                            )}
                          </div>
                        </div>
                      </div>
