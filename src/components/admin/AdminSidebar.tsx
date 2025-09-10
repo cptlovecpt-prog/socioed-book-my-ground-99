@@ -5,6 +5,7 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  Image,
 } from "lucide-react";
 
 import {
@@ -22,6 +23,7 @@ import {
 
 const items = [
   { title: "Dashboard", url: "/admin", icon: Home },
+  { title: "Manage Banners", url: "/admin/banners", icon: Image },
   { title: "Manage Facilities", url: "/admin/facilities", icon: Building2 },
   { title: "Manage Bookings", url: "/admin/bookings", icon: Calendar },
 ];

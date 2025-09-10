@@ -12,6 +12,7 @@ import MyBookings from "./pages/MyBookings";
 import NotFound from "./pages/NotFound";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageBanners from "./pages/admin/ManageBanners";
 import ManageFacilities from "./pages/admin/ManageFacilities";
 import ManageBookings from "./pages/admin/ManageBookings";
 
@@ -65,6 +66,14 @@ const App = () => {
                   element={
                     <AdminLayout>
                       <AdminDashboard />
+                    </AdminLayout>
+                  } 
+                />
+                <Route 
+                  path="/admin/banners" 
+                  element={
+                    <AdminLayout>
+                      <ManageBanners />
                     </AdminLayout>
                   } 
                 />
