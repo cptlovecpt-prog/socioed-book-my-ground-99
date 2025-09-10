@@ -16,11 +16,9 @@ export default function ManageFacilities() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isConfirmChangesDialogOpen, setIsConfirmChangesDialogOpen] = useState(false);
   const [isConfirmAddDialogOpen, setIsConfirmAddDialogOpen] = useState(false);
-  const [isMaintenanceCommentDialogOpen, setIsMaintenanceCommentDialogOpen] = useState(false);
   const [isCancelConfirmDialogOpen, setIsCancelConfirmDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<any>(null);
   const [deletingFacility, setDeletingFacility] = useState<any>(null);
-  const [tempMaintenanceComment, setTempMaintenanceComment] = useState("");
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -337,26 +335,14 @@ export default function ManageFacilities() {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    if (field === 'tag' && value === 'Schedule for Maintenance') {
-      setTempMaintenanceComment("");
-      setIsMaintenanceCommentDialogOpen(true);
-      return;
+    if (field === 'tag' && value !== 'Schedule for Maintenance') {
+      // Clear maintenance comment when changing away from maintenance
+      setFormData(prev => ({ ...prev, [field]: value, maintenanceComment: "" }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
     }
-    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleMaintenanceCommentConfirm = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      tag: 'Schedule for Maintenance',
-      maintenanceComment: tempMaintenanceComment
-    }));
-    setIsMaintenanceCommentDialogOpen(false);
-  };
-
-  const handleMaintenanceCommentCancel = () => {
-    setIsMaintenanceCommentDialogOpen(false);
-  };
 
   const handleConfirmChanges = () => {
     // Check if all required fields are filled
@@ -765,7 +751,7 @@ export default function ManageFacilities() {
               </div>
             </div>
 
-            {/* 4th Row: Tag and Maintenance Comment */}
+            {/* 4th Row: Tag */}
             <div className="space-y-2">
               <Label htmlFor="tag">Tag</Label>
               <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
@@ -777,15 +763,25 @@ export default function ManageFacilities() {
                   <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
                 </SelectContent>
               </Select>
-              {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
-                <div 
-                  className="text-xs text-muted-foreground mt-1 w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-help" 
-                  title={formData.maintenanceComment}
-                >
-                  Comment: {formData.maintenanceComment}
-                </div>
-              )}
             </div>
+
+            {/* Maintenance Comment - appears when Schedule for Maintenance is selected */}
+            {formData.tag === 'Schedule for Maintenance' && (
+              <div className="space-y-2">
+                <Label htmlFor="maintenanceComment">Comment</Label>
+                <textarea
+                  id="maintenanceComment"
+                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                  value={formData.maintenanceComment}
+                  onChange={(e) => handleInputChange('maintenanceComment', e.target.value)}
+                  placeholder="Enter maintenance comment"
+                  maxLength={100}
+                />
+                <div className="text-xs text-muted-foreground text-right">
+                  {formData.maintenanceComment.length}/100 characters
+                </div>
+              </div>
+            )}
           </div>
 
           <DialogFooter className="mt-6">
@@ -907,7 +903,7 @@ export default function ManageFacilities() {
               </div>
             </div>
 
-            {/* 4th Row: Tag and Maintenance Comment */}
+            {/* 4th Row: Tag */}
             <div className="space-y-2">
               <Label htmlFor="tag">Tag <span className="text-red-500">*</span></Label>
               <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
@@ -919,15 +915,25 @@ export default function ManageFacilities() {
                   <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
                 </SelectContent>
               </Select>
-              {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
-                <div 
-                  className="text-xs text-muted-foreground mt-1 w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-help" 
-                  title={formData.maintenanceComment}
-                >
-                  Comment: {formData.maintenanceComment}
-                </div>
-              )}
             </div>
+
+            {/* Maintenance Comment - appears when Schedule for Maintenance is selected */}
+            {formData.tag === 'Schedule for Maintenance' && (
+              <div className="space-y-2">
+                <Label htmlFor="maintenanceComment">Comment</Label>
+                <textarea
+                  id="maintenanceComment"
+                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                  value={formData.maintenanceComment}
+                  onChange={(e) => handleInputChange('maintenanceComment', e.target.value)}
+                  placeholder="Enter maintenance comment"
+                  maxLength={100}
+                />
+                <div className="text-xs text-muted-foreground text-right">
+                  {formData.maintenanceComment.length}/100 characters
+                </div>
+              </div>
+            )}
           </div>
 
           <DialogFooter className="mt-6">
@@ -1028,39 +1034,6 @@ export default function ManageFacilities() {
         </DialogContent>
       </Dialog>
 
-      {/* Maintenance Comment Dialog */}
-      <Dialog open={isMaintenanceCommentDialogOpen} onOpenChange={handleMaintenanceCommentCancel}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>Schedule for Maintenance</DialogTitle>
-            <DialogDescription>
-              Please enter a comment for scheduling this facility for maintenance.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="maintenance-comment">Comment</Label>
-              <Input
-                id="maintenance-comment"
-                value={tempMaintenanceComment}
-                onChange={(e) => setTempMaintenanceComment(e.target.value)}
-                placeholder="Enter maintenance comment"
-                maxLength={100}
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={handleMaintenanceCommentCancel}>
-              Cancel
-            </Button>
-            <Button onClick={handleMaintenanceCommentConfirm}>
-              Confirm
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
