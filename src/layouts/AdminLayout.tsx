@@ -38,6 +38,31 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     setIsSignInModalOpen(false);
   };
 
+  // Redirect if not signed in or not admin
+  if (!isSignedIn || !user?.isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold">Access Restricted</h1>
+          <p className="text-muted-foreground">
+            {!isSignedIn ? "Please sign in to access the admin panel." : "Admin access required."}
+          </p>
+          {!isSignedIn && (
+            <Button onClick={() => setIsSignInModalOpen(true)}>
+              Sign In as Admin
+            </Button>
+          )}
+        </div>
+        
+        <SignInModal
+          isOpen={isSignInModalOpen}
+          onClose={() => setIsSignInModalOpen(false)}
+          onSignIn={handleSignIn}
+        />
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
