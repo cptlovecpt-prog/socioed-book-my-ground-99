@@ -766,14 +766,14 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                   />
                   <div className="absolute inset-0 bg-black/90 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
                     <div className="text-sm font-medium">QR Code will be available</div>
-                    <div className="text-sm">1 hr before till 20 mins after event starts</div>
+                    <div className="text-sm">from 1 hr before till 20 mins after event starts</div>
                   </div>
                 </div>
               )}
             </div>
             
             <div className="text-center space-y-2">
-              <h3 className="font-medium">{facility.name}</h3>
+              <h3 className="font-medium">{facility.name} • {facility.location}</h3>
               <p className="text-sm text-muted-foreground">{finalDateDisplay} • {finalTimeDisplay}</p>
               <p className="text-sm text-muted-foreground">{participantCount} participant{participantCount > 1 ? 's' : ''} • {getSizeForSport(facility.sport)} sq mtrs.</p>
             </div>
