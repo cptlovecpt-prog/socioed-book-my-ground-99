@@ -115,6 +115,19 @@ const indoorFacilities = [
   },
   {
     id: "8",
+    name: "Chess Room",
+    sport: "Chess",
+    capacity: 10,
+    available: 6,
+    location: "C12 Block",
+    nextSlot: "16:00 - 18:00",
+    image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png",
+    status: 'available' as const,
+    rating: 4.1,
+    votes: 2048
+  },
+  {
+    id: "9",
     name: "Table Tennis",
     sport: "Table Tennis",
     capacity: 48,
