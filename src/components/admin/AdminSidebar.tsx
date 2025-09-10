@@ -70,7 +70,7 @@ export function AdminSidebar() {
                       to={item.url} 
                       className={getNavClassName(isActive(item.url))}
                     >
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white hover:outline hover:outline-1 hover:outline-black' : ''} transition-colors duration-200`} />
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white hover:outline hover:outline-1 hover:outline-black' : 'hover:text-[#941bac]'} transition-colors duration-200`} />
                       {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
