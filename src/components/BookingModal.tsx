@@ -795,31 +795,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 <span className="text-red-800">QR Code is only valid from 10 mins before the booked slot to 20 mins after slot starts</span>
               </div>
             </div>
-            
-            <div className="space-y-3">
-              <Button
-                onClick={handleShareWhatsApp}
-                className="w-full flex items-center gap-2 h-12 bg-green-600 hover:bg-green-700"
-                disabled={!isConfirmationQRAvailable}
-              >
-                <MessageCircle className="h-5 w-5" />
-                Share on WhatsApp
-              </Button>
-              
-              <Button
-                onClick={handleShareEmail}
-                variant="outline"
-                className="w-full flex items-center gap-2 h-12"
-                disabled={!isConfirmationQRAvailable}
-              >
-                <Mail className="h-5 w-5" />
-                Share on Mail
-              </Button>
-            </div>
-            
-            <Button onClick={resetModal} className="w-full">
-              Done
-            </Button>
           </div>
         );
 
@@ -833,9 +808,11 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       <Dialog open={isOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="w-[640px] h-[700px] max-w-none max-h-none flex flex-col">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              Book Your Ground - {facility.name} ({facility.location})
-            </DialogTitle>
+            {currentStep !== 'final-confirmation' && (
+              <DialogTitle className="flex items-center gap-2">
+                Book Your Ground - {facility.name} ({facility.location})
+              </DialogTitle>
+            )}
           </DialogHeader>
           
           <div className="flex-1 overflow-y-auto px-1">
