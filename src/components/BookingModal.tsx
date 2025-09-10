@@ -576,7 +576,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         const availableSpots = selectedTimeSlot?.available || 0;
         
         return (
-          <div className="space-y-6">
+          <div className="flex flex-col h-full space-y-6">
             <div>
               <h3 className="font-medium mb-3">Select Number of Participants</h3>
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
@@ -596,7 +596,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               )}
             </div>
             
-            <div className="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto">
+            <div className="flex-1 grid grid-cols-6 gap-2">
               {Array.from({ length: totalSpots }, (_, i) => i + 1).map((count) => {
                 const isAvailable = count <= availableSpots;
                 const isSelected = participantCount === count;
@@ -618,14 +618,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
             <p className="text-sm text-muted-foreground text-center">
               Maximum {totalSpots} participants allowed for {facility.sport}
             </p>
-            
-            <Button 
-              onClick={() => setCurrentStep('participant-details')} 
-              className="w-full"
-              disabled={!selectedSlot || participantCount < 1}
-            >
-              Continue
-            </Button>
           </div>
         );
         return (
