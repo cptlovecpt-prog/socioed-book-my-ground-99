@@ -512,10 +512,6 @@ export default function ManageFacilities() {
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Sport:</span>
-                  <span>{facility.sport}</span>
-                </div>
-                <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Type:</span>
                   <span className="capitalize">{facility.type}</span>
                 </div>
