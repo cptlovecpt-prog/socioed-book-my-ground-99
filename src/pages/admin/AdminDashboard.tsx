@@ -521,8 +521,11 @@ export default function AdminDashboard() {
               <div>
                 <CardTitle>Recent Bookings</CardTitle>
                 <CardDescription>
-                  {getPeriodDescription()} • Showing {startIndex + 1}-{Math.min(endIndex, allRecentBookings.length)} of {allRecentBookings.length}
+                  {getPeriodDescription()}
                 </CardDescription>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Showing {startIndex + 1}-{Math.min(endIndex, allRecentBookings.length)} of {allRecentBookings.length}
+                </div>
               </div>
               <Button
                 variant="outline"
