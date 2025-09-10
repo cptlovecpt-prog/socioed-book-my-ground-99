@@ -96,7 +96,7 @@ const HeroCarousel = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
                 <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-                  <div className="max-w-4xl px-4 space-y-2 sm:space-y-4 flex flex-col justify-center h-full">
+                  <div className="max-w-4xl px-4 space-y-2 sm:space-y-4">
                     <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight">
                       {slide.title}
                     </h1>
