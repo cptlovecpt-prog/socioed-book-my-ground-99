@@ -88,16 +88,16 @@ const HeroCarousel = () => {
         <CarouselContent className="h-full">
           {heroImages.map((slide) => (
             <CarouselItem key={slide.id} className="h-full">
-              <div className="relative h-full">
+               <div className="relative h-full">
                 <img
                   src={slide.image}
                   alt={slide.title}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white w-full">
-                  <div className="max-w-4xl mx-auto px-4 space-y-2 sm:space-y-4">
-                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight">
+                <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-4">
+                  <div className="w-full max-w-4xl">
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2 sm:mb-4">
                       {slide.title}
                     </h1>
                     <p className="text-sm sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
