@@ -7,15 +7,10 @@ import { useNavigate } from "react-router-dom";
 import SignInModal from "./SignInModal";
 import HelpSupportModal from "./HelpSupportModal";
 import { LOGO_IMAGE } from "@/constants/images";
+import { useAuth } from "@/contexts/AuthContext";
 
-interface NavigationProps {
-  isSignedIn: boolean;
-  setIsSignedIn: (value: boolean) => void;
-  userData: { name: string; email: string; isAdmin?: boolean } | null;
-  setUserData: (data: { name: string; email: string; isAdmin?: boolean } | null) => void;
-}
-
-const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: NavigationProps) => {
+const Navigation = () => {
+  const { user, isSignedIn, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isHelpSupportModalOpen, setIsHelpSupportModalOpen] = useState(false);
@@ -26,13 +21,12 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
   };
 
   const handleSignIn = (data: { name: string; email: string; isAdmin: boolean }) => {
-    setUserData(data);
-    setIsSignedIn(true);
+    // Sign-in is handled by the AuthContext in SignInModal
+    setIsSignInModalOpen(false);
   };
 
   const handleSignOut = () => {
-    setIsSignedIn(false);
-    setUserData(null);
+    signOut();
     // Navigate to home page if on My Bookings page, otherwise reload
     if (window.location.pathname === '/my-bookings') {
       navigate('/');
@@ -86,8 +80,8 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
                     className="flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base"
                   >
                     <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">{userData?.name}</span>
-                    <span className="sm:hidden">{userData?.name?.split(' ')[0]}</span>
+                    <span className="hidden sm:inline">{user?.name}</span>
+                    <span className="sm:hidden">{user?.name?.split(' ')[0]}</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>

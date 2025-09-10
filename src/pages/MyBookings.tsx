@@ -11,6 +11,7 @@ import { QRCodeDialog } from "@/components/QRCodeDialog";
 import { useToast } from "@/hooks/use-toast";
 import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
 import { isWithinOneHourOfEvent, isQRCodeAvailable } from "@/utils/timeUtils";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Utility function to check if cancellation is allowed (more than 1 hour before event)
 const isCancellationAllowed = (date: string, time: string): boolean => {
@@ -68,14 +69,9 @@ const convertTo12HourFormat = (timeRange: string) => {
   return `${convertTime(startTime)} - ${convertTime(endTime)}`;
 };
 
-interface MyBookingsProps {
-  isSignedIn: boolean;
-  setIsSignedIn: (value: boolean) => void;
-  userData: { name: string; email: string; isAdmin?: boolean } | null;
-  setUserData: (data: { name: string; email: string; isAdmin?: boolean } | null) => void;
-}
 
-const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBookingsProps) => {
+const MyBookings = () => {
+  const { user, isSignedIn } = useAuth();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
@@ -129,12 +125,7 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation 
-        isSignedIn={isSignedIn}
-        setIsSignedIn={setIsSignedIn}
-        userData={userData}
-        setUserData={setUserData}
-      />
+      <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">

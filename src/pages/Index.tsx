@@ -14,13 +14,8 @@ import Footer from "@/components/Footer";
 import YourBookings from "@/components/YourBookings";
 import { useToast } from "@/hooks/use-toast";
 import { SPORT_IMAGES } from "@/constants/images";
+import { useAuth } from "@/contexts/AuthContext";
 
-interface IndexProps {
-  isSignedIn: boolean;
-  setIsSignedIn: (value: boolean) => void;
-  userData: { name: string; email: string; isAdmin?: boolean } | null;
-  setUserData: (data: { name: string; email: string; isAdmin?: boolean } | null) => void;
-}
 
 const indoorFacilities = [
   {
@@ -275,7 +270,8 @@ const outdoorFacilities = [
   }
 ];
 
-const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps) => {
+const Index = () => {
+  const { user, isSignedIn } = useAuth();
   const [selectedFacility, setSelectedFacility] = useState<(typeof indoorFacilities[0]) | (typeof outdoorFacilities[0]) | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
@@ -347,12 +343,7 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation 
-        isSignedIn={isSignedIn}
-        setIsSignedIn={setIsSignedIn}
-        userData={userData}
-        setUserData={setUserData}
-      />
+      <Navigation />
       
       {/* Hero Carousel */}
       <HeroCarousel />
