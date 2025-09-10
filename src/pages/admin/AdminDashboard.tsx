@@ -16,9 +16,9 @@ export default function AdminDashboard() {
       icon: Users,
     },
     {
-      title: "Total Facilities",
-      value: "24",
-      description: "2 new this month",
+      title: "Facility Utilization Rate",
+      value: "65%",
+      description: "Increased 20% from last month",
       icon: Building2,
     },
     {
