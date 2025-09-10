@@ -5,12 +5,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, MapPin, Camera } from "lucide-react";
+import { Plus, Edit, Trash2, MapPin, Camera, AlertTriangle } from "lucide-react";
 import { useState, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ManageFacilities() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<any>(null);
+  const [deletingFacility, setDeletingFacility] = useState<any>(null);
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -100,6 +104,28 @@ export default function ManageFacilities() {
     setEditingFacility(null);
   };
 
+  const handleDeleteClick = (facility: any) => {
+    setDeletingFacility(facility);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    console.log("Deleting facility:", deletingFacility.id);
+    // Here you would typically delete the facility from your backend/state
+    toast({
+      title: "Facility Deleted",
+      description: `${deletingFacility.name} has been permanently deleted.`,
+      variant: "destructive",
+    });
+    setIsDeleteDialogOpen(false);
+    setDeletingFacility(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
+    setDeletingFacility(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -138,7 +164,7 @@ export default function ManageFacilities() {
                   <Button variant="ghost" size="sm" onClick={() => handleEditClick(facility)}>
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(facility)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -299,6 +325,31 @@ export default function ManageFacilities() {
             </Button>
             <Button onClick={handleConfirmChanges}>
               Confirm Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={handleDeleteCancel}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              Delete Facility
+            </DialogTitle>
+            <DialogDescription>
+              This action will permanently delete <strong>{deletingFacility?.name}</strong>. 
+              This cannot be undone. Are you sure you want to continue?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={handleDeleteCancel}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Delete Permanently
             </Button>
           </DialogFooter>
         </DialogContent>
