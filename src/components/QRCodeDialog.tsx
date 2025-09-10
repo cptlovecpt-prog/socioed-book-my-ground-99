@@ -144,21 +144,21 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
       {isFullScreenOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center cursor-pointer"
-          style={{ zIndex: 100000 }}
+          style={{ zIndex: 999999 }}
           onClick={() => setIsFullScreenOpen(false)}
         >
           <div className="relative" onClick={(e) => e.stopPropagation()}>
-            <Button
+            <button
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 setIsFullScreenOpen(false);
               }}
-              variant="outline"
-              size="icon"
-              className="absolute -top-12 -right-2 bg-white hover:bg-gray-100 z-10"
+              className="absolute -top-6 -right-6 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-110 border-2 border-gray-200 z-50"
+              style={{ zIndex: 1000000 }}
             >
-              <X className="h-4 w-4" />
-            </Button>
+              <X className="h-6 w-6 text-gray-700" />
+            </button>
             <div className="p-8 bg-white rounded-lg">
               <img 
                 src={qrCodeUrl} 

@@ -868,26 +868,28 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       {isQrFullscreen && qrCodeUrl && (
         <div 
           className="fixed inset-0 bg-black/80 flex items-center justify-center cursor-pointer"
-          style={{ zIndex: 99999 }}
+          style={{ zIndex: 999999 }}
           onClick={() => setIsQrFullscreen(false)}
         >
           <div className="relative max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsQrFullscreen(false);
+              }}
+              className="absolute -top-6 -right-6 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-110 border-2 border-gray-200 z-50"
+              style={{ zIndex: 1000000 }}
+            >
+              <X className="h-6 w-6 text-gray-700" />
+            </button>
             <div className="bg-white p-8 rounded-2xl shadow-2xl">
               <img 
                 src={qrCodeUrl} 
                 alt="QR Code - Full Screen" 
-                className="w-full h-auto"
+                className="w-full h-auto max-w-sm"
               />
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsQrFullscreen(false);
-              }}
-              className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow z-10"
-            >
-              <X className="h-5 w-5 text-gray-600" />
-            </button>
           </div>
         </div>
       )}
