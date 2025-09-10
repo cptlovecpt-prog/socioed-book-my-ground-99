@@ -17,6 +17,7 @@ export default function ManageFacilities() {
   const [isConfirmChangesDialogOpen, setIsConfirmChangesDialogOpen] = useState(false);
   const [isConfirmAddDialogOpen, setIsConfirmAddDialogOpen] = useState(false);
   const [isMaintenanceCommentDialogOpen, setIsMaintenanceCommentDialogOpen] = useState(false);
+  const [isCancelConfirmDialogOpen, setIsCancelConfirmDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<any>(null);
   const [deletingFacility, setDeletingFacility] = useState<any>(null);
   const [tempMaintenanceComment, setTempMaintenanceComment] = useState("");
@@ -358,6 +359,29 @@ export default function ManageFacilities() {
   };
 
   const handleConfirmChanges = () => {
+    // Check if all required fields are filled
+    const requiredFields = [
+      { key: 'name', label: 'Facility Name' },
+      { key: 'location', label: 'Location' },
+      { key: 'sport', label: 'Sport' },
+      { key: 'size', label: 'Size' },
+      { key: 'capacity', label: 'Capacity' },
+      { key: 'image', label: 'Facility Image' },
+      { key: 'type', label: 'Facility Type' },
+      { key: 'tag', label: 'Tag' }
+    ];
+    
+    const emptyFields = requiredFields.filter(field => !formData[field.key as keyof typeof formData]);
+    
+    if (emptyFields.length > 0) {
+      toast({
+        title: "Missing Required Fields",
+        description: `Please fill in all required fields: ${emptyFields.map(f => f.label).join(', ')}.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Check if there are any changes
     const hasChanges = 
       formData.name !== editingFacility.name ||
@@ -474,8 +498,35 @@ export default function ManageFacilities() {
   };
 
   const handleModalClose = () => {
+    // Check if there are any changes before closing
+    const hasChanges = editingFacility && (
+      formData.name !== editingFacility.name ||
+      formData.location !== editingFacility.location ||
+      formData.sport !== editingFacility.sport ||
+      formData.size !== editingFacility.size ||
+      formData.capacity !== editingFacility.capacity ||
+      formData.image !== editingFacility.image ||
+      formData.type !== (editingFacility.type || "indoor") ||
+      formData.tag !== (editingFacility.tag || "Active") ||
+      formData.maintenanceComment !== (editingFacility.maintenanceComment || "")
+    );
+
+    if (hasChanges) {
+      setIsCancelConfirmDialogOpen(true);
+    } else {
+      setIsEditModalOpen(false);
+      setEditingFacility(null);
+    }
+  };
+
+  const handleCancelConfirm = () => {
+    setIsCancelConfirmDialogOpen(false);
     setIsEditModalOpen(false);
     setEditingFacility(null);
+  };
+
+  const handleCancelCancel = () => {
+    setIsCancelConfirmDialogOpen(false);
   };
 
   const handleDeleteClick = (facility: any) => {
@@ -737,7 +788,7 @@ export default function ManageFacilities() {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <Button variant="outline" onClick={handleModalClose}>
               Cancel
             </Button>
@@ -879,7 +930,7 @@ export default function ManageFacilities() {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <Button variant="outline" onClick={handleAddModalClose}>
               Cancel
             </Button>
@@ -956,6 +1007,27 @@ export default function ManageFacilities() {
         </DialogContent>
       </Dialog>
 
+      {/* Cancel Confirmation Dialog */}
+      <Dialog open={isCancelConfirmDialogOpen} onOpenChange={handleCancelCancel}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Unsaved Changes</DialogTitle>
+            <DialogDescription>
+              You have unsaved changes. Are you sure you want to cancel without saving?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelCancel}>
+              Stay
+            </Button>
+            <Button variant="destructive" onClick={handleCancelConfirm}>
+              Discard Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Maintenance Comment Dialog */}
       <Dialog open={isMaintenanceCommentDialogOpen} onOpenChange={handleMaintenanceCommentCancel}>
         <DialogContent className="sm:max-w-[400px]">
@@ -974,6 +1046,7 @@ export default function ManageFacilities() {
                 value={tempMaintenanceComment}
                 onChange={(e) => setTempMaintenanceComment(e.target.value)}
                 placeholder="Enter maintenance comment"
+                maxLength={100}
               />
             </div>
           </div>
