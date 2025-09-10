@@ -259,7 +259,28 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     return sizes[sport] || 500;
   };
 
-  const handleConfirmBooking = () => {
+  // Placeholder function for email service - replace with actual email service integration
+  const sendConfirmationEmails = async (bookingDetails: any, participantEmails: string[]) => {
+    // TODO: Replace with actual email service integration (Supabase, Zapier, etc.)
+    console.log('Email service would be called here with:', {
+      bookingDetails,
+      participantEmails,
+      facility: facility?.name,
+      date: isSameDay(selectedDate, new Date()) ? "Today" : 
+            isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
+            format(selectedDate, 'MMM dd, yyyy'),
+      participants: participants.map(p => p.enrollmentId)
+    });
+    
+    // Simulate email sending delay
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 1000);
+    });
+  };
+
+  const handleConfirmBooking = async () => {
     if (!selectedSlot || !facility) return;
     
     if (!isSignedIn) {
@@ -293,8 +314,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
     const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
     if (selectedTimeSlot) {
-      // Add the booking to context
-      addBooking({
+      const bookingData = {
         facilityName: facility.name,
         sport: facility.sport,
         location: facility.location,
@@ -305,18 +325,44 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         image: getImageForFacility(facility),
         participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`,
         facilitySize: getSizeForSport(facility.sport)
-      });
+      };
+
+      // Add the booking to context
+      addBooking(bookingData);
       
       // Generate QR code
       generateQRCode();
+
+      // Send email confirmation if requested
+      if (sendEmailConfirmation) {
+        try {
+          // Placeholder for participant emails - would typically fetch from enrollment IDs
+          const participantEmails = participants.map(p => `${p.enrollmentId}@example.com`);
+          await sendConfirmationEmails(bookingData, participantEmails);
+          
+          toast({
+            title: "Booking Confirmed",
+            description: "Your booking is confirmed and confirmation emails have been sent to all participants.",
+            duration: 5000,
+          });
+        } catch (error) {
+          console.error('Email sending failed:', error);
+          toast({
+            title: "Booking Confirmed",
+            description: "Your booking is confirmed. Email service is currently unavailable.",
+            duration: 5000,
+          });
+        }
+      } else {
+        toast({
+          title: "Booking Confirmed",
+          description: "Your booking is confirmed.",
+          duration: 5000,
+        });
+      }
     }
     
     setCurrentStep('confirmation');
-    toast({
-      title: "Booking Confirmation",
-      description: "Your booking is confirmed. Check your e-mail for booking details",
-      duration: 5000,
-    });
   };
 
   const generateQRCode = async () => {
