@@ -59,7 +59,6 @@ export function AdminSidebar() {
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>BookMyGround Admin</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
                {items.map((item) => (
