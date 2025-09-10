@@ -37,31 +37,70 @@ interface BookingModalProps {
   } | null;
 }
 
-// Sport configuration with max participants based on Excel data
-const sportConfig: { [key: string]: number } = {
-  'Football': 22,
-  'Cricket': 22,
-  'Basketball': 20,
-  'Volleyball': 24,
-  'Tennis': 8,
-  'Badminton': 12,
-  'Squash': 6,
-  'Swimming': 35,
-  'Pickleball': 40,
-  'Gym': 40,
-  'Field Court': 8,
-  'Hockey': 10,
-  'Table Tennis': 48,
-  'Chess': 10,
-  'Padel': 8,
-  'Padel Court': 8,
-  'Basket Court': 12
+// Location and indoor/outdoor specific sport configuration with max participants
+const locationSportConfig: { [key: string]: { [key: string]: { indoor?: number; outdoor?: number } } } = {
+  'K block': {
+    'Football': { outdoor: 22 },
+    'Cricket': { outdoor: 22 },
+    'Basketball': { indoor: 12, outdoor: 20 },
+    'Volleyball': { indoor: 18, outdoor: 24 },
+    'Tennis': { outdoor: 8 },
+    'Badminton': { indoor: 12 },
+    'Squash': { indoor: 6 },
+    'Swimming': { indoor: 35 },
+    'Pickleball': { outdoor: 40 },
+    'Gym': { indoor: 40 },
+    'Table Tennis': { indoor: 48 },
+    'Chess': { indoor: 10 },
+    'Padel': { outdoor: 8 }
+  },
+  'N block': {
+    'Football': { outdoor: 22 },
+    'Cricket': { outdoor: 22 },
+    'Basketball': { indoor: 8, outdoor: 20 },
+    'Volleyball': { indoor: 16, outdoor: 24 },
+    'Tennis': { outdoor: 8 },
+    'Badminton': { indoor: 8 },
+    'Squash': { indoor: 4 },
+    'Swimming': { indoor: 35 },
+    'Hockey': { outdoor: 10 },
+    'Gym': { indoor: 30 },
+    'Table Tennis': { indoor: 24 },
+    'Chess': { indoor: 8 },
+    'Padel Court': { outdoor: 8 }
+  },
+  'Near K block': {
+    'Football': { outdoor: 22 },
+    'Cricket': { outdoor: 22 },
+    'Basketball': { outdoor: 20 },
+    'Volleyball': { outdoor: 24 },
+    'Tennis': { outdoor: 8 },
+    'Swimming': { outdoor: 35 },
+    'Field Court': { outdoor: 8 }
+  }
 };
 
 // Generate 45-minute slots for morning (6:30 AM - 9:30 AM) and evening (5:30 PM - 10:00 PM)
-const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
+const generateTimeSlots = (selectedDate: Date, facility: { sport: string; location: string; id: string } | null): TimeSlot[] => {
   const slots: TimeSlot[] = [];
   let id = 1;
+  
+  // Get the maximum capacity for this specific facility
+  const getMaxCapacity = () => {
+    if (!facility) return 15;
+    
+    const locationConfig = locationSportConfig[facility.location];
+    if (!locationConfig) return 15;
+    
+    const sportConfig = locationConfig[facility.sport];
+    if (!sportConfig) return 15;
+    
+    // Determine if this is indoor or outdoor based on facility id
+    const isIndoor = facility.id.includes('indoor');
+    return isIndoor ? (sportConfig.indoor || 15) : (sportConfig.outdoor || 15);
+  };
+  
+  const maxCapacity = getMaxCapacity();
   
   // Create a seed based on the selected date to ensure consistent availability for each date
   const dateSeed = selectedDate.getFullYear() * 10000 + selectedDate.getMonth() * 100 + selectedDate.getDate();
@@ -87,9 +126,9 @@ const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
     let available: number;
     
     if (random < 0.4) {
-      available = 15; // Fully available
+      available = maxCapacity; // Fully available
     } else if (random < 0.8) {
-      available = Math.floor(seededRandom(dateSeed + id + 1000) * 8) + 3; // Partially available (3-10)
+      available = Math.floor(seededRandom(dateSeed + id + 1000) * (maxCapacity * 0.6)) + Math.floor(maxCapacity * 0.2); // Partially available
     } else {
       available = 0; // Full
     }
@@ -98,7 +137,7 @@ const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
       id: id.toString(),
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
-      capacity: 15
+      capacity: maxCapacity
     });
     id++;
   }
@@ -118,9 +157,9 @@ const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
     let available: number;
     
     if (random < 0.4) {
-      available = 15; // Fully available
+      available = maxCapacity; // Fully available
     } else if (random < 0.8) {
-      available = Math.floor(seededRandom(dateSeed + id + 1000) * 8) + 3; // Partially available (3-10)
+      available = Math.floor(seededRandom(dateSeed + id + 1000) * (maxCapacity * 0.6)) + Math.floor(maxCapacity * 0.2); // Partially available
     } else {
       available = 0; // Full
     }
@@ -129,7 +168,7 @@ const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
       id: id.toString(),
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
-      capacity: 15
+      capacity: maxCapacity
     });
     id++;
   }
@@ -165,8 +204,24 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const { toast } = useToast();
   const { addBooking, bookings } = useBookings();
   
-  const timeSlots = generateTimeSlots(selectedDate);
-  const maxParticipants = facility ? sportConfig[facility.sport] || 10 : 10;
+  const timeSlots = generateTimeSlots(selectedDate, facility);
+  
+  // Get max participants based on location and indoor/outdoor
+  const getMaxParticipants = () => {
+    if (!facility) return 10;
+    
+    const locationConfig = locationSportConfig[facility.location];
+    if (!locationConfig) return 10;
+    
+    const sportConfig = locationConfig[facility.sport];
+    if (!sportConfig) return 10;
+    
+    // Determine if this is indoor or outdoor based on facility id
+    const isIndoor = facility.id.includes('indoor');
+    return isIndoor ? (sportConfig.indoor || 10) : (sportConfig.outdoor || 10);
+  };
+  
+  const maxParticipants = getMaxParticipants();
 
   // Generate dates for the next week initially
   const [dateRange, setDateRange] = useState(() => {
