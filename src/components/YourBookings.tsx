@@ -51,6 +51,11 @@ const isCancellationAllowed = (date: string, time: string): boolean => {
 
 // Utility function to convert 24-hour time to AM/PM format
 const convertTo12HourFormat = (timeRange: string) => {
+  // Check if time already has AM/PM format
+  if (timeRange.includes('AM') || timeRange.includes('PM')) {
+    return timeRange; // Already formatted, return as is
+  }
+  
   const [startTime, endTime] = timeRange.split(' - ');
   
   const convertTime = (time: string) => {
