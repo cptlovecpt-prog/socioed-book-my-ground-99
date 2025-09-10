@@ -80,7 +80,6 @@ export default function AdminDashboard() {
                       by John Doe • Today at 2:00 PM
                     </p>
                   </div>
-                  <div className="ml-auto font-medium">₹500</div>
                 </div>
               ))}
             </div>
