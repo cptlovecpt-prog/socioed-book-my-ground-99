@@ -142,13 +142,20 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
       
       {/* Full Screen QR Code View */}
       {isFullScreenOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
-          <div className="relative">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center cursor-pointer"
+          style={{ zIndex: 100000 }}
+          onClick={() => setIsFullScreenOpen(false)}
+        >
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
             <Button
-              onClick={() => setIsFullScreenOpen(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFullScreenOpen(false);
+              }}
               variant="outline"
               size="icon"
-              className="absolute -top-12 -right-2 bg-white hover:bg-gray-100"
+              className="absolute -top-12 -right-2 bg-white hover:bg-gray-100 z-10"
             >
               <X className="h-4 w-4" />
             </Button>
