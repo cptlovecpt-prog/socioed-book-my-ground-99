@@ -695,35 +695,34 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         
         return (
           <div className="space-y-6">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold mb-4">Confirm Your Booking</h3>
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-left">Your Selection</h3>
             </div>
             
-            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-              <div className="flex justify-center mb-4">
+            <div className="bg-muted/30 rounded-lg p-4 space-y-4">
+              <div className="mb-4">
                 <img 
                   src={getImageForFacility(facility)} 
                   alt={facility.sport}
-                  className="w-24 h-24 rounded-lg object-cover"
+                  className="w-full h-48 rounded-lg object-cover"
                 />
               </div>
               
-              <div className="text-center space-y-2">
+              <div className="space-y-3 text-left">
                 <h4 className="font-semibold text-lg">{facility.name}</h4>
-                <p className="text-muted-foreground">{facility.sport}</p>
-                <p className="text-muted-foreground">{facility.location}</p>
+                <p className="text-muted-foreground">{facility.location} • {getSizeForSport(facility.sport)} sq mtrs.</p>
               </div>
               
               <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+                <div className="text-left">
+                  <div className="flex items-center gap-1 text-muted-foreground mb-1">
                     <Calendar className="h-4 w-4" />
                     <span className="text-sm">Date</span>
                   </div>
                   <p className="font-medium">{confirmDateDisplay}</p>
                 </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+                <div className="text-left">
+                  <div className="flex items-center gap-1 text-muted-foreground mb-1">
                     <Clock className="h-4 w-4" />
                     <span className="text-sm">Time</span>
                   </div>
@@ -731,16 +730,12 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 </div>
               </div>
               
-              <div className="text-center pt-2">
-                <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+              <div className="text-left pt-2">
+                <div className="flex items-center gap-1 text-muted-foreground mb-1">
                   <Users className="h-4 w-4" />
                   <span className="text-sm">Participants</span>
                 </div>
                 <p className="font-medium">1 participant</p>
-              </div>
-              
-              <div className="text-center pt-2">
-                <p className="text-sm text-muted-foreground">Facility Size: {getSizeForSport(facility.sport)} sq mtrs.</p>
               </div>
             </div>
             
