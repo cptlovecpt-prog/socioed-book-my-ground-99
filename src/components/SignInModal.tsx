@@ -32,7 +32,7 @@ const SignInModal = ({ isOpen, onClose, onSignIn }: SignInModalProps) => {
       
       toast({
         title: isAdmin ? "Welcome Admin" : "Welcome to Book My Ground",
-        description: isAdmin ? "Admin access granted." : "You have successfully signed in.",
+        description: isAdmin ? "Create booking or Manage Book Your Ground Portal from here" : "You have successfully signed in.",
       });
       
       onClose();
