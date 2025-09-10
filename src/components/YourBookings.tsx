@@ -2,13 +2,50 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { QrCode, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { QrCode, X, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { useBookings } from "@/contexts/BookingContext";
 import { QRCodeDialog } from "./QRCodeDialog";
+import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
 
 interface YourBookingsProps {
   isSignedIn: boolean;
 }
+
+// Utility function to check if cancellation is allowed (more than 1 hour before event)
+const isCancellationAllowed = (date: string, time: string): boolean => {
+  try {
+    const now = new Date();
+    let bookingDate: Date;
+    
+    // Parse the date
+    if (date === "Today") {
+      bookingDate = new Date();
+    } else if (date === "Tomorrow") {
+      bookingDate = addDays(new Date(), 1);
+    } else {
+      // Try to parse date formats like "Dec 12" or "Dec 12, 2024"
+      const currentYear = new Date().getFullYear();
+      const dateWithYear = date.includes(',') ? date : `${date}, ${currentYear}`;
+      bookingDate = parse(dateWithYear, 'MMM dd, yyyy', new Date());
+    }
+    
+    // Parse the start time (we only care about start time for cancellation)
+    const startTime = time.split(' - ')[0];
+    const [hours, minutes] = startTime.split(':').map(Number);
+    
+    // Set the booking time
+    bookingDate.setHours(hours, minutes, 0, 0);
+    
+    // Check if current time is more than 1 hour before booking time
+    const oneHourBeforeBooking = addHours(bookingDate, -1);
+    
+    return isBefore(now, oneHourBeforeBooking);
+  } catch (error) {
+    console.error('Error parsing booking time:', error);
+    // If parsing fails, allow cancellation to be safe
+    return true;
+  }
+};
 
 // Utility function to convert 24-hour time to AM/PM format
 const convertTo12HourFormat = (timeRange: string) => {
@@ -66,6 +103,9 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   // Ensure currentIndex is within bounds
   const safeCurrentIndex = Math.min(currentIndex, sortedBookings.length - 1);
   const currentBooking = sortedBookings[safeCurrentIndex];
+  
+  // Check if cancellation is allowed for current booking
+  const canCancel = currentBooking ? isCancellationAllowed(currentBooking.date, currentBooking.time) : false;
 
   const nextBooking = () => {
     setCurrentIndex((prev) => (prev + 1) % sortedBookings.length);
@@ -158,11 +198,19 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex items-center space-x-1 text-destructive hover:text-white hover:bg-destructive border-destructive"
-                onClick={() => handleCancelClick(currentBooking.id)}
+                className={`flex items-center space-x-1 ${
+                  canCancel 
+                    ? "text-destructive hover:text-white hover:bg-destructive border-destructive" 
+                    : "text-muted-foreground cursor-not-allowed opacity-50"
+                }`}
+                onClick={() => canCancel && handleCancelClick(currentBooking.id)}
+                disabled={!canCancel}
+                title={!canCancel ? "Cannot cancel within 1 hour of booking time" : "Cancel booking"}
+                style={{ cursor: canCancel ? 'pointer' : 'not-allowed' }}
               >
-                <X className="h-4 w-4" />
-                <span className="hidden sm:inline">Cancel</span>
+                {!canCancel && <Clock className="h-4 w-4" />}
+                {canCancel && <X className="h-4 w-4" />}
+                <span className="hidden sm:inline">{canCancel ? "Cancel" : "Cannot Cancel"}</span>
               </Button>
             </div>
           </Card>
