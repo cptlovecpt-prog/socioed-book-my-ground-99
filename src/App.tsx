@@ -27,14 +27,14 @@ const AppRoutes = () => {
         <Route 
           path="/" 
           element={
-            user?.isAdmin ? (
-              <AdminLayout>
-                <AdminDashboard />
-              </AdminLayout>
-            ) : (
-              <Index />
-            )
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
           } 
+        />
+        <Route 
+          path="/student" 
+          element={<Index />} 
         />
         <Route 
           path="/my-bookings" 
