@@ -99,7 +99,7 @@ export const QRCodeDialog = ({ isOpen, onClose, booking, isQRAvailable = true }:
               <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center relative">
                 <QrCode className="h-12 w-12 text-muted-foreground" />
                 {!isQRAvailable && (
-                  <div className="absolute inset-0 bg-black/50 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
+                  <div className="absolute inset-0 bg-black/70 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
                     <div className="text-sm font-medium">QR Code available</div>
                     <div className="text-sm">1 hr before till 20 mins after event starts</div>
                   </div>
