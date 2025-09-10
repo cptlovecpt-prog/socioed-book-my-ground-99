@@ -41,21 +41,36 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Redirect if not signed in or not admin
   if (!isSignedIn || !user?.isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">Access Restricted</h1>
-          <p className="text-muted-foreground">
-            {!isSignedIn ? "Please sign in to access the admin panel." : "Admin access required."}
-          </p>
-          {!isSignedIn && (
-            <Button onClick={() => setIsSignInModalOpen(true)}>
-              Sign In as Admin
-            </Button>
-          )}
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#8B5CF6] to-[#A855F7]">
+        <div className="text-center space-y-8">
+          {/* Large Logo Section */}
+          <div className="flex flex-col items-center space-y-6">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 border border-white/30">
+              <img src={LOGO_IMAGE} alt="Book My Ground" className="h-24 w-36 mx-auto" />
+            </div>
+            <h1 className="text-5xl font-bold text-white tracking-wide">
+              BOOK MY<br />GROUND
+            </h1>
+          </div>
+          
+          {/* Access Message */}
+          <div className="text-white/90 space-y-4">
+            <p className="text-xl">
+              {!isSignedIn ? "Admin Access Required" : "Insufficient Permissions"}
+            </p>
+            {!isSignedIn && (
+              <Button 
+                onClick={() => setIsSignInModalOpen(true)}
+                className="bg-white text-purple-600 hover:bg-white/90 font-semibold px-8 py-3"
+              >
+                Sign In as Administrator
+              </Button>
+            )}
+          </div>
         </div>
         
         <SignInModal
-          isOpen={isSignInModalOpen}
+          isOpen={isSignInModalOpen || !isSignedIn}
           onClose={() => setIsSignInModalOpen(false)}
           onSignIn={handleSignIn}
         />
