@@ -617,15 +617,15 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                          <div className="flex items-center gap-2">
                             {slot.isExpired || slot.available === 0 ? (
                               slot.unavailableReason === 'blocked' ? (
-                                <Badge 
-                                  className="font-bold relative"
-                                  style={{ 
-                                    backgroundColor: '#d8d4d4', 
-                                    borderColor: '#d8d4d4',
-                                    color: '#000000',
-                                    zIndex: 50 
-                                  }}
-                                >
+                                 <Badge 
+                                   className="font-bold relative"
+                                   style={{ 
+                                     backgroundColor: '#141d24', 
+                                     borderColor: '#141d24',
+                                     color: '#ffffff',
+                                     zIndex: 50 
+                                   }}
+                                 >
                                   Blocked by Admin
                                 </Badge>
                               ) : slot.unavailableReason === 'maintenance' ? (
@@ -667,9 +667,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                                <Badge 
                                  className="font-bold relative"
                                  style={{ 
-                                   backgroundColor: '#8b5cf6', 
-                                   borderColor: '#8b5cf6',
-                                   color: '#a434b4',
+                                   backgroundColor: '#9c23b3', 
+                                   borderColor: '#9c23b3',
+                                   color: '#ffffff',
                                    zIndex: 50 
                                  }}
                                >
