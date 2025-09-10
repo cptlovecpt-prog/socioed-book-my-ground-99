@@ -46,7 +46,9 @@ export default function ManageFacilities() {
       pricePerHour: 500,
       type: "outdoor",
       area: "7400",
-      image: SPORT_IMAGES.CRICKET
+      image: SPORT_IMAGES.CRICKET,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 2,
@@ -59,7 +61,9 @@ export default function ManageFacilities() {
       pricePerHour: 400,
       type: "outdoor",
       area: "1252",
-      image: SPORT_IMAGES.BASKETBALL
+      image: SPORT_IMAGES.BASKETBALL,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 3,
@@ -72,7 +76,9 @@ export default function ManageFacilities() {
       pricePerHour: 350,
       type: "outdoor",
       area: "960",
-      image: SPORT_IMAGES.VOLLEYBALL
+      image: SPORT_IMAGES.VOLLEYBALL,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 4,
@@ -85,7 +91,9 @@ export default function ManageFacilities() {
       pricePerHour: 300,
       type: "outdoor",
       area: "1338",
-      image: SPORT_IMAGES.TENNIS
+      image: SPORT_IMAGES.TENNIS,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 5,
@@ -98,7 +106,9 @@ export default function ManageFacilities() {
       pricePerHour: 250,
       type: "indoor",
       area: "480",
-      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop",
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 6,
@@ -111,7 +121,9 @@ export default function ManageFacilities() {
       pricePerHour: 200,
       type: "indoor",
       area: "187",
-      image: SPORT_IMAGES.SQUASH
+      image: SPORT_IMAGES.SQUASH,
+      tag: "Down for Maintenance",
+      maintenanceComment: ""
     },
     {
       id: 7,
@@ -124,7 +136,9 @@ export default function ManageFacilities() {
       pricePerHour: 450,
       type: "indoor",
       area: "336",
-      image: SPORT_IMAGES.BASKETBALL
+      image: SPORT_IMAGES.BASKETBALL,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 8,
@@ -137,7 +151,9 @@ export default function ManageFacilities() {
       pricePerHour: 600,
       type: "outdoor",
       area: "1474",
-      image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop"
+      image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 9,
@@ -150,7 +166,9 @@ export default function ManageFacilities() {
       pricePerHour: 450,
       type: "indoor",
       area: "336",
-      image: SPORT_IMAGES.BASKETBALL
+      image: SPORT_IMAGES.BASKETBALL,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 10,
@@ -163,7 +181,9 @@ export default function ManageFacilities() {
       pricePerHour: 300,
       type: "indoor",
       area: "308",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 11,
@@ -176,7 +196,9 @@ export default function ManageFacilities() {
       pricePerHour: 400,
       type: "indoor",
       area: "382",
-      image: SPORT_IMAGES.TENNIS
+      image: SPORT_IMAGES.TENNIS,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 12,
@@ -189,7 +211,9 @@ export default function ManageFacilities() {
       pricePerHour: 250,
       type: "indoor",
       area: "1120",
-      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop",
+      tag: "Down for Maintenance",
+      maintenanceComment: ""
     },
     {
       id: 13,
@@ -202,7 +226,9 @@ export default function ManageFacilities() {
       pricePerHour: 500,
       type: "outdoor",
       area: "261",
-      image: SPORT_IMAGES.FOOTBALL
+      image: SPORT_IMAGES.FOOTBALL,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 14,
@@ -215,7 +241,9 @@ export default function ManageFacilities() {
       pricePerHour: 200,
       type: "outdoor",
       area: "174",
-      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop",
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 15,
@@ -228,7 +256,9 @@ export default function ManageFacilities() {
       pricePerHour: 350,
       type: "outdoor",
       area: "480",
-      image: SPORT_IMAGES.BASKETBALL
+      image: SPORT_IMAGES.BASKETBALL,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 16,
@@ -241,7 +271,9 @@ export default function ManageFacilities() {
       pricePerHour: 200,
       type: "indoor",
       area: "332",
-      image: SPORT_IMAGES.SQUASH
+      image: SPORT_IMAGES.SQUASH,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 17,
@@ -254,7 +286,9 @@ export default function ManageFacilities() {
       pricePerHour: 100,
       type: "indoor",
       area: "2048",
-      image: SPORT_IMAGES.CHESS
+      image: SPORT_IMAGES.CHESS,
+      tag: "Active",
+      maintenanceComment: ""
     },
     {
       id: 18,
@@ -267,7 +301,9 @@ export default function ManageFacilities() {
       pricePerHour: 350,
       type: "outdoor",
       area: "200",
-      image: SPORT_IMAGES.BASKETBALL
+      image: SPORT_IMAGES.BASKETBALL,
+      tag: "Active",
+      maintenanceComment: ""
     }
   ]);
 
@@ -420,7 +456,9 @@ export default function ManageFacilities() {
       type: formData.type,
       status: "Active",
       pricePerHour: 0,
-      area: "0"
+      area: "0",
+      tag: formData.tag,
+      maintenanceComment: formData.maintenanceComment
     };
     setFacilities(prev => [...prev, newFacility]);
     toast({
@@ -489,17 +527,24 @@ export default function ManageFacilities() {
                 alt={facility.name}
                 className="w-full h-full object-cover"
               />
-              {facility.status === "Down for Maintenance" && (
+              {(facility.status === "Down for Maintenance" || facility.tag === "Schedule for Maintenance") && (
                 <div className="absolute inset-0 bg-gray-500/80"></div>
+              )}
+              {facility.tag === "Schedule for Maintenance" && facility.maintenanceComment && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center px-4">
+                    <p className="font-bold text-black text-sm">{facility.maintenanceComment}</p>
+                  </div>
+                </div>
               )}
               <Badge 
                 className={`absolute top-2 right-2 ${
-                  facility.status === "Active" 
+                  (facility.status === "Active" && facility.tag !== "Schedule for Maintenance")
                     ? "bg-green-500 hover:bg-green-600 text-white" 
                     : "bg-amber-700 hover:bg-amber-800 text-white"
                 }`}
               >
-                {facility.status}
+                {facility.tag === "Schedule for Maintenance" ? "Down for Maintenance" : facility.status}
               </Badge>
             </div>
             <CardHeader>
