@@ -806,21 +806,35 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = 
         
         return (
           <div className="bg-card text-card-foreground rounded-lg p-6 space-y-6 border border-border">
-            <div className="flex items-center gap-2 text-left">
-              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-primary">Booking Confirmed</h3>
+            <div className="text-left">
+              <h3 className="text-xl font-semibold text-primary mb-4">
+                <div className="flex items-center gap-2">
+                  Booking Confirmed
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </h3>
             </div>
             
             <div className="text-left">
-              <img 
-                src={getImageForFacility(facility)} 
-                alt={facility.sport}
-                className="w-full h-48 rounded-lg object-cover mb-4"
-              />
+              {/* QR Code Section */}
+              {qrCodeUrl && (
+                <div className="mb-4">
+                  <div className="flex justify-start">
+                    <img 
+                      src={qrCodeUrl} 
+                      alt="Booking QR Code" 
+                      className="w-48 h-48 bg-white p-4 rounded-lg border border-border"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Show this QR code at the venue for entry
+                  </p>
+                </div>
+              )}
               
               <div className="space-y-2">
                 <h4 className="text-xl font-semibold">{facility.name}</h4>
@@ -857,23 +871,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = 
                 )}
               </div>
             </div>
-
-            {/* QR Code Section */}
-            {qrCodeUrl && (
-              <div className="bg-secondary/50 rounded-lg p-4 space-y-3">
-                <h5 className="font-medium text-center">Your QR Code</h5>
-                <div className="flex justify-center">
-                  <img 
-                    src={qrCodeUrl} 
-                    alt="Booking QR Code" 
-                    className="w-32 h-32 bg-white p-2 rounded-lg"
-                  />
-                </div>
-                <p className="text-xs text-center text-muted-foreground">
-                  Show this QR code at the venue for entry
-                </p>
-              </div>
-            )}
             
             <div className="space-y-3 text-left text-sm text-muted-foreground">
               <div className="flex items-start gap-2">
