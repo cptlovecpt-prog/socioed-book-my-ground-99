@@ -470,16 +470,19 @@ export default function ManageFacilities() {
                   <span>{facility.area} Sq. Mtrs</span>
                 </div>
                 <div className="pt-4 border-t">
-                  <div className="flex justify-center space-x-2">
-                    <Button variant="outline" size="sm" onClick={() => handleEditClick(facility)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                    <div className="w-px bg-border h-8"></div>
-                    <Button variant="outline" size="sm" onClick={() => handleDeleteClick(facility)}>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex justify-center">
+                      <Button variant="outline" size="sm" onClick={() => handleEditClick(facility)}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </Button>
+                    </div>
+                    <div className="flex justify-center">
+                      <Button variant="outline" size="sm" onClick={() => handleDeleteClick(facility)}>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
