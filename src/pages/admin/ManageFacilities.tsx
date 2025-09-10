@@ -440,10 +440,6 @@ export default function ManageFacilities() {
                   <span className="text-muted-foreground">Area:</span>
                   <span>{facility.area} Sq. Mtrs</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Price/Hour:</span>
-                  <span className="font-medium">₹{facility.pricePerHour}</span>
-                </div>
                 <div className="pt-4 border-t">
                   <div className="flex justify-center space-x-2">
                     <Button variant="outline" size="sm" onClick={() => handleEditClick(facility)}>
