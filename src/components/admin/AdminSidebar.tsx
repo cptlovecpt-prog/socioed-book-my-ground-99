@@ -42,8 +42,8 @@ export function AdminSidebar() {
 
   const getNavClassName = (active: boolean) =>
     active 
-      ? "bg-primary text-primary-foreground font-medium" 
-      : "hover:bg-accent hover:text-accent-foreground";
+      ? "bg-[#941bac] text-white font-medium hover:bg-[#941bac]" 
+      : "hover:bg-[#941bac] hover:text-white";
 
   return (
     <Sidebar collapsible="icon" className={state === "collapsed" ? "w-14" : "w-60"}>
