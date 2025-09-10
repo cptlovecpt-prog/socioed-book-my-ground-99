@@ -16,12 +16,17 @@ interface QRCodeDialogProps {
     location: string;
     participants: string;
     facilitySize: number;
-  };
+  } | null;
   isQRAvailable?: boolean;
 }
 
 export const QRCodeDialog = ({ isOpen, onClose, booking, isQRAvailable = true }: QRCodeDialogProps) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  
+  // Don't render if booking is null
+  if (!booking) {
+    return null;
+  }
   
   // Utility function to convert 24-hour time to AM/PM format
   const convertTo12HourFormat = (timeRange: string) => {
@@ -47,10 +52,10 @@ export const QRCodeDialog = ({ isOpen, onClose, booking, isQRAvailable = true }:
   const shareText = `Join me for ${booking.sport} at ${booking.facilityName}!\n📅 ${booking.date} at ${convertTo12HourFormat(booking.time)}\n📍 ${booking.location}\n\nBooking ID: ${booking.id}`;
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && booking) {
       generateQRCode();
     }
-  }, [isOpen, booking.id]);
+  }, [isOpen, booking?.id]);
 
   const generateQRCode = async () => {
     try {
