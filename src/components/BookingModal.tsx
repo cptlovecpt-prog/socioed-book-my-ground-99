@@ -727,12 +727,21 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               </div>
             </div>
             
-            <Button 
-              onClick={handleConfirmBooking}
-              className="w-full bg-gradient-primary h-12 text-lg font-semibold"
-            >
-              Confirm Booking
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleGoBack}
+                variant="outline"
+                className="flex-1 h-12 text-lg font-semibold"
+              >
+                Back
+              </Button>
+              <Button 
+                onClick={handleConfirmBooking}
+                className="flex-1 bg-gradient-primary h-12 text-lg font-semibold"
+              >
+                Confirm Booking
+              </Button>
+            </div>
           </div>
         );
 
@@ -826,13 +835,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       <Dialog open={isOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="w-[640px] h-[700px] max-w-none max-h-none flex flex-col">
           <DialogHeader>
-            {(currentStep === 'booking-confirmation') && (
-              <div className="mb-2">
-                <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground hover:text-foreground" onClick={handleGoBack}>
-                  &lt; Back
-                </Button>
-              </div>
-            )}
             <DialogTitle className="flex items-center gap-2">
               Book Your Ground - {facility.name} ({facility.location})
             </DialogTitle>
