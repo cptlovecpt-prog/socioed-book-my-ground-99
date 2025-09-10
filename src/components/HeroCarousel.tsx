@@ -92,8 +92,7 @@ const HeroCarousel = () => {
                 <img
                   src={slide.image}
                   alt={slide.title}
-                  className={`w-full h-full object-cover ${slide.id === 2 ? 'object-center' : ''}`}
-                  style={slide.id === 2 ? { objectPosition: 'center center' } : undefined}
+                  className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
                 <div className="absolute inset-0 flex items-center justify-center text-center text-white">
