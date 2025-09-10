@@ -642,26 +642,34 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               )}
             </div>
             
-            <div className="flex-1 grid grid-cols-6 gap-2">
-              {Array.from({ length: totalSpots }, (_, i) => i + 1).map((count) => {
-                const isAvailable = count <= availableSpots;
-                const isSelected = participantCount === count;
-                
-                return (
-                  <Button
-                    key={count}
-                    variant={isSelected ? "default" : "outline"}
-                    className={`h-10 text-sm ${!isAvailable ? "opacity-40 cursor-not-allowed bg-muted/50 text-muted-foreground border-muted" : ""}`}
-                    onClick={() => isAvailable ? handleParticipantCountSelect(count) : undefined}
-                    disabled={!isAvailable}
-                  >
-                    {count}
-                  </Button>
-                );
-              })}
+            <div className="flex-1">
+              <div 
+                className="grid grid-cols-6 gap-2 min-h-[120px]"
+                style={{ 
+                  gridAutoRows: '40px',
+                  alignContent: 'start'
+                }}
+              >
+                {Array.from({ length: totalSpots }, (_, i) => i + 1).map((count) => {
+                  const isAvailable = count <= availableSpots;
+                  const isSelected = participantCount === count;
+                  
+                  return (
+                    <Button
+                      key={count}
+                      variant={isSelected ? "default" : "outline"}
+                      className={`h-10 text-sm ${!isAvailable ? "opacity-40 cursor-not-allowed bg-muted/50 text-muted-foreground border-muted" : ""}`}
+                      onClick={() => isAvailable ? handleParticipantCountSelect(count) : undefined}
+                      disabled={!isAvailable}
+                    >
+                      {count}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
             
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-sm text-muted-foreground">
               Maximum {totalSpots} participants allowed for {facility.sport}
             </p>
           </div>
