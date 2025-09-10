@@ -695,10 +695,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         
         return (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-left">Your Selection</h3>
-            </div>
-            
             <div className="bg-muted/30 rounded-lg p-4 space-y-4">
               <div className="mb-4">
                 <img 
@@ -728,14 +724,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                   </div>
                   <p className="font-medium">{confirmTimeDisplay}</p>
                 </div>
-              </div>
-              
-              <div className="text-left pt-2">
-                <div className="flex items-center gap-1 text-muted-foreground mb-1">
-                  <Users className="h-4 w-4" />
-                  <span className="text-sm">Participants</span>
-                </div>
-                <p className="font-medium">1 participant</p>
               </div>
             </div>
             
