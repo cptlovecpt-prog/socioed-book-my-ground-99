@@ -11,8 +11,8 @@ import { LOGO_IMAGE } from "@/constants/images";
 interface NavigationProps {
   isSignedIn: boolean;
   setIsSignedIn: (value: boolean) => void;
-  userData: { name: string; email: string } | null;
-  setUserData: (data: { name: string; email: string } | null) => void;
+  userData: { name: string; email: string; isAdmin?: boolean } | null;
+  setUserData: (data: { name: string; email: string; isAdmin?: boolean } | null) => void;
 }
 
 const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: NavigationProps) => {
@@ -25,7 +25,7 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const handleSignIn = (data: { name: string; email: string }) => {
+  const handleSignIn = (data: { name: string; email: string; isAdmin: boolean }) => {
     setUserData(data);
     setIsSignedIn(true);
   };

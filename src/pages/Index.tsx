@@ -18,8 +18,8 @@ import { SPORT_IMAGES } from "@/constants/images";
 interface IndexProps {
   isSignedIn: boolean;
   setIsSignedIn: (value: boolean) => void;
-  userData: { name: string; email: string } | null;
-  setUserData: (data: { name: string; email: string } | null) => void;
+  userData: { name: string; email: string; isAdmin?: boolean } | null;
+  setUserData: (data: { name: string; email: string; isAdmin?: boolean } | null) => void;
 }
 
 const indoorFacilities = [

@@ -10,7 +10,7 @@ import { toast } from "@/components/ui/use-toast";
 interface SignInModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSignIn: (userData: { name: string; email: string }) => void;
+  onSignIn: (userData: { name: string; email: string; isAdmin: boolean }) => void;
 }
 
 const SignInModal = ({ isOpen, onClose, onSignIn }: SignInModalProps) => {
@@ -22,14 +22,17 @@ const SignInModal = ({ isOpen, onClose, onSignIn }: SignInModalProps) => {
     e.preventDefault();
     
     if (email && password) {
-      // Extract name from email for display purposes
-      const name = email.split('@')[0];
+      // Check for admin credentials
+      const isAdmin = email === 'admin@bu.edu' && password === 'admin123';
       
-      onSignIn({ name, email });
+      // Extract name from email for display purposes
+      const name = isAdmin ? 'Admin' : email.split('@')[0];
+      
+      onSignIn({ name, email, isAdmin });
       
       toast({
-        title: "Welcome to Book My Ground",
-        description: "You have successfully signed in.",
+        title: isAdmin ? "Welcome Admin" : "Welcome to Book My Ground",
+        description: isAdmin ? "Admin access granted." : "You have successfully signed in.",
       });
       
       onClose();

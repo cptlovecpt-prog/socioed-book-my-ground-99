@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { BookingProvider } from "@/contexts/BookingContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { useState } from "react";
 import Index from "./pages/Index";
 import MyBookings from "./pages/MyBookings";
@@ -18,26 +19,33 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
+  const [userData, setUserData] = useState<{ name: string; email: string; isAdmin?: boolean } | null>(null);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <TooltipProvider>
-          <BookingProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+          <AuthProvider>
+            <BookingProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
               <Routes>
                 <Route 
                   path="/" 
                   element={
-                    <Index 
-                      isSignedIn={isSignedIn}
-                      setIsSignedIn={setIsSignedIn}
-                      userData={userData}
-                      setUserData={setUserData}
-                    />
+                    userData?.isAdmin ? (
+                      <AdminLayout>
+                        <AdminDashboard />
+                      </AdminLayout>
+                    ) : (
+                      <Index 
+                        isSignedIn={isSignedIn}
+                        setIsSignedIn={setIsSignedIn}
+                        userData={userData}
+                        setUserData={setUserData}
+                      />
+                    )
                   } 
                 />
                 <Route 
@@ -79,8 +87,9 @@ const App = () => {
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </BookingProvider>
+              </BrowserRouter>
+            </BookingProvider>
+          </AuthProvider>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
