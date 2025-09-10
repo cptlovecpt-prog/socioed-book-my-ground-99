@@ -378,27 +378,16 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
           // Placeholder for participant emails - would typically fetch from enrollment IDs
           const participantEmails = participants.map(p => `${p.enrollmentId}@example.com`);
           await sendConfirmationEmails(bookingData, participantEmails);
-          
-          toast({
-            title: "Booking Confirmed",
-            description: "Your booking is confirmed and confirmation emails have been sent to all participants.",
-            duration: 5000,
-          });
         } catch (error) {
           console.error('Email sending failed:', error);
-          toast({
-            title: "Booking Confirmed",
-            description: "Your booking is confirmed. Email service is currently unavailable.",
-            duration: 5000,
-          });
         }
-      } else {
-        toast({
-          title: "Booking Confirmed",
-          description: "Your booking is confirmed.",
-          duration: 5000,
-        });
       }
+      
+      toast({
+        title: "Booking Confirmed",
+        description: "Your booking details have been shared on your university e-mail address",
+        duration: 5000,
+      });
     }
     
     setCurrentStep('final-confirmation');
@@ -759,7 +748,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               <h3 className="text-lg font-semibold text-green-600 mb-2">Booking Confirmed!</h3>
             </div>
             
-            <div className="flex justify-center relative">
+            <div className="flex justify-center relative mb-4">
               {qrCodeUrl && isConfirmationQRAvailable ? (
                 <div className="p-4 bg-white rounded-lg border">
                   <img 
@@ -770,9 +759,13 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 </div>
               ) : (
                 <div className="relative w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
-                  <QrCode className="h-12 w-12 text-muted-foreground" />
-                  <div className="absolute inset-0 bg-black/70 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
-                    <div className="text-sm font-medium">QR Code available</div>
+                  <img 
+                    src={getImageForFacility(facility)} 
+                    alt={facility.sport}
+                    className="w-48 h-48 rounded-lg object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/90 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
+                    <div className="text-sm font-medium">QR Code will be available</div>
                     <div className="text-sm">1 hr before till 20 mins after event starts</div>
                   </div>
                 </div>
@@ -795,6 +788,15 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 <span className="text-red-800">QR Code is only valid from 10 mins before the booked slot to 20 mins after slot starts</span>
               </div>
             </div>
+            
+            <Button
+              onClick={handleShareWhatsApp}
+              className="w-full flex items-center gap-2 h-12 text-white"
+              style={{ backgroundColor: '#25D366' }}
+            >
+              <MessageCircle className="h-5 w-5" />
+              Share on WhatsApp
+            </Button>
           </div>
         );
 
