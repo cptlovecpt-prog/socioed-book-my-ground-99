@@ -1,9 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Calendar, Users, Building2, XCircle, CalendarIcon } from "lucide-react";
+import { Calendar, Users, Building2, XCircle, CalendarIcon, Search } from "lucide-react";
 import { useState } from "react";
 import { format, subYears, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,10 @@ export default function AdminDashboard() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [isDateRangeOpen, setIsDateRangeOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [studentsCurrentPage, setStudentsCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const recordsPerPage = 5;
+  const studentsPerPage = 20;
 
   const oneYearAgo = subYears(new Date(), 1);
   const today = startOfDay(new Date());
@@ -247,49 +251,51 @@ export default function AdminDashboard() {
     { name: "Badminton Court", bookings: 18 },
   ];
 
-  // Function to get students data based on selected time period
-  const getStudentsForPeriod = () => {
-    switch (timePeriod) {
-      case "week":
-        return [
-          { name: "Alice Johnson", bookings: 12, qrScans: 8, cancellations: 2, favoriteGame: "Basketball" },
-          { name: "Bob Smith", bookings: 10, qrScans: 15, cancellations: 1, favoriteGame: "Tennis" },
-          { name: "Carol Brown", bookings: 8, qrScans: 6, cancellations: 0, favoriteGame: "Badminton" },
-          { name: "David Wilson", bookings: 7, qrScans: 12, cancellations: 3, favoriteGame: "Swimming" },
-          { name: "Eva Davis", bookings: 6, qrScans: 9, cancellations: 1, favoriteGame: "Football" },
-          { name: "Frank Miller", bookings: 5, qrScans: 7, cancellations: 2, favoriteGame: "Cricket" },
-          { name: "Grace Wilson", bookings: 4, qrScans: 5, cancellations: 0, favoriteGame: "Volleyball" },
-          { name: "Henry Davis", bookings: 3, qrScans: 4, cancellations: 1, favoriteGame: "Hockey" },
-        ];
-      case "range":
-        if (dateRange?.from && dateRange?.to) {
-          return [
-            { name: "Mike Thompson", bookings: 45, qrScans: 52, cancellations: 8, favoriteGame: "Cricket" },
-            { name: "Sarah Miller", bookings: 38, qrScans: 41, cancellations: 5, favoriteGame: "Football" },
-            { name: "Tom Anderson", bookings: 32, qrScans: 28, cancellations: 4, favoriteGame: "Tennis" },
-            { name: "Lisa Garcia", bookings: 28, qrScans: 35, cancellations: 6, favoriteGame: "Basketball" },
-            { name: "James Martinez", bookings: 25, qrScans: 30, cancellations: 3, favoriteGame: "Swimming" },
-            { name: "Emma Johnson", bookings: 22, qrScans: 26, cancellations: 2, favoriteGame: "Badminton" },
-            { name: "Oliver Smith", bookings: 18, qrScans: 21, cancellations: 4, favoriteGame: "Volleyball" },
-            { name: "Ava Brown", bookings: 15, qrScans: 18, cancellations: 1, favoriteGame: "Hockey" },
-          ];
-        }
-        return getMonthStudents();
-      default: // month
-        return getMonthStudents();
+  // Generate large mock dataset for 10,000 students (500 pages × 20 students per page)
+  const generateStudentsData = (period: "week" | "month" | "range") => {
+    const sports = ["Basketball", "Tennis", "Football", "Cricket", "Swimming", "Badminton", "Volleyball", "Hockey", "Squash", "Table Tennis"];
+    const firstNames = ["Alice", "Bob", "Carol", "David", "Eva", "Frank", "Grace", "Henry", "Ivy", "Jack", "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Quinn", "Ruby", "Sam", "Tina", "Uma", "Victor", "Wendy", "Xander", "Yara", "Zoe"];
+    const lastNames = ["Johnson", "Smith", "Brown", "Wilson", "Davis", "Miller", "Garcia", "Martinez", "Anderson", "Taylor", "Thomas", "Jackson", "White", "Harris", "Clark", "Lewis", "Robinson", "Walker", "Young", "Allen"];
+    
+    const students = [];
+    
+    for (let i = 1; i <= 10000; i++) {
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const favoriteGame = sports[Math.floor(Math.random() * sports.length)];
+      
+      let bookings, qrScans, cancellations;
+      
+      if (period === "week") {
+        bookings = Math.floor(Math.random() * 15) + 1;
+        qrScans = Math.floor(Math.random() * 20) + 1;
+        cancellations = Math.floor(Math.random() * 5);
+      } else if (period === "range") {
+        bookings = Math.floor(Math.random() * 50) + 1;
+        qrScans = Math.floor(Math.random() * 60) + 1;
+        cancellations = Math.floor(Math.random() * 10);
+      } else {
+        bookings = Math.floor(Math.random() * 30) + 1;
+        qrScans = Math.floor(Math.random() * 40) + 1;
+        cancellations = Math.floor(Math.random() * 8);
+      }
+      
+      students.push({
+        name: `${firstName} ${lastName} ${i}`,
+        bookings,
+        qrScans,
+        cancellations,
+        favoriteGame
+      });
     }
+    
+    return students;
   };
 
-  const getMonthStudents = () => [
-    { name: "John Doe", bookings: 28, qrScans: 32, cancellations: 5, favoriteGame: "Cricket" },
-    { name: "Jane Smith", bookings: 24, qrScans: 28, cancellations: 3, favoriteGame: "Football" },
-    { name: "Mike Johnson", bookings: 20, qrScans: 25, cancellations: 2, favoriteGame: "Basketball" },
-    { name: "Sarah Wilson", bookings: 18, qrScans: 22, cancellations: 4, favoriteGame: "Tennis" },
-    { name: "Tom Brown", bookings: 15, qrScans: 18, cancellations: 1, favoriteGame: "Swimming" },
-    { name: "Lisa Davis", bookings: 12, qrScans: 15, cancellations: 3, favoriteGame: "Badminton" },
-    { name: "Chris Miller", bookings: 10, qrScans: 12, cancellations: 2, favoriteGame: "Volleyball" },
-    { name: "Amy Garcia", bookings: 8, qrScans: 10, cancellations: 1, favoriteGame: "Hockey" },
-  ];
+  // Function to get students data based on selected time period
+  const getAllStudentsForPeriod = () => {
+    return generateStudentsData(timePeriod);
+  };
 
   // Function to get period description
   const getPeriodDescription = () => {
@@ -309,7 +315,33 @@ export default function AdminDashboard() {
   const stats = getStatsForPeriod();
   const allRecentBookings = getAllRecentBookingsForPeriod();
   const popularFacilities = getPopularFacilitiesForPeriod();
-  const studentsData = getStudentsForPeriod();
+  const allStudents = getAllStudentsForPeriod();
+  
+  // Filter students based on search query
+  const filteredStudents = allStudents.filter(student =>
+    student.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  // Students pagination logic
+  const totalStudentsPages = Math.ceil(filteredStudents.length / studentsPerPage);
+  const studentsStartIndex = (studentsCurrentPage - 1) * studentsPerPage;
+  const studentsEndIndex = studentsStartIndex + studentsPerPage;
+  const currentStudents = filteredStudents.slice(studentsStartIndex, studentsEndIndex);
+  
+  // Calculate percentage stats for students
+  const calculatePercentage = (value: number, total: number) => {
+    return total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+  };
+  
+  // Get total stats for percentage calculation
+  const getTotalStats = () => {
+    const totalBookings = allStudents.reduce((sum, student) => sum + student.bookings, 0);
+    const totalQrScans = allStudents.reduce((sum, student) => sum + student.qrScans, 0);
+    const totalCancellations = allStudents.reduce((sum, student) => sum + student.cancellations, 0);
+    return { totalBookings, totalQrScans, totalCancellations };
+  };
+  
+  const { totalBookings, totalQrScans, totalCancellations } = getTotalStats();
   
   // Pagination logic
   const totalPages = Math.ceil(allRecentBookings.length / recordsPerPage);
@@ -321,6 +353,8 @@ export default function AdminDashboard() {
   const handleTimePeriodChange = (period: "week" | "month" | "range") => {
     setTimePeriod(period);
     setCurrentPage(1);
+    setStudentsCurrentPage(1);
+    setSearchQuery("");
   };
 
   return (
@@ -513,34 +547,187 @@ export default function AdminDashboard() {
         <CardHeader>
           <CardTitle>Students Dashboard</CardTitle>
           <CardDescription>
-            Student activity overview {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"}
+            Student activity overview {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"} • Showing {studentsStartIndex + 1}-{Math.min(studentsEndIndex, filteredStudents.length)} of {filteredStudents.length} students
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Search Input */}
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search student names..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setStudentsCurrentPage(1); // Reset to first page when searching
+              }}
+              className="pl-9"
+            />
+          </div>
+          
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
                   <th className="text-left py-3 px-2 font-medium text-sm text-muted-foreground">Name</th>
-                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Bookings</th>
-                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">QR Code Scans</th>
-                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Cancellations</th>
+                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Bookings (%)</th>
+                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">QR Code Scans (%)</th>
+                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Cancellations (%)</th>
                   <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Favorite Game</th>
                 </tr>
               </thead>
               <tbody>
-                {studentsData.map((student, i) => (
-                  <tr key={i} className="border-b border-border/50">
+                {currentStudents.map((student, i) => (
+                  <tr key={studentsStartIndex + i} className="border-b border-border/50">
                     <td className="py-3 px-2 text-sm font-medium">{student.name}</td>
-                    <td className="py-3 px-2 text-sm text-center">{student.bookings}</td>
-                    <td className="py-3 px-2 text-sm text-center">{student.qrScans}</td>
-                    <td className="py-3 px-2 text-sm text-center">{student.cancellations}</td>
+                    <td className="py-3 px-2 text-sm text-center">
+                      {student.bookings} ({calculatePercentage(student.bookings, totalBookings)}%)
+                    </td>
+                    <td className="py-3 px-2 text-sm text-center">
+                      {student.qrScans} ({calculatePercentage(student.qrScans, totalQrScans)}%)
+                    </td>
+                    <td className="py-3 px-2 text-sm text-center">
+                      {student.cancellations} ({calculatePercentage(student.cancellations, totalCancellations)}%)
+                    </td>
                     <td className="py-3 px-2 text-sm text-center">{student.favoriteGame}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          
+          {/* Students Pagination */}
+          {totalStudentsPages > 1 && (
+            <div className="mt-6">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => setStudentsCurrentPage(Math.max(1, studentsCurrentPage - 1))}
+                      className={studentsCurrentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                  
+                  {/* Show first few pages, ellipsis, and last few pages for large page counts */}
+                  {totalStudentsPages <= 10 ? (
+                    // Show all pages if 10 or fewer
+                    Array.from({ length: totalStudentsPages }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => setStudentsCurrentPage(page)}
+                          isActive={studentsCurrentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))
+                  ) : (
+                    // Show condensed pagination for many pages
+                    <>
+                      {studentsCurrentPage <= 4 ? (
+                        // Show first 5 pages + ellipsis + last page
+                        <>
+                          {Array.from({ length: 5 }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setStudentsCurrentPage(page)}
+                                isActive={studentsCurrentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setStudentsCurrentPage(totalStudentsPages)}
+                              className="cursor-pointer"
+                            >
+                              {totalStudentsPages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </>
+                      ) : studentsCurrentPage >= totalStudentsPages - 3 ? (
+                        // Show first page + ellipsis + last 5 pages
+                        <>
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setStudentsCurrentPage(1)}
+                              className="cursor-pointer"
+                            >
+                              1
+                            </PaginationLink>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                          {Array.from({ length: 5 }, (_, i) => totalStudentsPages - 4 + i).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setStudentsCurrentPage(page)}
+                                isActive={studentsCurrentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                        </>
+                      ) : (
+                        // Show first page + ellipsis + current area + ellipsis + last page
+                        <>
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setStudentsCurrentPage(1)}
+                              className="cursor-pointer"
+                            >
+                              1
+                            </PaginationLink>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                          {[studentsCurrentPage - 1, studentsCurrentPage, studentsCurrentPage + 1].map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setStudentsCurrentPage(page)}
+                                isActive={studentsCurrentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setStudentsCurrentPage(totalStudentsPages)}
+                              className="cursor-pointer"
+                            >
+                              {totalStudentsPages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </>
+                      )}
+                    </>
+                  )}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => setStudentsCurrentPage(Math.min(totalStudentsPages, studentsCurrentPage + 1))}
+                      className={studentsCurrentPage === totalStudentsPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
