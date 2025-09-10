@@ -18,6 +18,7 @@ interface TimeSlot {
   time: string;
   available: number;
   capacity: number;
+  isExpired?: boolean;
 }
 
 interface ParticipantData {
@@ -63,6 +64,7 @@ const sportConfig: { [key: string]: number } = {
 const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSlot[] => {
   const slots: TimeSlot[] = [];
   let id = 1;
+  const currentTime = new Date();
   
   // Create a seed based on the selected date to ensure consistent availability for each date
   const dateSeed = selectedDate.getFullYear() * 10000 + selectedDate.getMonth() * 100 + selectedDate.getDate();
@@ -71,6 +73,15 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
   const seededRandom = (seed: number) => {
     const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
+  };
+
+  // Helper function to check if slot is expired
+  const isSlotExpired = (slotStartTime: Date, selectedDate: Date) => {
+    // Create the actual slot date/time by combining selected date with slot time
+    const slotDateTime = new Date(selectedDate);
+    slotDateTime.setHours(slotStartTime.getHours(), slotStartTime.getMinutes(), 0, 0);
+    
+    return slotDateTime < currentTime;
   };
 
   // Morning slots: 6:30 AM to 9:30 AM
@@ -83,11 +94,17 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
+    // Check if slot is expired
+    const isExpired = isSlotExpired(startTime, selectedDate);
+    
     // Create different slot states based on seeded random for consistency
     const random = seededRandom(dateSeed + id);
     let available: number;
     
-    if (random < 0.3) {
+    // If slot is expired, set available to 0
+    if (isExpired) {
+      available = 0;
+    } else if (random < 0.3) {
       available = facilityCapacity; // Fully available
     } else if (random < 0.8) {
       // Partially available - generate X where X < facilityCapacity
@@ -100,7 +117,8 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
       id: id.toString(),
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
-      capacity: facilityCapacity
+      capacity: facilityCapacity,
+      isExpired: isExpired
     });
     id++;
   }
@@ -115,11 +133,17 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 45);
     
+    // Check if slot is expired
+    const isExpired = isSlotExpired(startTime, selectedDate);
+    
     // Create different slot states based on seeded random for consistency
     const random = seededRandom(dateSeed + id);
     let available: number;
     
-    if (random < 0.3) {
+    // If slot is expired, set available to 0
+    if (isExpired) {
+      available = 0;
+    } else if (random < 0.3) {
       available = facilityCapacity; // Fully available
     } else if (random < 0.8) {
       // Partially available - generate X where X < facilityCapacity
@@ -132,7 +156,8 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
       id: id.toString(),
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
-      capacity: facilityCapacity
+      capacity: facilityCapacity,
+      isExpired: isExpired
     });
     id++;
   }
@@ -549,7 +574,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               <h3 className="font-medium mb-3">Available Time Slots</h3>
               <div className="grid gap-2">
                  {timeSlots.map((slot) => {
-                   const isAvailable = slot.available > 0;
+                   const isAvailable = slot.available > 0 && !slot.isExpired;
                    
                    return (
                      <div
@@ -570,7 +595,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                            <span className="font-medium">{slot.time}</span>
                          </div>
                          <div className="flex items-center gap-2">
-                           {slot.available === 0 ? (
+                           {slot.isExpired || slot.available === 0 ? (
                              <Badge 
                                className="text-white font-bold relative"
                                style={{ 
