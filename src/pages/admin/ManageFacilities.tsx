@@ -647,9 +647,6 @@ export default function ManageFacilities() {
                     <p className="text-sm text-muted-foreground mt-2">Click to select image</p>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Camera className="h-8 w-8 text-white" />
-                </div>
               </div>
               <p className="text-xs text-muted-foreground">
                 Maximum image size allowed is 50kb in .jpeg, .jpg or .png format only
