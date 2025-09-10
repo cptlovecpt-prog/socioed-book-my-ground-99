@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Calendar, Users, Building2, Shield, CalendarIcon } from "lucide-react";
+import { Calendar, Users, Building2, XCircle, CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { format, subYears, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -43,10 +43,10 @@ export default function AdminDashboard() {
             icon: Building2,
           },
           {
-            title: "Blocked by Students",
+            title: "Cancellations",
             value: "38%",
             description: "+12% from last week",
-            icon: Shield,
+            icon: XCircle,
           },
         ];
       case "range":
@@ -71,10 +71,10 @@ export default function AdminDashboard() {
               icon: Building2,
             },
             {
-              title: "Blocked by Students",
+              title: "Cancellations",
               value: "41%",
               description: "Selected date range",
-              icon: Shield,
+              icon: XCircle,
             },
           ];
         }
@@ -105,10 +105,10 @@ export default function AdminDashboard() {
       icon: Building2,
     },
     {
-      title: "Blocked by Students",
+      title: "Cancellations",
       value: "45%",
       description: "+35% from last month",
-      icon: Shield,
+      icon: XCircle,
     },
   ];
 
