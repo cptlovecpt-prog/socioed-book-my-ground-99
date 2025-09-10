@@ -42,7 +42,7 @@ const sportConfig: { [key: string]: number } = {
   'Football': 22,
   'Cricket': 22,
   'Basketball': 20,
-  'Volleyball': 25,
+  'Volleyball': 24,
   'Tennis': 8,
   'Badminton': 12,
   'Squash': 6,
@@ -769,13 +769,15 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       <Dialog open={isOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="w-[640px] h-[700px] max-w-none max-h-none flex flex-col">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {currentStep !== 'date-slot-selection' && (
-                <Button variant="ghost" size="sm" onClick={currentStep === 'confirmation' ? resetModal : handleGoBack}>
-                  {currentStep === 'confirmation' ? <X className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            {(currentStep === 'participant-count' || currentStep === 'participant-details') && (
+              <div className="mb-2">
+                <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground hover:text-foreground" onClick={handleGoBack}>
+                  &lt; Back
                 </Button>
-              )}
-              Book {facility.name}
+              </div>
+            )}
+            <DialogTitle className="flex items-center gap-2">
+              Book Your Ground - {facility.name} ({facility.location})
             </DialogTitle>
           </DialogHeader>
           
