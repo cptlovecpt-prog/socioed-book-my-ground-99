@@ -351,17 +351,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       return;
     }
 
-    // Validate enrollment IDs
-    const hasEmptyIds = participants.some(p => !p.enrollmentId.trim());
-    if (hasEmptyIds) {
-      toast({
-        title: "Please enter all enrollment IDs",
-        variant: "destructive",
-        duration: 3000,
-      });
-      return;
-    }
-
     const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
     if (selectedTimeSlot) {
       const bookingData = {
@@ -724,6 +713,16 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                   </div>
                   <p className="font-medium">{confirmTimeDisplay}</p>
                 </div>
+              </div>
+              
+              <div className="text-left pt-2">
+                <div className="flex items-center gap-1 text-muted-foreground mb-1">
+                  <Users className="h-4 w-4" />
+                  <span className="text-sm">Available Spots</span>
+                </div>
+                <p className="font-medium">
+                  {selectedTimeSlot ? `${selectedTimeSlot.available}/${selectedTimeSlot.capacity} spots available` : 'Loading...'}
+                </p>
               </div>
             </div>
             
