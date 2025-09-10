@@ -37,7 +37,7 @@ export default function AdminDashboard() {
             icon: Users,
           },
           {
-            title: "Facility Utilization Rate",
+            title: "Facility Utilization",
             value: "72%",
             description: "+5% from last week",
             icon: Building2,
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
               icon: Users,
             },
             {
-              title: "Facility Utilization Rate",
+              title: "Facility Utilization",
               value: "58%",
               description: "Selected date range",
               icon: Building2,
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
       icon: Users,
     },
     {
-      title: "Facility Utilization Rate",
+      title: "Facility Utilization",
       value: "65%",
       description: "+20% from last month",
       icon: Building2,
