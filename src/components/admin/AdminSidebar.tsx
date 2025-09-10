@@ -42,7 +42,7 @@ export function AdminSidebar() {
 
   const getNavClassName = (active: boolean) =>
     active 
-      ? "bg-[#941bac] text-white font-medium hover:bg-[#941bac]" 
+      ? "bg-[#941bac] text-white font-medium hover:bg-[#941bac] [&>*]:text-white" 
       : "hover:bg-[#941bac] hover:text-white";
 
   return (
