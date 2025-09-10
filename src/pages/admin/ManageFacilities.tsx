@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function ManageFacilities() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isConfirmChangesDialogOpen, setIsConfirmChangesDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<any>(null);
   const [deletingFacility, setDeletingFacility] = useState<any>(null);
   const { toast } = useToast();
@@ -93,10 +94,23 @@ export default function ManageFacilities() {
   };
 
   const handleConfirmChanges = () => {
+    setIsConfirmChangesDialogOpen(true);
+  };
+
+  const handleSaveChanges = () => {
     console.log("Updating facility:", editingFacility.id, "with data:", formData);
     // Here you would typically update the facility in your backend/state
+    toast({
+      title: "Changes Saved",
+      description: `${formData.name} has been updated successfully.`,
+    });
+    setIsConfirmChangesDialogOpen(false);
     setIsEditModalOpen(false);
     setEditingFacility(null);
+  };
+
+  const handleCancelSave = () => {
+    setIsConfirmChangesDialogOpen(false);
   };
 
   const handleModalClose = () => {
@@ -350,6 +364,27 @@ export default function ManageFacilities() {
             </Button>
             <Button variant="destructive" onClick={handleDeleteConfirm}>
               Delete Permanently
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Save Changes Confirmation Dialog */}
+      <Dialog open={isConfirmChangesDialogOpen} onOpenChange={handleCancelSave}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Changes</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to save the changes made to <strong>{editingFacility?.name}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelSave}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveChanges}>
+              Yes, Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
