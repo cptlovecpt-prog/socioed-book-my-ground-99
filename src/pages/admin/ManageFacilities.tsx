@@ -758,30 +758,47 @@ export default function ManageFacilities() {
                 <SelectTrigger>
                   <SelectValue placeholder="Select tag" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background border z-50">
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Maintenance Comment - appears when Schedule for Maintenance is selected */}
-            {formData.tag === 'Schedule for Maintenance' && (
-              <div className="space-y-2">
-                <Label htmlFor="maintenanceComment">Comment</Label>
-                <textarea
-                  id="maintenanceComment"
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                  value={formData.maintenanceComment}
-                  onChange={(e) => handleInputChange('maintenanceComment', e.target.value)}
-                  placeholder="Enter maintenance comment"
-                  maxLength={100}
-                />
-                <div className="text-xs text-muted-foreground text-right">
-                  {formData.maintenanceComment.length}/100 characters
-                </div>
+              
+              {/* Fixed space for maintenance comment - always present to avoid layout shift */}
+              <div className="min-h-[2.5rem] flex items-center">
+                {formData.tag === 'Schedule for Maintenance' && (
+                  <div className="w-full">
+                    {formData.maintenanceComment ? (
+                      <div 
+                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded cursor-pointer truncate" 
+                        title={formData.maintenanceComment}
+                        onClick={() => {
+                          const newComment = prompt("Edit maintenance comment (max 100 characters):", formData.maintenanceComment);
+                          if (newComment !== null && newComment.length <= 100) {
+                            handleInputChange('maintenanceComment', newComment);
+                          }
+                        }}
+                      >
+                        {formData.maintenanceComment}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded hover:bg-muted/50 transition-colors w-full text-left"
+                        onClick={() => {
+                          const comment = prompt("Enter maintenance comment (max 100 characters):");
+                          if (comment !== null && comment.length <= 100) {
+                            handleInputChange('maintenanceComment', comment);
+                          }
+                        }}
+                      >
+                        Click to add maintenance comment
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <DialogFooter className="mt-6">
@@ -910,30 +927,47 @@ export default function ManageFacilities() {
                 <SelectTrigger>
                   <SelectValue placeholder="Select tag" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background border z-50">
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Maintenance Comment - appears when Schedule for Maintenance is selected */}
-            {formData.tag === 'Schedule for Maintenance' && (
-              <div className="space-y-2">
-                <Label htmlFor="maintenanceComment">Comment</Label>
-                <textarea
-                  id="maintenanceComment"
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                  value={formData.maintenanceComment}
-                  onChange={(e) => handleInputChange('maintenanceComment', e.target.value)}
-                  placeholder="Enter maintenance comment"
-                  maxLength={100}
-                />
-                <div className="text-xs text-muted-foreground text-right">
-                  {formData.maintenanceComment.length}/100 characters
-                </div>
+              
+              {/* Fixed space for maintenance comment - always present to avoid layout shift */}
+              <div className="min-h-[2.5rem] flex items-center">
+                {formData.tag === 'Schedule for Maintenance' && (
+                  <div className="w-full">
+                    {formData.maintenanceComment ? (
+                      <div 
+                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded cursor-pointer truncate" 
+                        title={formData.maintenanceComment}
+                        onClick={() => {
+                          const newComment = prompt("Edit maintenance comment (max 100 characters):", formData.maintenanceComment);
+                          if (newComment !== null && newComment.length <= 100) {
+                            handleInputChange('maintenanceComment', newComment);
+                          }
+                        }}
+                      >
+                        {formData.maintenanceComment}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded hover:bg-muted/50 transition-colors w-full text-left"
+                        onClick={() => {
+                          const comment = prompt("Enter maintenance comment (max 100 characters):");
+                          if (comment !== null && comment.length <= 100) {
+                            handleInputChange('maintenanceComment', comment);
+                          }
+                        }}
+                      >
+                        Click to add maintenance comment
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <DialogFooter className="mt-6">
