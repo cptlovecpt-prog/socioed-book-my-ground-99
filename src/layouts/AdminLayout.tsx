@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Redirect if not signed in or not admin
   if (!isSignedIn || !user?.isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#8B5CF6] to-[#A855F7]">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#430459' }}>
         <div className="text-center space-y-8">
           {/* Large Logo Section */}
           <div className="flex flex-col items-center space-y-6">
