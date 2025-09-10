@@ -149,15 +149,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
-  const [isQrFullscreen, setIsQrFullscreen] = useState<boolean>(false);
   
   const handleDialogClose = (open: boolean) => {
     if (!open) {
-      // Prevent dialog from closing if fullscreen QR is open
-      if (isQrFullscreen) {
-        return; // Don't close the dialog, just ignore the close attempt
-      }
-      
       if (currentStep === 'confirmation') {
         resetModal();
       } else {
@@ -766,10 +760,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
             
             <div className="flex justify-center">
               {qrCodeUrl ? (
-                <div 
-                  className="p-4 bg-white rounded-lg border cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => setIsQrFullscreen(true)}
-                >
+                <div className="p-4 bg-white rounded-lg border">
                   <img 
                     src={qrCodeUrl} 
                     alt="QR Code" 
@@ -868,38 +859,6 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
           )}
         </DialogContent>
       </Dialog>
-      
-      {/* Fullscreen QR Code Overlay - Properly isolated with working close functionality */}
-      {isQrFullscreen && qrCodeUrl && (
-        <div 
-          className="fixed inset-0 bg-black/90 flex items-center justify-center cursor-pointer"
-          style={{ zIndex: 2147483647 }}
-          onClick={() => setIsQrFullscreen(false)}
-        >
-          <div 
-            className="relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsQrFullscreen(false);
-              }}
-              className="absolute -top-8 -right-8 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-200 hover:scale-110 border-2 border-gray-300 cursor-pointer z-10"
-            >
-              <X className="h-7 w-7 text-gray-800" />
-            </button>
-            <div className="bg-white p-10 rounded-3xl shadow-2xl">
-              <img 
-                src={qrCodeUrl} 
-                alt="QR Code - Full Screen" 
-                className="w-80 h-80 select-none"
-                draggable={false}
-              />
-            </div>
-          </div>
-        </div>
-      )}
       
       <AlertDialog open={showExitConfirm} onOpenChange={setShowExitConfirm}>
         <AlertDialogContent>

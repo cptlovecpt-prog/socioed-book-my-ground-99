@@ -21,7 +21,6 @@ interface QRCodeDialogProps {
 
 export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
-  const [isFullScreenOpen, setIsFullScreenOpen] = useState(false);
   
   // Utility function to convert 24-hour time to AM/PM format
   const convertTo12HourFormat = (timeRange: string) => {
@@ -76,13 +75,7 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
   return (
     <Dialog 
       open={isOpen} 
-      onOpenChange={(open) => {
-        // Prevent dialog from closing if fullscreen QR is open
-        if (!open && isFullScreenOpen) {
-          return; // Don't close the dialog, just ignore the close attempt
-        }
-        onClose();
-      }}
+      onOpenChange={onClose}
     >
       <DialogContent className="max-w-sm">
         <DialogHeader>
@@ -94,10 +87,7 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
         <div className="space-y-6 py-4">
           <div className="flex justify-center">
             {qrCodeUrl ? (
-              <div 
-                className="p-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => setIsFullScreenOpen(true)}
-              >
+              <div className="p-4 bg-white rounded-lg border">
                 <img 
                   src={qrCodeUrl} 
                   alt="QR Code" 
@@ -148,38 +138,6 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
           </div>
         </div>
       </DialogContent>
-      
-      {/* Full Screen QR Code View - Properly isolated with working close functionality */}
-      {isFullScreenOpen && (
-        <div 
-          className="fixed inset-0 bg-black/90 flex items-center justify-center cursor-pointer"
-          style={{ zIndex: 2147483647 }}
-          onClick={() => setIsFullScreenOpen(false)}
-        >
-          <div 
-            className="relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFullScreenOpen(false);
-              }}
-              className="absolute -top-8 -right-8 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-200 hover:scale-110 border-2 border-gray-300 cursor-pointer z-10"
-            >
-              <X className="h-7 w-7 text-gray-800" />
-            </button>
-            <div className="p-10 bg-white rounded-3xl shadow-2xl">
-              <img 
-                src={qrCodeUrl} 
-                alt="QR Code Full Screen" 
-                className="w-80 h-80 select-none"
-                draggable={false}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </Dialog>
   );
 };
