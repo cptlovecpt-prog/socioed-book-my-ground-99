@@ -44,8 +44,8 @@ export function AdminSidebar() {
 
   const getNavClassName = (active: boolean) =>
     active 
-      ? "bg-[#941bac] text-white font-medium hover:bg-[#941bac]" 
-      : "hover:bg-[#941bac] hover:text-white hover:font-medium";
+      ? "bg-[#941bac] text-white font-medium hover:bg-[#941bac] rounded-full px-3 py-2" 
+      : "hover:bg-[#941bac]/10 hover:text-[#941bac] hover:font-medium rounded-full px-3 py-2 transition-all duration-200";
 
   return (
     <Sidebar collapsible="icon" className={state === "collapsed" ? "w-14" : "w-60"}>
@@ -70,7 +70,7 @@ export function AdminSidebar() {
                       to={item.url} 
                       className={getNavClassName(isActive(item.url))}
                     >
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : ''} hover:outline hover:outline-2 hover:outline-[#8c04a4] hover:rounded-sm`} />
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : ''} transition-colors duration-200`} />
                       {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
