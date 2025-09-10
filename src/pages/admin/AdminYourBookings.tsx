@@ -8,7 +8,8 @@ import { useState } from "react";
 import { useBookings } from "@/contexts/BookingContext";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
 import { useToast } from "@/hooks/use-toast";
-import { isQRCodeAvailable } from "@/utils/timeUtils";
+import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
+import { isWithinOneHourOfEvent, isQRCodeAvailable } from "@/utils/timeUtils";
 
 // Utility function to check if cancellation is allowed (more than 1 hour before event)
 const isCancellationAllowed = (date: string, time: string): boolean => {
@@ -16,32 +17,54 @@ const isCancellationAllowed = (date: string, time: string): boolean => {
     const now = new Date();
     let bookingDate: Date;
     
+    // Parse the date
     if (date === "Today") {
       bookingDate = new Date();
     } else if (date === "Tomorrow") {
-      bookingDate = new Date();
-      bookingDate.setDate(bookingDate.getDate() + 1);
+      bookingDate = addDays(new Date(), 1);
     } else {
-      bookingDate = new Date(date);
+      // Try to parse date formats like "Dec 12" or "Dec 12, 2024"
+      const currentYear = new Date().getFullYear();
+      const dateWithYear = date.includes(',') ? date : `${date}, ${currentYear}`;
+      bookingDate = parse(dateWithYear, 'MMM dd, yyyy', new Date());
     }
     
-    const [hours, minutes] = time.split(':').map(Number);
+    // Parse the start time (we only care about start time for cancellation)
+    const startTime = time.split(' - ')[0];
+    const [hours, minutes] = startTime.split(':').map(Number);
+    
+    // Set the booking time
     bookingDate.setHours(hours, minutes, 0, 0);
     
-    const oneHourBefore = new Date(bookingDate.getTime() - 60 * 60 * 1000);
-    return now < oneHourBefore;
-  } catch {
-    return false;
+    // Check if current time is more than 1 hour before booking time
+    const oneHourBeforeBooking = addHours(bookingDate, -1);
+    
+    return isBefore(now, oneHourBeforeBooking);
+  } catch (error) {
+    console.error('Error parsing booking time:', error);
+    // If parsing fails, allow cancellation to be safe
+    return true;
   }
 };
 
-// Convert 24-hour format to 12-hour format
-const convertTo12HourFormat = (time24: string): string => {
-  const [hours, minutes] = time24.split(':');
-  const hour = parseInt(hours, 10);
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const hour12 = hour % 12 || 12;
-  return `${hour12}:${minutes} ${ampm}`;
+// Utility function to convert 24-hour time to AM/PM format
+const convertTo12HourFormat = (timeRange: string) => {
+  // Check if time already has AM/PM format
+  if (timeRange.includes('AM') || timeRange.includes('PM')) {
+    return timeRange; // Already formatted, return as is
+  }
+  
+  const [startTime, endTime] = timeRange.split(' - ');
+  
+  const convertTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+  
+  return `${convertTime(startTime)} - ${convertTime(endTime)}`;
 };
 
 export default function AdminYourBookings() {
