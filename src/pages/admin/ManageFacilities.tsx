@@ -528,10 +528,7 @@ export default function ManageFacilities() {
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="text-white text-sm flex items-center">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Change Image
-                  </div>
+                  <Camera className="h-8 w-8 text-white" />
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -651,10 +648,7 @@ export default function ManageFacilities() {
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="text-white text-sm flex items-center">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Change Image
-                  </div>
+                  <Camera className="h-8 w-8 text-white" />
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
