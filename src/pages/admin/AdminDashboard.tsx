@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, Building2, TrendingUp } from "lucide-react";
+import { Calendar, Users, Building2, Shield } from "lucide-react";
 
 export default function AdminDashboard() {
   const stats = [
@@ -18,14 +18,14 @@ export default function AdminDashboard() {
     {
       title: "Facility Utilization Rate",
       value: "65%",
-      description: "Increased 20% from last month",
+      description: "+20% from last month",
       icon: Building2,
     },
     {
-      title: "Revenue",
-      value: "₹45,234",
-      description: "+15% from last month",
-      icon: TrendingUp,
+      title: "Blocked by Students",
+      value: "45%",
+      description: "+35% from last month",
+      icon: Shield,
     },
   ];
 
