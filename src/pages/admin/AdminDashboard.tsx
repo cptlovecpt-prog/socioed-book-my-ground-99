@@ -247,6 +247,50 @@ export default function AdminDashboard() {
     { name: "Badminton Court", bookings: 18 },
   ];
 
+  // Function to get students data based on selected time period
+  const getStudentsForPeriod = () => {
+    switch (timePeriod) {
+      case "week":
+        return [
+          { name: "Alice Johnson", bookings: 12, qrScans: 8, cancellations: 2, favoriteGame: "Basketball" },
+          { name: "Bob Smith", bookings: 10, qrScans: 15, cancellations: 1, favoriteGame: "Tennis" },
+          { name: "Carol Brown", bookings: 8, qrScans: 6, cancellations: 0, favoriteGame: "Badminton" },
+          { name: "David Wilson", bookings: 7, qrScans: 12, cancellations: 3, favoriteGame: "Swimming" },
+          { name: "Eva Davis", bookings: 6, qrScans: 9, cancellations: 1, favoriteGame: "Football" },
+          { name: "Frank Miller", bookings: 5, qrScans: 7, cancellations: 2, favoriteGame: "Cricket" },
+          { name: "Grace Wilson", bookings: 4, qrScans: 5, cancellations: 0, favoriteGame: "Volleyball" },
+          { name: "Henry Davis", bookings: 3, qrScans: 4, cancellations: 1, favoriteGame: "Hockey" },
+        ];
+      case "range":
+        if (dateRange?.from && dateRange?.to) {
+          return [
+            { name: "Mike Thompson", bookings: 45, qrScans: 52, cancellations: 8, favoriteGame: "Cricket" },
+            { name: "Sarah Miller", bookings: 38, qrScans: 41, cancellations: 5, favoriteGame: "Football" },
+            { name: "Tom Anderson", bookings: 32, qrScans: 28, cancellations: 4, favoriteGame: "Tennis" },
+            { name: "Lisa Garcia", bookings: 28, qrScans: 35, cancellations: 6, favoriteGame: "Basketball" },
+            { name: "James Martinez", bookings: 25, qrScans: 30, cancellations: 3, favoriteGame: "Swimming" },
+            { name: "Emma Johnson", bookings: 22, qrScans: 26, cancellations: 2, favoriteGame: "Badminton" },
+            { name: "Oliver Smith", bookings: 18, qrScans: 21, cancellations: 4, favoriteGame: "Volleyball" },
+            { name: "Ava Brown", bookings: 15, qrScans: 18, cancellations: 1, favoriteGame: "Hockey" },
+          ];
+        }
+        return getMonthStudents();
+      default: // month
+        return getMonthStudents();
+    }
+  };
+
+  const getMonthStudents = () => [
+    { name: "John Doe", bookings: 28, qrScans: 32, cancellations: 5, favoriteGame: "Cricket" },
+    { name: "Jane Smith", bookings: 24, qrScans: 28, cancellations: 3, favoriteGame: "Football" },
+    { name: "Mike Johnson", bookings: 20, qrScans: 25, cancellations: 2, favoriteGame: "Basketball" },
+    { name: "Sarah Wilson", bookings: 18, qrScans: 22, cancellations: 4, favoriteGame: "Tennis" },
+    { name: "Tom Brown", bookings: 15, qrScans: 18, cancellations: 1, favoriteGame: "Swimming" },
+    { name: "Lisa Davis", bookings: 12, qrScans: 15, cancellations: 3, favoriteGame: "Badminton" },
+    { name: "Chris Miller", bookings: 10, qrScans: 12, cancellations: 2, favoriteGame: "Volleyball" },
+    { name: "Amy Garcia", bookings: 8, qrScans: 10, cancellations: 1, favoriteGame: "Hockey" },
+  ];
+
   // Function to get period description
   const getPeriodDescription = () => {
     switch (timePeriod) {
@@ -265,6 +309,7 @@ export default function AdminDashboard() {
   const stats = getStatsForPeriod();
   const allRecentBookings = getAllRecentBookingsForPeriod();
   const popularFacilities = getPopularFacilitiesForPeriod();
+  const studentsData = getStudentsForPeriod();
   
   // Pagination logic
   const totalPages = Math.ceil(allRecentBookings.length / recordsPerPage);
@@ -462,6 +507,42 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Students Dashboard */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Students Dashboard</CardTitle>
+          <CardDescription>
+            Student activity overview {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-3 px-2 font-medium text-sm text-muted-foreground">Name</th>
+                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Bookings</th>
+                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">QR Code Scans</th>
+                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Cancellations</th>
+                  <th className="text-center py-3 px-2 font-medium text-sm text-muted-foreground">Favorite Game</th>
+                </tr>
+              </thead>
+              <tbody>
+                {studentsData.map((student, i) => (
+                  <tr key={i} className="border-b border-border/50">
+                    <td className="py-3 px-2 text-sm font-medium">{student.name}</td>
+                    <td className="py-3 px-2 text-sm text-center">{student.bookings}</td>
+                    <td className="py-3 px-2 text-sm text-center">{student.qrScans}</td>
+                    <td className="py-3 px-2 text-sm text-center">{student.cancellations}</td>
+                    <td className="py-3 px-2 text-sm text-center">{student.favoriteGame}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
