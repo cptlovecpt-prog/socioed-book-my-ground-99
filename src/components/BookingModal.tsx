@@ -811,7 +811,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       {/* Fullscreen QR Code Overlay */}
       {isQrFullscreen && qrCodeUrl && (
         <div 
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] cursor-pointer"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center cursor-pointer"
+          style={{ zIndex: 99999 }}
           onClick={() => setIsQrFullscreen(false)}
         >
           <div className="relative max-w-md w-full mx-4">
