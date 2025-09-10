@@ -629,15 +629,15 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                                   Blocked by Admin
                                 </Badge>
                               ) : slot.unavailableReason === 'maintenance' ? (
-                                <Badge 
-                                  className="font-bold relative"
-                                  style={{ 
-                                    backgroundColor: '#9c7464', 
-                                    borderColor: '#9c7464',
-                                    color: '#663c2e',
-                                    zIndex: 50 
-                                  }}
-                                >
+                                 <Badge 
+                                   className="font-bold relative"
+                                   style={{ 
+                                     backgroundColor: '#9c7464', 
+                                     borderColor: '#9c7464',
+                                     color: '#ffffff',
+                                     zIndex: 50 
+                                   }}
+                                 >
                                   Down for Maintenance
                                 </Badge>
                               ) : (
