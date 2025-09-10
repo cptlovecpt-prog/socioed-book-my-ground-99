@@ -147,6 +147,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const [shareToken] = useState("BK-" + Math.random().toString(36).substr(2, 8).toUpperCase());
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [isQrFullscreen, setIsQrFullscreen] = useState<boolean>(false);
+  
   const handleDialogClose = (open: boolean) => {
     if (!open) {
       if (currentStep === 'confirmation') {
@@ -703,7 +705,10 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
             
             <div className="flex justify-center">
               {qrCodeUrl ? (
-                <div className="p-4 bg-white rounded-lg border">
+                <div 
+                  className="p-4 bg-white rounded-lg border cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => setIsQrFullscreen(true)}
+                >
                   <img 
                     src={qrCodeUrl} 
                     alt="QR Code" 
@@ -802,6 +807,31 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
           )}
         </DialogContent>
       </Dialog>
+      
+      {/* Fullscreen QR Code Overlay */}
+      {isQrFullscreen && qrCodeUrl && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] cursor-pointer"
+          onClick={() => setIsQrFullscreen(false)}
+        >
+          <div className="relative max-w-md w-full mx-4">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl">
+              <img 
+                src={qrCodeUrl} 
+                alt="QR Code - Full Screen" 
+                className="w-full h-auto"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            <button
+              onClick={() => setIsQrFullscreen(false)}
+              className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+            >
+              <X className="h-5 w-5 text-gray-600" />
+            </button>
+          </div>
+        </div>
+      )}
       
       <AlertDialog open={showExitConfirm} onOpenChange={setShowExitConfirm}>
         <AlertDialogContent>
