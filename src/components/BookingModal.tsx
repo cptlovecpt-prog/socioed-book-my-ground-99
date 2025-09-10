@@ -59,7 +59,7 @@ const sportConfig: { [key: string]: number } = {
 };
 
 // Generate 45-minute slots for morning (6:30 AM - 9:30 AM) and evening (5:30 PM - 10:00 PM)
-const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
+const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSlot[] => {
   const slots: TimeSlot[] = [];
   let id = 1;
   
@@ -86,19 +86,20 @@ const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
     const random = seededRandom(dateSeed + id);
     let available: number;
     
-    if (random < 0.4) {
-      available = 15; // Fully available
+    if (random < 0.3) {
+      available = facilityCapacity; // Fully available
     } else if (random < 0.8) {
-      available = Math.floor(seededRandom(dateSeed + id + 1000) * 8) + 3; // Partially available (3-10)
+      // Partially available - generate X where X < facilityCapacity
+      available = Math.floor(seededRandom(dateSeed + id + 1000) * (facilityCapacity - 1)) + 1;
     } else {
-      available = 0; // Full
+      available = 0; // Slot unavailable
     }
     
     slots.push({
       id: id.toString(),
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
-      capacity: 15
+      capacity: facilityCapacity
     });
     id++;
   }
@@ -117,19 +118,20 @@ const generateTimeSlots = (selectedDate: Date): TimeSlot[] => {
     const random = seededRandom(dateSeed + id);
     let available: number;
     
-    if (random < 0.4) {
-      available = 15; // Fully available
+    if (random < 0.3) {
+      available = facilityCapacity; // Fully available
     } else if (random < 0.8) {
-      available = Math.floor(seededRandom(dateSeed + id + 1000) * 8) + 3; // Partially available (3-10)
+      // Partially available - generate X where X < facilityCapacity
+      available = Math.floor(seededRandom(dateSeed + id + 1000) * (facilityCapacity - 1)) + 1;
     } else {
-      available = 0; // Full
+      available = 0; // Slot unavailable
     }
     
     slots.push({
       id: id.toString(),
       time: `${format(startTime, 'h:mm a')} - ${format(endTime, 'h:mm a')}`,
       available: available,
-      capacity: 15
+      capacity: facilityCapacity
     });
     id++;
   }
@@ -167,7 +169,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const { toast } = useToast();
   const { addBooking, bookings } = useBookings();
   
-  const timeSlots = generateTimeSlots(selectedDate);
+  const timeSlots = generateTimeSlots(selectedDate, facility ? sportConfig[facility.sport] || 10 : 10);
   const maxParticipants = facility ? sportConfig[facility.sport] || 10 : 10;
 
   // Generate dates for the next week initially
@@ -500,64 +502,65 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
             <div>
               <h3 className="font-medium mb-3">Available Time Slots</h3>
               <div className="grid gap-2">
-                {timeSlots.map((slot) => {
-                  const isAvailable = slot.available > 0;
-                  
-                  return (
-                    <div
-                      key={slot.id}
-                      onClick={() => isAvailable && handleSlotSelect(slot.id)}
-                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                        selectedSlot === slot.id
-                          ? 'border-primary bg-primary/5'
-                          : isAvailable 
-                            ? 'border-border hover:border-primary/50' 
-                            : 'border-border bg-muted cursor-not-allowed opacity-50'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Clock className="h-4 w-4" />
-                          <span className="font-medium">{slot.time}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {slot.available === 0 ? (
-                            <Badge 
-                              className="text-white font-bold relative"
-                              style={{ 
-                                backgroundColor: '#ed4545', 
-                                borderColor: '#ed4545',
-                                zIndex: 50 
-                              }}
-                            >
-                              Slot Unavailable
-                            </Badge>
-                          ) : slot.available === slot.capacity ? (
-                            <Badge 
-                              className="text-white font-bold relative"
-                              style={{ 
-                                backgroundColor: '#10b981', 
-                                borderColor: '#10b981',
-                                zIndex: 50 
-                              }}
-                            >
-                              Fully Available
-                            </Badge>
-                          ) : (
-                            <Badge 
-                              className="text-white font-bold relative"
-                              style={{ 
-                                backgroundColor: '#8b5cf6', 
-                                borderColor: '#8b5cf6',
-                                zIndex: 50 
-                              }}
-                            >
-                              {slot.available}/{slot.capacity} Spots Available
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                 {timeSlots.map((slot) => {
+                   const isAvailable = slot.available > 0;
+                   
+                   return (
+                     <div
+                       key={slot.id}
+                       onClick={() => isAvailable && handleSlotSelect(slot.id)}
+                       className={`p-3 rounded-lg border transition-all ${
+                         selectedSlot === slot.id
+                           ? 'border-primary bg-primary/5 cursor-pointer'
+                           : isAvailable 
+                             ? 'border-border hover:border-primary/50 cursor-pointer' 
+                             : 'border-border bg-muted cursor-default opacity-50'
+                       }`}
+                       style={{ cursor: isAvailable ? 'pointer' : 'default' }}
+                     >
+                       <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                           <Clock className="h-4 w-4" />
+                           <span className="font-medium">{slot.time}</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           {slot.available === 0 ? (
+                             <Badge 
+                               className="text-white font-bold relative"
+                               style={{ 
+                                 backgroundColor: '#ef4444', 
+                                 borderColor: '#ef4444',
+                                 zIndex: 50 
+                               }}
+                             >
+                               Slot Unavailable
+                             </Badge>
+                           ) : slot.available === slot.capacity ? (
+                             <Badge 
+                               className="text-white font-bold relative"
+                               style={{ 
+                                 backgroundColor: '#10b981', 
+                                 borderColor: '#10b981',
+                                 zIndex: 50 
+                               }}
+                             >
+                               Fully Available
+                             </Badge>
+                           ) : (
+                             <Badge 
+                               className="text-white font-bold relative"
+                               style={{ 
+                                 backgroundColor: '#8b5cf6', 
+                                 borderColor: '#8b5cf6',
+                                 zIndex: 50 
+                               }}
+                             >
+                               {slot.available}/{slot.capacity} Spots Available
+                             </Badge>
+                           )}
+                         </div>
+                       </div>
+                     </div>
                   );
                 })}
               </div>
