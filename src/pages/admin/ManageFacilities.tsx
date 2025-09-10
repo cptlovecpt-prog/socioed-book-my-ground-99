@@ -29,7 +29,7 @@ export default function ManageFacilities() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const facilities = [
+  const [facilities, setFacilities] = useState([
     {
       id: 1,
       name: "Cricket",
@@ -264,7 +264,7 @@ export default function ManageFacilities() {
       area: "200",
       image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png"
     }
-  ];
+  ]);
 
   const handleEditClick = (facility: any) => {
     setEditingFacility(facility);
@@ -297,12 +297,37 @@ export default function ManageFacilities() {
   };
 
   const handleConfirmChanges = () => {
+    // Check if there are any changes
+    const hasChanges = 
+      formData.name !== editingFacility.name ||
+      formData.location !== editingFacility.location ||
+      formData.sport !== editingFacility.sport ||
+      formData.size !== editingFacility.size ||
+      formData.capacity !== editingFacility.capacity ||
+      formData.image !== editingFacility.image ||
+      formData.type !== (editingFacility.type || "indoor");
+
+    if (!hasChanges) {
+      // No changes made, close modal directly
+      setIsEditModalOpen(false);
+      setEditingFacility(null);
+      return;
+    }
+
+    // Changes detected, show confirmation dialog
     setIsConfirmChangesDialogOpen(true);
   };
 
   const handleSaveChanges = () => {
     console.log("Updating facility:", editingFacility.id, "with data:", formData);
     // Here you would typically update the facility in your backend/state
+    setFacilities(prevFacilities => 
+      prevFacilities.map(facility => 
+        facility.id === editingFacility.id 
+          ? { ...facility, ...formData }
+          : facility
+      )
+    );
     toast({
       title: "Changes Saved",
       description: `${formData.name} has been updated successfully.`,
@@ -365,7 +390,10 @@ export default function ManageFacilities() {
 
   const handleDeleteConfirm = () => {
     console.log("Deleting facility:", deletingFacility.id);
-    // Here you would typically delete the facility from your backend/state
+    // Remove the facility from the state
+    setFacilities(prevFacilities => 
+      prevFacilities.filter(facility => facility.id !== deletingFacility.id)
+    );
     toast({
       title: "Facility Deleted",
       description: `${deletingFacility.name} has been permanently deleted.`,
