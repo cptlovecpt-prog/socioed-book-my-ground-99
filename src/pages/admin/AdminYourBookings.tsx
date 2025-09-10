@@ -1,15 +1,248 @@
-import YourBookings from "@/components/YourBookings";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Clock, MapPin, Users, QrCode, X, Building } from "lucide-react";
+import { useState } from "react";
+import { useBookings } from "@/contexts/BookingContext";
+import { QRCodeDialog } from "@/components/QRCodeDialog";
+import { useToast } from "@/hooks/use-toast";
+import { isQRCodeAvailable } from "@/utils/timeUtils";
+
+// Utility function to check if cancellation is allowed (more than 1 hour before event)
+const isCancellationAllowed = (date: string, time: string): boolean => {
+  try {
+    const now = new Date();
+    let bookingDate: Date;
+    
+    if (date === "Today") {
+      bookingDate = new Date();
+    } else if (date === "Tomorrow") {
+      bookingDate = new Date();
+      bookingDate.setDate(bookingDate.getDate() + 1);
+    } else {
+      bookingDate = new Date(date);
+    }
+    
+    const [hours, minutes] = time.split(':').map(Number);
+    bookingDate.setHours(hours, minutes, 0, 0);
+    
+    const oneHourBefore = new Date(bookingDate.getTime() - 60 * 60 * 1000);
+    return now < oneHourBefore;
+  } catch {
+    return false;
+  }
+};
+
+// Convert 24-hour format to 12-hour format
+const convertTo12HourFormat = (time24: string): string => {
+  const [hours, minutes] = time24.split(':');
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+};
 
 export default function AdminYourBookings() {
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
+  const [bookingForQRCode, setBookingForQRCode] = useState<any>(null);
+  
+  const { bookings, cancelBooking } = useBookings();
+  const { toast } = useToast();
+
+  // Sort bookings by latest first, prioritizing "Today" and "Tomorrow"
+  const sortedBookings = [...bookings].sort((a, b) => {
+    const dateOrder = { "Today": 0, "Tomorrow": 1 };
+    const aOrder = dateOrder[a.date as keyof typeof dateOrder] ?? 2;
+    const bOrder = dateOrder[b.date as keyof typeof dateOrder] ?? 2;
+    
+    if (aOrder !== bOrder) {
+      return aOrder - bOrder;
+    }
+    
+    // For same category, sort by date string (newest first for regular dates)
+    if (aOrder === 2 && bOrder === 2) {
+      return new Date(b.date) > new Date(a.date) ? 1 : -1;
+    }
+    
+    return 0;
+  });
+
+  // Calculate active bookings for this week
+  const activeThisWeek = sortedBookings.filter(booking => 
+    booking.status === 'Upcoming' && 
+    (booking.date === 'Today' || booking.date === 'Tomorrow' || 
+     new Date(booking.date) >= new Date() && 
+     new Date(booking.date) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
+  ).length;
+
+  const handleCancelClick = (bookingId: string) => {
+    setBookingToCancel(bookingId);
+    setShowCancelDialog(true);
+  };
+
+  const handleQRCodeClick = (booking: any) => {
+    if (isQRCodeAvailable(booking.date, booking.time)) {
+      setBookingForQRCode(booking);
+      setShowQRCodeDialog(true);
+    }
+  };
+
+  const handleConfirmCancel = () => {
+    if (bookingToCancel) {
+      cancelBooking(bookingToCancel);
+      toast({
+        title: "Alert",
+        description: "Your booking was canceled as requested, cancellation mail has been sent to all participants.",
+        duration: 4000,
+      });
+    }
+    setShowCancelDialog(false);
+    setBookingToCancel(null);
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Your Bookings</h2>
         <p className="text-muted-foreground">
-          View and manage your facility bookings
+          You have {sortedBookings.length} bookings • {activeThisWeek}/{sortedBookings.length} active this week
         </p>
       </div>
-      <YourBookings isSignedIn={true} />
+
+      <div className="space-y-6">
+        {sortedBookings.length === 0 ? (
+          <Card className="w-full">
+            <CardContent className="p-12 text-center">
+              <p className="text-muted-foreground text-lg">No bookings found</p>
+              <p className="text-muted-foreground text-sm mt-2">Book a facility to see it here</p>
+            </CardContent>
+          </Card>
+        ) : (
+          sortedBookings.map((booking) => (
+            <Card key={booking.id} className="w-full">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-xl font-semibold">{booking.facilityName}</h3>
+                      <Badge 
+                        variant="secondary" 
+                        className={
+                          booking.status === 'Upcoming' 
+                            ? "bg-green-100 text-green-800 border-green-200" 
+                            : booking.status === 'Cancelled'
+                            ? "bg-red-100 text-red-800 border-red-200"
+                            : "bg-gray-100 text-gray-800 border-gray-200"
+                        }
+                      >
+                        {booking.status}
+                      </Badge>
+                    </div>
+                    <p className="text-muted-foreground mb-3">{booking.sport}</p>
+                  </div>
+                  <span className="text-sm text-muted-foreground font-mono">{booking.id}</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">{booking.date} • {convertTo12HourFormat(booking.time)}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{booking.location}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{booking.participants}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Building className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{booking.facilitySize} sq mtrs.</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className={`flex items-center gap-2 ${
+                            !isQRCodeAvailable(booking.date, booking.time) ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                          onClick={() => handleQRCodeClick(booking)}
+                          disabled={!isQRCodeAvailable(booking.date, booking.time)}
+                        >
+                          <QrCode className="h-4 w-4" />
+                          <span className="hidden sm:inline">QR Code</span>
+                        </Button>
+                      </TooltipTrigger>
+                      {!isQRCodeAvailable(booking.date, booking.time) && (
+                        <TooltipContent>
+                          <p>QR Code available 1 hr before event starts till 20 mins after event starts</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
+                  {booking.status === 'Upcoming' && (
+                    (() => {
+                      const canCancel = isCancellationAllowed(booking.date, booking.time);
+                      return (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className={`flex items-center gap-2 text-red-600 hover:bg-red-50 ${
+                            !canCancel ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                          onClick={() => canCancel && handleCancelClick(booking.id)}
+                          disabled={!canCancel}
+                        >
+                          <X className="h-4 w-4" />
+                          <span className="hidden sm:inline">Cancel</span>
+                        </Button>
+                      );
+                    })()
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this booking? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmCancel} className="bg-red-600 hover:bg-red-700">
+              Cancel Booking
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* QR Code Dialog */}
+      <QRCodeDialog
+        isOpen={showQRCodeDialog}
+        onClose={() => setShowQRCodeDialog(false)}
+        booking={bookingForQRCode}
+      />
     </div>
   );
 }
