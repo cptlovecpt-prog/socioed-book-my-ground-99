@@ -15,6 +15,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageBanners from "./pages/admin/ManageBanners";
 import ManageFacilities from "./pages/admin/ManageFacilities";
 import ManageBookings from "./pages/admin/ManageBookings";
+import AdminYourBookings from "./pages/admin/AdminYourBookings";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,14 @@ const App = () => {
                   element={
                     <AdminLayout>
                       <ManageBookings />
+                    </AdminLayout>
+                  } 
+                />
+                <Route 
+                  path="/admin/your-bookings" 
+                  element={
+                    <AdminLayout>
+                      <AdminYourBookings />
                     </AdminLayout>
                   } 
                 />

@@ -38,6 +38,7 @@ interface BookingModalProps {
     sport: string;
     location: string;
   } | null;
+  isAdmin?: boolean;
 }
 
 // Sport configuration with max participants based on Excel data
@@ -186,10 +187,11 @@ const generateTimeSlots = (selectedDate: Date, facilityCapacity: number): TimeSl
   return slots;
 };
 
-export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingModalProps) => {
+export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = false }: BookingModalProps) => {
   const [currentStep, setCurrentStep] = useState<BookingStep>('date-slot-selection');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([]); // For admin multiple selection
   const [participantCount, setParticipantCount] = useState<number>(1);
   const [participants, setParticipants] = useState<ParticipantData[]>([{ enrollmentId: '' }]);
   const [sendEmailConfirmation, setSendEmailConfirmation] = useState<boolean>(false);
@@ -267,12 +269,22 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   };
 
   const handleSlotSelect = async (slotId: string) => {
-    setSelectedSlot(slotId);
-    
-    // Update availability after selection (API call placeholder)
-    await updateSlotAvailability(slotId);
-    
-    setCurrentStep('booking-confirmation');
+    if (isAdmin) {
+      // Admin can select multiple slots
+      if (selectedSlots.includes(slotId)) {
+        setSelectedSlots(prev => prev.filter(id => id !== slotId));
+      } else {
+        setSelectedSlots(prev => [...prev, slotId]);
+      }
+    } else {
+      // Regular user selects single slot
+      setSelectedSlot(slotId);
+      
+      // Update availability after selection (API call placeholder)
+      await updateSlotAvailability(slotId);
+      
+      setCurrentStep('booking-confirmation');
+    }
   };
 
   // Placeholder function for updating slot availability via API
@@ -331,7 +343,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   };
 
   const handleConfirmBooking = async () => {
-    if (!selectedSlot || !facility) return;
+    const slotsToBook = isAdmin ? selectedSlots : (selectedSlot ? [selectedSlot] : []);
+    
+    if (slotsToBook.length === 0 || !facility) return;
     
     if (!isSignedIn) {
       toast({
@@ -341,54 +355,59 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       return;
     }
 
-    // Check if user already has 4 upcoming bookings
-    const upcomingBookings = bookings.filter(booking => booking.status === 'Upcoming');
-    if (upcomingBookings.length >= 4) {
-      toast({
-        title: "You already have 4 active bookings, you can schedule another booking after a booking completes",
-        duration: 4000,
-      });
-      return;
+    // Check if user already has 4 upcoming bookings (only for regular users)
+    if (!isAdmin) {
+      const upcomingBookings = bookings.filter(booking => booking.status === 'Upcoming');
+      if (upcomingBookings.length >= 4) {
+        toast({
+          title: "You already have 4 active bookings, you can schedule another booking after a booking completes",
+          duration: 4000,
+        });
+        return;
+      }
     }
 
-    const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
-    if (selectedTimeSlot) {
-      const bookingData = {
-        facilityName: facility.name,
-        sport: facility.sport,
-        location: facility.location,
-        date: isSameDay(selectedDate, new Date()) ? "Today" : 
-              isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
-              format(selectedDate, 'MMM dd, yyyy'),
-        time: selectedTimeSlot.time,
-        image: getSportImage(facility.sport),
-        participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`,
-        facilitySize: getSizeForSport(facility.sport)
-      };
+    // Create bookings for each selected slot
+    for (const slotId of slotsToBook) {
+      const selectedTimeSlot = timeSlots.find(s => s.id === slotId);
+      if (selectedTimeSlot) {
+        const bookingData = {
+          facilityName: facility.name,
+          sport: facility.sport,
+          location: facility.location,
+          date: isSameDay(selectedDate, new Date()) ? "Today" : 
+                isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
+                format(selectedDate, 'MMM dd, yyyy'),
+          time: selectedTimeSlot.time,
+          image: getSportImage(facility.sport),
+          participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`,
+          facilitySize: getSizeForSport(facility.sport)
+        };
 
-      // Add the booking to context
-      addBooking(bookingData);
-      
-      // Generate QR code
-      generateQRCode();
-
-      // Send email confirmation if requested
-      if (sendEmailConfirmation) {
-        try {
-          // Placeholder for participant emails - would typically fetch from enrollment IDs
-          const participantEmails = participants.map(p => `${p.enrollmentId}@example.com`);
-          await sendConfirmationEmails(bookingData, participantEmails);
-        } catch (error) {
-          console.error('Email sending failed:', error);
+        // Add the booking to context
+        addBooking(bookingData);
+        
+        // Send email confirmation if requested
+        if (sendEmailConfirmation) {
+          try {
+            // Placeholder for participant emails - would typically fetch from enrollment IDs
+            const participantEmails = participants.map(p => `${p.enrollmentId}@example.com`);
+            await sendConfirmationEmails(bookingData, participantEmails);
+          } catch (error) {
+            console.error('Email sending failed:', error);
+          }
         }
       }
-      
-      toast({
-        title: "Booking Confirmed",
-        description: "Your booking details have been shared on your university e-mail address",
-        duration: 5000,
-      });
     }
+    
+    // Generate QR code
+    generateQRCode();
+      
+    toast({
+      title: `Booking${slotsToBook.length > 1 ? 's' : ''} Confirmed`,
+      description: `${slotsToBook.length} slot${slotsToBook.length > 1 ? 's have' : ' has'} been booked successfully`,
+      duration: 5000,
+    });
     
     setCurrentStep('final-confirmation');
   };
@@ -414,6 +433,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     setCurrentStep('date-slot-selection');
     setSelectedDate(new Date());
     setSelectedSlot(null);
+    setSelectedSlots([]); // Reset multiple selections
     setParticipantCount(1);
     setParticipants([{ enrollmentId: '' }]);
     setSendEmailConfirmation(false);
@@ -572,13 +592,16 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               <div className="grid gap-2">
                  {timeSlots.map((slot) => {
                    const isAvailable = slot.available > 0 && !slot.isExpired;
+                   const isSlotSelected = isAdmin 
+                     ? selectedSlots.includes(slot.id)
+                     : selectedSlot === slot.id;
                    
                    return (
                      <div
                        key={slot.id}
                        onClick={() => isAvailable && handleSlotSelect(slot.id)}
                        className={`p-3 rounded-lg border transition-all ${
-                         selectedSlot === slot.id
+                         isSlotSelected
                            ? 'border-primary bg-primary/5 cursor-pointer'
                             : isAvailable 
                               ? 'border-border hover:border-primary/50 cursor-pointer' 
@@ -590,6 +613,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                          <div className="flex items-center gap-3">
                            <Clock className="h-4 w-4" />
                            <span className="font-medium">{slot.time}</span>
+                           {isAdmin && isSlotSelected && (
+                             <Badge className="bg-primary text-primary-foreground">Selected</Badge>
+                           )}
                          </div>
                          <div className="flex items-center gap-2">
                             {slot.isExpired || slot.available === 0 ? (
@@ -657,18 +683,36 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                        </div>
                      </div>
                   );
-                })}
-              </div>
-            </div>
+                 })}
+               </div>
+               
+               {/* Admin multiple slot selection continue button */}
+               {isAdmin && selectedSlots.length > 0 && (
+                 <div className="mt-4 pt-4 border-t">
+                   <div className="flex items-center justify-between">
+                     <div className="text-sm text-muted-foreground">
+                       {selectedSlots.length} slot{selectedSlots.length > 1 ? 's' : ''} selected
+                     </div>
+                     <Button onClick={() => setCurrentStep('booking-confirmation')}>
+                       Continue with {selectedSlots.length} slot{selectedSlots.length > 1 ? 's' : ''}
+                     </Button>
+                   </div>
+                 </div>
+               )}
+             </div>
           </div>
         );
 
       case 'booking-confirmation':
-        const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+        const selectedTimeSlot = isAdmin && selectedSlots.length === 1 
+          ? timeSlots.find(s => s.id === selectedSlots[0])
+          : timeSlots.find(s => s.id === selectedSlot);
         const confirmDateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
                            isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
                            format(selectedDate, 'MMM dd, yyyy');
-        const confirmTimeDisplay = selectedTimeSlot ? convertTo12HourFormat(selectedTimeSlot.time) : '';
+        const confirmTimeDisplay = isAdmin && selectedSlots.length > 1
+          ? `${selectedSlots.length} slots selected`
+          : selectedTimeSlot ? convertTo12HourFormat(selectedTimeSlot.time) : '';
         
         return (
           <div className="space-y-6">
@@ -703,13 +747,30 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 </div>
               </div>
               
+              {/* Show selected slots for admin */}
+              {isAdmin && selectedSlots.length > 1 && (
+                <div className="text-left pt-2 border-t">
+                  <h5 className="font-medium mb-2">Selected Time Slots:</h5>
+                  <div className="space-y-1">
+                    {selectedSlots.map(slotId => {
+                      const slot = timeSlots.find(s => s.id === slotId);
+                      return (
+                        <div key={slotId} className="text-sm">
+                          • {slot ? convertTo12HourFormat(slot.time) : ''}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              
               <div className="text-left pt-2">
                 <div className="flex items-center gap-1 text-muted-foreground mb-1">
                   <Users className="h-4 w-4" />
                   <span className="text-sm">Available Spots</span>
                 </div>
                 <p className="font-medium">
-                  {selectedTimeSlot ? `${selectedTimeSlot.available}/${selectedTimeSlot.capacity} spots available` : 'Loading...'}
+                  {selectedTimeSlot ? `${selectedTimeSlot.available}/${selectedTimeSlot.capacity} spots available` : 'Multiple slots selected'}
                 </p>
               </div>
             </div>
@@ -726,7 +787,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 onClick={handleConfirmBooking}
                 className="flex-1 bg-gradient-primary h-12 text-lg font-semibold"
               >
-                Confirm Booking
+                Confirm Booking{isAdmin && selectedSlots.length > 1 ? 's' : ''}
               </Button>
             </div>
           </div>
