@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { QrCode, X, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { useBookings } from "@/contexts/BookingContext";
 import { QRCodeDialog } from "./QRCodeDialog";
 import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
+import { isWithinOneHourOfEvent } from "@/utils/timeUtils";
 
 interface YourBookingsProps {
   isSignedIn: boolean;
@@ -106,6 +108,9 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   
   // Check if cancellation is allowed for current booking
   const canCancel = currentBooking ? isCancellationAllowed(currentBooking.date, currentBooking.time) : false;
+  
+  // Check if QR code is available (within 1 hour of event)
+  const isQRAvailable = currentBooking ? isWithinOneHourOfEvent(currentBooking.date, currentBooking.time) : false;
 
   const nextBooking = () => {
     setCurrentIndex((prev) => (prev + 1) % sortedBookings.length);
@@ -121,7 +126,9 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   };
 
   const handleQRCodeClick = () => {
-    setShowQRCodeDialog(true);
+    if (isQRAvailable) {
+      setShowQRCodeDialog(true);
+    }
   };
 
   const handleConfirmCancel = () => {
@@ -191,10 +198,29 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
             
             {/* Action Buttons */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-              <Button variant="outline" size="sm" className="flex items-center space-x-1" onClick={handleQRCodeClick}>
-                <QrCode className="h-4 w-4" />
-                <span className="hidden sm:inline">QR Code</span>
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className={`flex items-center space-x-1 ${
+                        !isQRAvailable ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      onClick={handleQRCodeClick}
+                      disabled={!isQRAvailable}
+                    >
+                      <QrCode className="h-4 w-4" />
+                      <span className="hidden sm:inline">QR Code</span>
+                    </Button>
+                  </TooltipTrigger>
+                  {!isQRAvailable && (
+                    <TooltipContent>
+                      <p>QR Code will be available 1 hr before event starts</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -221,6 +247,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
         isOpen={showQRCodeDialog}
         onClose={() => setShowQRCodeDialog(false)}
         booking={currentBooking}
+        isQRAvailable={isQRAvailable}
       />
       
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>

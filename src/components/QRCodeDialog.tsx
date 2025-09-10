@@ -17,9 +17,10 @@ interface QRCodeDialogProps {
     participants: string;
     facilitySize: number;
   };
+  isQRAvailable?: boolean;
 }
 
-export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) => {
+export const QRCodeDialog = ({ isOpen, onClose, booking, isQRAvailable = true }: QRCodeDialogProps) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   
   // Utility function to convert 24-hour time to AM/PM format
@@ -85,8 +86,8 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
-          <div className="flex justify-center">
-            {qrCodeUrl ? (
+          <div className="flex justify-center relative">
+            {qrCodeUrl && isQRAvailable ? (
               <div className="p-4 bg-white rounded-lg border">
                 <img 
                   src={qrCodeUrl} 
@@ -95,8 +96,14 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
                 />
               </div>
             ) : (
-              <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
+              <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center relative">
                 <QrCode className="h-12 w-12 text-muted-foreground" />
+                {!isQRAvailable && (
+                  <div className="absolute inset-0 bg-black/50 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
+                    <div className="text-sm font-medium">QR Code will be available</div>
+                    <div className="text-sm">1 hr before event starts</div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -122,6 +129,7 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
             <Button
               onClick={handleWhatsApp}
               className="w-full flex items-center gap-2 h-12 bg-green-600 hover:bg-green-700"
+              disabled={!isQRAvailable}
             >
               <MessageCircle className="h-5 w-5" />
               Share on WhatsApp
@@ -131,6 +139,7 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
               onClick={handleEmail}
               variant="outline"
               className="w-full flex items-center gap-2 h-12"
+              disabled={!isQRAvailable}
             >
               <Mail className="h-5 w-5" />
               Share on Mail

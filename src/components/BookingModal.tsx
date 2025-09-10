@@ -753,14 +753,17 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                            format(selectedDate, 'MMM dd, yyyy');
         const timeDisplay = confirmationTimeSlot ? convertTo12HourFormat(confirmationTimeSlot.time) : '';
         
+        // For confirmation, assume QR is not available yet (newly created booking)
+        const isConfirmationQRAvailable = false;
+        
         return (
           <div className="space-y-6 py-4">
             <div className="text-center">
               <h3 className="text-lg font-semibold text-green-600 mb-2">Booking Confirmed!</h3>
             </div>
             
-            <div className="flex justify-center">
-              {qrCodeUrl ? (
+            <div className="flex justify-center relative">
+              {qrCodeUrl && isConfirmationQRAvailable ? (
                 <div className="p-4 bg-white rounded-lg border">
                   <img 
                     src={qrCodeUrl} 
@@ -769,8 +772,12 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                   />
                 </div>
               ) : (
-                <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
+                <div className="relative w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
                   <QrCode className="h-12 w-12 text-muted-foreground" />
+                  <div className="absolute inset-0 bg-black/50 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
+                    <div className="text-sm font-medium">QR Code will be available</div>
+                    <div className="text-sm">1 hr before event starts</div>
+                  </div>
                 </div>
               )}
             </div>
@@ -796,6 +803,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               <Button
                 onClick={handleShareWhatsApp}
                 className="w-full flex items-center gap-2 h-12 bg-green-600 hover:bg-green-700"
+                disabled={!isConfirmationQRAvailable}
               >
                 <MessageCircle className="h-5 w-5" />
                 Share on WhatsApp
@@ -805,6 +813,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 onClick={handleShareEmail}
                 variant="outline"
                 className="w-full flex items-center gap-2 h-12"
+                disabled={!isConfirmationQRAvailable}
               >
                 <Mail className="h-5 w-5" />
                 Share on Mail

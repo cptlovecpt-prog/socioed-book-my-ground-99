@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Clock, MapPin, Users, QrCode, X, Building } from "lucide-react";
 import { useState } from "react";
@@ -9,6 +10,7 @@ import { useBookings } from "@/contexts/BookingContext";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
 import { useToast } from "@/hooks/use-toast";
 import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
+import { isWithinOneHourOfEvent } from "@/utils/timeUtils";
 
 // Utility function to check if cancellation is allowed (more than 1 hour before event)
 const isCancellationAllowed = (date: string, time: string): boolean => {
@@ -101,8 +103,10 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
   };
 
   const handleQRCodeClick = (booking: any) => {
-    setBookingForQRCode(booking);
-    setShowQRCodeDialog(true);
+    if (isWithinOneHourOfEvent(booking.date, booking.time)) {
+      setBookingForQRCode(booking);
+      setShowQRCodeDialog(true);
+    }
   };
 
   const handleConfirmCancel = () => {
@@ -190,10 +194,29 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
                   </div>
 
                   <div className="flex gap-3">
-                    <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={() => handleQRCodeClick(booking)}>
-                      <QrCode className="h-4 w-4" />
-                      <span className="hidden sm:inline">QR Code</span>
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className={`flex items-center gap-2 ${
+                              !isWithinOneHourOfEvent(booking.date, booking.time) ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            onClick={() => handleQRCodeClick(booking)}
+                            disabled={!isWithinOneHourOfEvent(booking.date, booking.time)}
+                          >
+                            <QrCode className="h-4 w-4" />
+                            <span className="hidden sm:inline">QR Code</span>
+                          </Button>
+                        </TooltipTrigger>
+                        {!isWithinOneHourOfEvent(booking.date, booking.time) && (
+                          <TooltipContent>
+                            <p>QR Code will be available 1 hr before event starts</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                     {booking.status === 'Upcoming' && (
                       (() => {
                         const canCancel = isCancellationAllowed(booking.date, booking.time);
@@ -234,6 +257,7 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
             setBookingForQRCode(null);
           }}
           booking={bookingForQRCode}
+          isQRAvailable={isWithinOneHourOfEvent(bookingForQRCode.date, bookingForQRCode.time)}
         />
       )}
       
