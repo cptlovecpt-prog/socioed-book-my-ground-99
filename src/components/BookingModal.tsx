@@ -659,7 +659,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                     value={participant.enrollmentId}
                     onChange={(e) => handleEnrollmentIdChange(index, e.target.value)}
                     placeholder="Enter enrollment ID"
-                    className="mt-1"
+                    className="mt-1 focus:outline-none focus:ring-0 border-input"
                   />
                 </div>
               ))}
