@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Edit, Trash2, MapPin, Camera, AlertTriangle } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { SPORT_IMAGES } from "@/constants/images";
 
 export default function ManageFacilities() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -41,7 +42,7 @@ export default function ManageFacilities() {
       pricePerHour: 500,
       type: "outdoor",
       area: "7400",
-      image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png"
+      image: SPORT_IMAGES.CRICKET
     },
     {
       id: 2,
@@ -54,7 +55,7 @@ export default function ManageFacilities() {
       pricePerHour: 400,
       type: "outdoor",
       area: "1252",
-      image: "/lovable-uploads/13f55e31-dbbf-4013-9810-91c3cbb90e0a.png"
+      image: SPORT_IMAGES.BASKETBALL
     },
     {
       id: 3,
@@ -67,7 +68,7 @@ export default function ManageFacilities() {
       pricePerHour: 350,
       type: "outdoor",
       area: "960",
-      image: "/lovable-uploads/30c311d0-0531-4989-b2cf-446fa8a581ed.png"
+      image: SPORT_IMAGES.VOLLEYBALL
     },
     {
       id: 4,
@@ -80,7 +81,7 @@ export default function ManageFacilities() {
       pricePerHour: 300,
       type: "outdoor",
       area: "1338",
-      image: "/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png"
+      image: SPORT_IMAGES.TENNIS
     },
     {
       id: 5,
@@ -93,7 +94,7 @@ export default function ManageFacilities() {
       pricePerHour: 250,
       type: "indoor",
       area: "480",
-      image: "/lovable-uploads/41b5b789-fdcc-40d9-a3d7-323838e4ea3f.png"
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
     },
     {
       id: 6,
@@ -106,7 +107,7 @@ export default function ManageFacilities() {
       pricePerHour: 200,
       type: "indoor",
       area: "187",
-      image: "/lovable-uploads/691656f8-b703-46bf-a786-c3ef0507018f.png"
+      image: SPORT_IMAGES.SQUASH
     },
     {
       id: 7,
@@ -119,7 +120,7 @@ export default function ManageFacilities() {
       pricePerHour: 450,
       type: "indoor",
       area: "336",
-      image: "/lovable-uploads/75efefc8-6f39-47ce-b08c-18e3336f2ada.png"
+      image: SPORT_IMAGES.BASKETBALL
     },
     {
       id: 8,
@@ -132,7 +133,7 @@ export default function ManageFacilities() {
       pricePerHour: 600,
       type: "outdoor",
       area: "1474",
-      image: "/lovable-uploads/78147606-33bf-41e6-9575-8f1950aff715.png"
+      image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop"
     },
     {
       id: 9,
@@ -145,7 +146,7 @@ export default function ManageFacilities() {
       pricePerHour: 450,
       type: "indoor",
       area: "336",
-      image: "/lovable-uploads/7db2248d-16a0-4a56-bae5-8a61c1a607e7.png"
+      image: SPORT_IMAGES.BASKETBALL
     },
     {
       id: 10,
@@ -158,7 +159,7 @@ export default function ManageFacilities() {
       pricePerHour: 300,
       type: "indoor",
       area: "308",
-      image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png"
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
     },
     {
       id: 11,
@@ -171,7 +172,7 @@ export default function ManageFacilities() {
       pricePerHour: 400,
       type: "indoor",
       area: "382",
-      image: "/lovable-uploads/923283f5-8027-43fb-b25c-080ee8310656.png"
+      image: SPORT_IMAGES.TENNIS
     },
     {
       id: 12,
@@ -184,7 +185,7 @@ export default function ManageFacilities() {
       pricePerHour: 250,
       type: "indoor",
       area: "1120",
-      image: "/lovable-uploads/ab1aee87-6cbc-4ad4-ab3e-a52aae6cf731.png"
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
     },
     {
       id: 13,
@@ -197,7 +198,7 @@ export default function ManageFacilities() {
       pricePerHour: 500,
       type: "outdoor",
       area: "261",
-      image: "/lovable-uploads/b935a6aa-5073-48e5-9c0f-2e74d806ecaa.png"
+      image: SPORT_IMAGES.FOOTBALL
     },
     {
       id: 14,
@@ -210,7 +211,7 @@ export default function ManageFacilities() {
       pricePerHour: 200,
       type: "outdoor",
       area: "174",
-      image: "/lovable-uploads/bf8cc990-c9ef-41ee-85fe-9fb459ca0ff6.png"
+      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop"
     },
     {
       id: 15,
@@ -223,7 +224,7 @@ export default function ManageFacilities() {
       pricePerHour: 350,
       type: "outdoor",
       area: "480",
-      image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png"
+      image: SPORT_IMAGES.BASKETBALL
     },
     {
       id: 16,
@@ -236,7 +237,7 @@ export default function ManageFacilities() {
       pricePerHour: 200,
       type: "indoor",
       area: "332",
-      image: "/lovable-uploads/f5824fb2-7c1a-4759-89eb-628b108960b7.png"
+      image: SPORT_IMAGES.SQUASH
     },
     {
       id: 17,
@@ -249,7 +250,7 @@ export default function ManageFacilities() {
       pricePerHour: 100,
       type: "indoor",
       area: "2048",
-      image: "/lovable-uploads/fdffe92f-f5b1-4ab3-9e26-bf822ff29b7e.png"
+      image: SPORT_IMAGES.CHESS
     },
     {
       id: 18,
@@ -262,7 +263,7 @@ export default function ManageFacilities() {
       pricePerHour: 350,
       type: "outdoor",
       area: "200",
-      image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png"
+      image: SPORT_IMAGES.BASKETBALL
     }
   ]);
 
