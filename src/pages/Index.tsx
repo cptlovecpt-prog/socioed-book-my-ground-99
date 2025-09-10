@@ -225,11 +225,11 @@ const outdoorFacilities = [
     name: "Pickleball Courts",
     sport: "Pickleball",
     capacity: 40,
-    available: 0,
+    available: 30,
     location: "Near H block",
     nextSlot: "08:00 - 10:00",
     image: "/lovable-uploads/75efefc8-6f39-47ce-b08c-18e3336f2ada.png",
-    status: 'full' as const,
+    status: 'available' as const,
     rating: 4.3,
     votes: 736
   },
