@@ -10,7 +10,7 @@ import { useBookings } from "@/contexts/BookingContext";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
 import { useToast } from "@/hooks/use-toast";
 import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
-import { isWithinOneHourOfEvent } from "@/utils/timeUtils";
+import { isWithinOneHourOfEvent, isQRCodeAvailable } from "@/utils/timeUtils";
 
 // Utility function to check if cancellation is allowed (more than 1 hour before event)
 const isCancellationAllowed = (date: string, time: string): boolean => {
@@ -103,7 +103,7 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
   };
 
   const handleQRCodeClick = (booking: any) => {
-    if (isWithinOneHourOfEvent(booking.date, booking.time)) {
+    if (isQRCodeAvailable(booking.date, booking.time)) {
       setBookingForQRCode(booking);
       setShowQRCodeDialog(true);
     }
@@ -201,18 +201,18 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
                             variant="outline" 
                             size="sm" 
                             className={`flex items-center gap-2 ${
-                              !isWithinOneHourOfEvent(booking.date, booking.time) ? "opacity-50 cursor-not-allowed" : ""
+                              !isQRCodeAvailable(booking.date, booking.time) ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                             onClick={() => handleQRCodeClick(booking)}
-                            disabled={!isWithinOneHourOfEvent(booking.date, booking.time)}
+                            disabled={!isQRCodeAvailable(booking.date, booking.time)}
                           >
                             <QrCode className="h-4 w-4" />
                             <span className="hidden sm:inline">QR Code</span>
                           </Button>
                         </TooltipTrigger>
-                        {!isWithinOneHourOfEvent(booking.date, booking.time) && (
+                        {!isQRCodeAvailable(booking.date, booking.time) && (
                           <TooltipContent>
-                            <p>QR Code will be available 1 hr before event starts</p>
+                            <p>QR Code available 1 hr before event starts till 20 mins after event starts</p>
                           </TooltipContent>
                         )}
                       </Tooltip>
@@ -257,7 +257,7 @@ const MyBookings = ({ isSignedIn, setIsSignedIn, userData, setUserData }: MyBook
             setBookingForQRCode(null);
           }}
           booking={bookingForQRCode}
-          isQRAvailable={isWithinOneHourOfEvent(bookingForQRCode.date, bookingForQRCode.time)}
+          isQRAvailable={isQRCodeAvailable(bookingForQRCode.date, bookingForQRCode.time)}
         />
       )}
       

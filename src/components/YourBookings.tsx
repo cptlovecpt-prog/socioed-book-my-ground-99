@@ -7,7 +7,7 @@ import { QrCode, X, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { useBookings } from "@/contexts/BookingContext";
 import { QRCodeDialog } from "./QRCodeDialog";
 import { addDays, parseISO, parse, isBefore, addHours } from "date-fns";
-import { isWithinOneHourOfEvent } from "@/utils/timeUtils";
+import { isWithinOneHourOfEvent, isQRCodeAvailable } from "@/utils/timeUtils";
 
 interface YourBookingsProps {
   isSignedIn: boolean;
@@ -109,8 +109,8 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
   // Check if cancellation is allowed for current booking
   const canCancel = currentBooking ? isCancellationAllowed(currentBooking.date, currentBooking.time) : false;
   
-  // Check if QR code is available (within 1 hour of event)
-  const isQRAvailable = currentBooking ? isWithinOneHourOfEvent(currentBooking.date, currentBooking.time) : false;
+  // Check if QR code is available (1 hour before to 20 minutes after event start)
+  const isQRAvailable = currentBooking ? isQRCodeAvailable(currentBooking.date, currentBooking.time) : false;
 
   const nextBooking = () => {
     setCurrentIndex((prev) => (prev + 1) % sortedBookings.length);
@@ -216,7 +216,7 @@ const YourBookings = ({ isSignedIn }: YourBookingsProps) => {
                   </TooltipTrigger>
                   {!isQRAvailable && (
                     <TooltipContent>
-                      <p>QR Code will be available 1 hr before event starts</p>
+                      <p>QR Code available 1 hr before event starts till 20 mins after event starts</p>
                     </TooltipContent>
                   )}
                 </Tooltip>

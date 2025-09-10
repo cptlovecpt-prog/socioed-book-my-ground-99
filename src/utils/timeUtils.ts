@@ -1,12 +1,12 @@
 // Utility functions for time-based logic
 
 /**
- * Check if current time is within 1 hour of event start time
+ * Check if QR code is available (1 hour before event start to 20 minutes after event start)
  * @param eventDate - Event date (Today, Tomorrow, or formatted date)
  * @param eventTime - Event time string (e.g., "14:00 - 16:00")
- * @returns boolean - true if within 1 hour of event start
+ * @returns boolean - true if QR code is available
  */
-export const isWithinOneHourOfEvent = (eventDate: string, eventTime: string): boolean => {
+export const isQRCodeAvailable = (eventDate: string, eventTime: string): boolean => {
   try {
     const now = new Date();
     
@@ -44,24 +44,28 @@ export const isWithinOneHourOfEvent = (eventDate: string, eventTime: string): bo
     
     eventDateTime.setHours(hours, minutes, 0, 0);
     
-    // Calculate time difference in milliseconds
-    const timeDiff = eventDateTime.getTime() - now.getTime();
+    // QR code available from 1 hour before event start to 20 minutes after event start
+    const qrStartTime = eventDateTime.getTime() - (60 * 60 * 1000); // 1 hour before
+    const qrEndTime = eventDateTime.getTime() + (20 * 60 * 1000);   // 20 minutes after event start
+    const currentTime = now.getTime();
     
-    // Check if within 1 hour (3600000 milliseconds)
-    return timeDiff <= 3600000 && timeDiff > 0;
+    return currentTime >= qrStartTime && currentTime <= qrEndTime;
   } catch (error) {
     console.error('Error parsing event time:', error);
     return false;
   }
 };
 
+// Keep the old function for backwards compatibility but make it use the new logic
+export const isWithinOneHourOfEvent = isQRCodeAvailable;
+
 /**
- * Get time remaining until QR code becomes available
+ * Get time remaining until QR code becomes available or when it expires
  * @param eventDate - Event date
  * @param eventTime - Event time string
- * @returns string - Human readable time remaining
+ * @returns string - Human readable time remaining or status
  */
-export const getTimeUntilQRAvailable = (eventDate: string, eventTime: string): string => {
+export const getQRCodeStatus = (eventDate: string, eventTime: string): string => {
   try {
     const now = new Date();
     
@@ -93,22 +97,31 @@ export const getTimeUntilQRAvailable = (eventDate: string, eventTime: string): s
     
     eventDateTime.setHours(hours, minutes, 0, 0);
     
-    // QR code becomes available 1 hour before event
-    const qrAvailableTime = new Date(eventDateTime.getTime() - 3600000);
-    const timeDiff = qrAvailableTime.getTime() - now.getTime();
+    // QR code available from 1 hour before to 20 minutes after event start
+    const qrStartTime = new Date(eventDateTime.getTime() - (60 * 60 * 1000));
+    const qrEndTime = new Date(eventDateTime.getTime() + (20 * 60 * 1000));
+    const currentTime = now.getTime();
     
-    if (timeDiff <= 0) return "Available now";
-    
-    const hoursRemaining = Math.floor(timeDiff / (1000 * 60 * 60));
-    const minutesRemaining = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (hoursRemaining > 0) {
-      return `Available in ${hoursRemaining}h ${minutesRemaining}m`;
+    if (currentTime >= qrStartTime.getTime() && currentTime <= qrEndTime.getTime()) {
+      return "Available now";
+    } else if (currentTime < qrStartTime.getTime()) {
+      const timeDiff = qrStartTime.getTime() - currentTime;
+      const hoursRemaining = Math.floor(timeDiff / (1000 * 60 * 60));
+      const minutesRemaining = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (hoursRemaining > 0) {
+        return `Available in ${hoursRemaining}h ${minutesRemaining}m`;
+      } else {
+        return `Available in ${minutesRemaining}m`;
+      }
     } else {
-      return `Available in ${minutesRemaining}m`;
+      return "QR Code expired";
     }
   } catch (error) {
-    console.error('Error calculating time until QR available:', error);
+    console.error('Error calculating QR code status:', error);
     return "Unable to calculate";
   }
 };
+
+// Keep old function name for backwards compatibility
+export const getTimeUntilQRAvailable = getQRCodeStatus;
