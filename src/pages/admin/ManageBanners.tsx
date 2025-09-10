@@ -221,7 +221,7 @@ export default function ManageBanners() {
                 className="w-full h-full object-cover"
               />
               <Badge 
-                className="absolute top-2 right-2"
+                className="absolute top-2 right-2 bg-green-500 hover:bg-green-600 text-white"
                 variant={banner.status === "Active" ? "default" : "secondary"}
               >
                 {banner.status}
