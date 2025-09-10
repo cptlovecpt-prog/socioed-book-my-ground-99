@@ -379,7 +379,22 @@ export default function ManageFacilities() {
 
   const handleSaveNewFacility = () => {
     console.log("Adding new facility with data:", formData);
-    // Here you would typically add the facility to your backend/state
+    // Add the facility to the state
+    const newId = Math.max(...facilities.map(f => f.id)) + 1;
+    const newFacility = {
+      id: newId,
+      name: formData.name,
+      location: formData.location,
+      sport: formData.sport,
+      size: formData.size,
+      capacity: formData.capacity,
+      image: formData.image,
+      type: formData.type,
+      status: "Active",
+      pricePerHour: 0,
+      area: "0"
+    };
+    setFacilities(prev => [...prev, newFacility]);
     toast({
       title: "Facility Added",
       description: `${formData.name} has been added to Book Your Ground successfully.`,

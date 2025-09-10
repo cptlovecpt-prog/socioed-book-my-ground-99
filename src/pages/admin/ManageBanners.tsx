@@ -196,7 +196,14 @@ export default function ManageBanners() {
     console.log("Adding new banner with data:", formData);
     // Add the banner to the state
     const newId = Math.max(...banners.map(b => b.id)) + 1;
-    setBanners(prev => [...prev, { ...formData, id: newId, status: "Active" }]);
+    const newBanner = { 
+      id: newId, 
+      title: formData.title,
+      description: formData.description,
+      image: formData.image,
+      status: "Active" 
+    };
+    setBanners(prev => [...prev, newBanner]);
     toast({
       title: "Banner Added",
       description: `${formData.title} banner has been added to the carousel successfully.`,
