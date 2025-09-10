@@ -284,7 +284,7 @@ export default function ManageBanners() {
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={handleModalClose}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] [&>button]:hidden">
           <DialogHeader>
             <DialogTitle>Edit Banner</DialogTitle>
             <DialogDescription>
@@ -356,7 +356,7 @@ export default function ManageBanners() {
 
       {/* Add Banner Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={handleAddModalClose}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] [&>button]:hidden">
           <DialogHeader>
             <DialogTitle>Add Banner</DialogTitle>
             <DialogDescription>

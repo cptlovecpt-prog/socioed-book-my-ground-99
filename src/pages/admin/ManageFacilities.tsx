@@ -536,7 +536,7 @@ export default function ManageFacilities() {
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={handleModalClose}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] [&>button]:hidden">
           <DialogHeader>
             <DialogTitle>Edit Facility</DialogTitle>
             <DialogDescription>
@@ -656,7 +656,7 @@ export default function ManageFacilities() {
 
       {/* Add Facility Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={handleAddModalClose}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] [&>button]:hidden">
           <DialogHeader>
             <DialogTitle>Add Facility</DialogTitle>
             <DialogDescription>
