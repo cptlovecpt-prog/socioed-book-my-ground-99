@@ -16,7 +16,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const { theme, setTheme } = useTheme();
-  const { user, isSignedIn, signOut } = useAuth();
+  const { user, isSignedIn, signIn, signOut } = useAuth();
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
 
   const toggleTheme = () => {
@@ -33,8 +33,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   };
 
-  const handleSignIn = (data: { name: string; email: string; isAdmin: boolean }) => {
-    // Sign in logic handled by the modal and AuthContext
+  const handleSignIn = () => {
+    // Authentication is handled by SignInModal using AuthContext
     setIsSignInModalOpen(false);
   };
 
@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
         
         <SignInModal
-          isOpen={isSignInModalOpen || !isSignedIn}
+          isOpen={isSignInModalOpen}
           onClose={() => setIsSignInModalOpen(false)}
           onSignIn={handleSignIn}
         />
@@ -132,12 +132,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <Footer isSignedIn={true} />
         </div>
       </div>
-
-      <SignInModal
-        isOpen={isSignInModalOpen}
-        onClose={() => setIsSignInModalOpen(false)}
-        onSignIn={handleSignIn}
-      />
     </SidebarProvider>
   );
 }

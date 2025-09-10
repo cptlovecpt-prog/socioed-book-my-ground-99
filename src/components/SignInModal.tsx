@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -17,28 +17,31 @@ const SignInModal = ({ isOpen, onClose, onSignIn }: SignInModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const { signIn } = useAuth();
 
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (email && password) {
-      // Check for admin credentials
-      const isAdmin = email === 'admin@bu.edu' && password === 'admin123';
+      const success = signIn(email, password);
       
-      // Extract name from email for display purposes
-      const name = isAdmin ? 'Admin' : email.split('@')[0];
-      
-      onSignIn({ name, email, isAdmin });
-      
-      toast({
-        title: isAdmin ? "Welcome Admin" : "Welcome to Book My Ground",
-        description: isAdmin ? "Create booking or Manage Book Your Ground Portal from here" : "You have successfully signed in.",
-      });
-      
-      onClose();
-      setEmail("");
-      setPassword("");
-      setRememberMe(false);
+      if (success) {
+        toast({
+          title: email === 'admin@bu.edu' ? "Welcome Admin" : "Welcome to Book My Ground",
+          description: email === 'admin@bu.edu' ? "Create booking or Manage Book Your Ground Portal from here" : "You have successfully signed in.",
+        });
+        
+        onClose();
+        setEmail("");
+        setPassword("");
+        setRememberMe(false);
+      } else {
+        toast({
+          title: "Sign In Failed",
+          description: "Invalid email or password. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
