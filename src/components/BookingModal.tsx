@@ -574,7 +574,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         
         return (
           <div className="space-y-6">
-            <div className="text-center">
+            <div>
               <h3 className="font-medium mb-3">Select Number of Participants</h3>
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
                 <div className="flex items-center gap-1">
