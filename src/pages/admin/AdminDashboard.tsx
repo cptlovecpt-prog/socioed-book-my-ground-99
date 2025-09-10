@@ -16,7 +16,73 @@ export default function AdminDashboard() {
   const oneYearAgo = subYears(new Date(), 1);
   const today = startOfDay(new Date());
 
-  const stats = [
+  // Function to get stats based on selected time period
+  const getStatsForPeriod = () => {
+    switch (timePeriod) {
+      case "week":
+        return [
+          {
+            title: "Total Bookings",
+            value: "187",
+            description: "+23% from last week",
+            icon: Calendar,
+          },
+          {
+            title: "Active Users",
+            value: "89",
+            description: "+15% from last week",
+            icon: Users,
+          },
+          {
+            title: "Facility Utilization Rate",
+            value: "72%",
+            description: "+5% from last week",
+            icon: Building2,
+          },
+          {
+            title: "Blocked by Students",
+            value: "38%",
+            description: "+12% from last week",
+            icon: Shield,
+          },
+        ];
+      case "range":
+        if (dateRange?.from && dateRange?.to) {
+          return [
+            {
+              title: "Total Bookings",
+              value: "892",
+              description: "Selected date range",
+              icon: Calendar,
+            },
+            {
+              title: "Active Users",
+              value: "234",
+              description: "Selected date range",
+              icon: Users,
+            },
+            {
+              title: "Facility Utilization Rate",
+              value: "58%",
+              description: "Selected date range",
+              icon: Building2,
+            },
+            {
+              title: "Blocked by Students",
+              value: "41%",
+              description: "Selected date range",
+              icon: Shield,
+            },
+          ];
+        }
+        // Fallback to month if no range selected
+        return getMonthStats();
+      default: // month
+        return getMonthStats();
+    }
+  };
+
+  const getMonthStats = () => [
     {
       title: "Total Bookings",
       value: "1,234",
@@ -42,6 +108,95 @@ export default function AdminDashboard() {
       icon: Shield,
     },
   ];
+
+  // Function to get recent bookings based on selected time period
+  const getRecentBookingsForPeriod = () => {
+    switch (timePeriod) {
+      case "week":
+        return [
+          { facility: "Basketball Court", user: "Alice Johnson", time: "Today at 3:00 PM" },
+          { facility: "Tennis Court", user: "Bob Smith", time: "Today at 1:00 PM" },
+          { facility: "Badminton Court", user: "Carol Brown", time: "Yesterday at 5:00 PM" },
+          { facility: "Swimming Pool", user: "David Wilson", time: "Yesterday at 2:00 PM" },
+          { facility: "Gym", user: "Eva Davis", time: "Monday at 8:00 AM" },
+        ];
+      case "range":
+        if (dateRange?.from && dateRange?.to) {
+          return [
+            { facility: "Cricket Ground", user: "Mike Thompson", time: "Within selected range" },
+            { facility: "Football Field", user: "Sarah Miller", time: "Within selected range" },
+            { facility: "Volleyball Court", user: "Tom Anderson", time: "Within selected range" },
+            { facility: "Hockey Field", user: "Lisa Garcia", time: "Within selected range" },
+            { facility: "Squash Court", user: "James Martinez", time: "Within selected range" },
+          ];
+        }
+        return getMonthBookings();
+      default: // month
+        return getMonthBookings();
+    }
+  };
+
+  const getMonthBookings = () => [
+    { facility: "Cricket Ground", user: "John Doe", time: "Today at 2:00 PM" },
+    { facility: "Cricket Ground", user: "John Doe", time: "Today at 2:00 PM" },
+    { facility: "Cricket Ground", user: "John Doe", time: "Today at 2:00 PM" },
+    { facility: "Cricket Ground", user: "John Doe", time: "Today at 2:00 PM" },
+    { facility: "Cricket Ground", user: "John Doe", time: "Today at 2:00 PM" },
+  ];
+
+  // Function to get popular facilities based on selected time period
+  const getPopularFacilitiesForPeriod = () => {
+    switch (timePeriod) {
+      case "week":
+        return [
+          { name: "Basketball Court", bookings: 28 },
+          { name: "Tennis Court", bookings: 22 },
+          { name: "Badminton Court", bookings: 19 },
+          { name: "Swimming Pool", bookings: 15 },
+          { name: "Gym", bookings: 12 },
+        ];
+      case "range":
+        if (dateRange?.from && dateRange?.to) {
+          return [
+            { name: "Cricket Ground", bookings: 89 },
+            { name: "Football Field", bookings: 76 },
+            { name: "Volleyball Court", bookings: 54 },
+            { name: "Hockey Field", bookings: 43 },
+            { name: "Squash Court", bookings: 32 },
+          ];
+        }
+        return getMonthFacilities();
+      default: // month
+        return getMonthFacilities();
+    }
+  };
+
+  const getMonthFacilities = () => [
+    { name: "Cricket Ground", bookings: 45 },
+    { name: "Football Field", bookings: 38 },
+    { name: "Tennis Court", bookings: 29 },
+    { name: "Basketball Court", bookings: 22 },
+    { name: "Badminton Court", bookings: 18 },
+  ];
+
+  // Function to get period description
+  const getPeriodDescription = () => {
+    switch (timePeriod) {
+      case "week":
+        return "This week's facility bookings from users";
+      case "range":
+        if (dateRange?.from && dateRange?.to) {
+          return `Facility bookings from ${format(dateRange.from, "MMM dd")} to ${format(dateRange.to, "MMM dd")}`;
+        }
+        return "Latest facility bookings from users";
+      default: // month
+        return "Latest facility bookings from users";
+    }
+  };
+
+  const stats = getStatsForPeriod();
+  const recentBookings = getRecentBookingsForPeriod();
+  const popularFacilities = getPopularFacilitiesForPeriod();
 
   return (
     <div className="space-y-6">
@@ -148,22 +303,22 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle>Recent Bookings</CardTitle>
             <CardDescription>
-              Latest facility bookings from users
+              {getPeriodDescription()}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((_, i) => (
+              {recentBookings.map((booking, i) => (
                 <div key={i} className="flex items-center space-x-4">
                   <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
                     <Calendar className="h-4 w-4" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      Cricket Ground booking
+                      {booking.facility} booking
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      by John Doe • Today at 2:00 PM
+                      by {booking.user} • {booking.time}
                     </p>
                   </div>
                 </div>
@@ -176,18 +331,12 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle>Popular Facilities</CardTitle>
             <CardDescription>
-              Most booked facilities this month
+              Most booked facilities {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { name: "Cricket Ground", bookings: 45 },
-                { name: "Football Field", bookings: 38 },
-                { name: "Tennis Court", bookings: 29 },
-                { name: "Basketball Court", bookings: 22 },
-                { name: "Badminton Court", bookings: 18 },
-              ].map((facility, i) => (
+              {popularFacilities.map((facility, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <div className="text-sm font-medium">{facility.name}</div>
                   <div className="text-sm text-muted-foreground">
