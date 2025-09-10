@@ -70,7 +70,7 @@ const HeroCarousel = () => {
   }, [api]);
 
   return (
-    <section className="relative h-[250px] sm:h-[300px] lg:h-[350px] w-full overflow-hidden">
+    <section className="relative h-[400px] w-full overflow-hidden">
       <Carousel
         setApi={setApi}
         plugins={[
@@ -87,15 +87,15 @@ const HeroCarousel = () => {
       >
         <CarouselContent className="h-full">
           {heroImages.map((slide) => (
-            <CarouselItem key={slide.id} className="h-full">
-               <div className="relative h-full">
+            <CarouselItem key={slide.id} className="h-[400px] min-h-[400px]">
+              <div className="relative h-full w-full">
                 <img
                   src={slide.image}
                   alt={slide.title}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
-                <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-4">
+                <div className="absolute inset-0 flex items-end justify-center pb-20 text-center text-white px-4">
                   <div className="w-full max-w-4xl">
                     <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2 sm:mb-4">
                       {slide.title}
