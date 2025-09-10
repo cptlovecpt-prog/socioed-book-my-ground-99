@@ -25,9 +25,6 @@ const items = [
   { title: "Dashboard", url: "/admin", icon: Home },
   { title: "Manage Facilities", url: "/admin/facilities", icon: Building2 },
   { title: "Manage Bookings", url: "/admin/bookings", icon: Calendar },
-  { title: "User Management", url: "/admin/users", icon: Users },
-  { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
