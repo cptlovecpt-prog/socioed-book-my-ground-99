@@ -4,11 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Calendar, Users, Building2, XCircle, CalendarIcon, Search } from "lucide-react";
+import { Calendar, Users, Building2, XCircle, CalendarIcon, Search, Download } from "lucide-react";
 import { useState } from "react";
 import { format, subYears, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
+import * as XLSX from 'xlsx';
 
 export default function AdminDashboard() {
   const [timePeriod, setTimePeriod] = useState<"week" | "month" | "range">("month");
@@ -343,6 +344,62 @@ export default function AdminDashboard() {
   
   const { totalBookings, totalQrScans, totalCancellations } = getTotalStats();
   
+  // Excel download functions
+  const downloadRecentBookingsExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      allRecentBookings.map((booking, index) => ({
+        'S.No': index + 1,
+        'Facility': booking.facility,
+        'User': booking.user,
+        'Time': booking.time
+      }))
+    );
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Recent Bookings');
+    
+    const periodText = timePeriod === "week" ? "Week" : timePeriod === "range" ? "DateRange" : "Month";
+    XLSX.writeFile(wb, `Recent_Bookings_${periodText}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+  };
+  
+  const downloadPopularFacilitiesExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      popularFacilities.map((facility, index) => ({
+        'S.No': index + 1,
+        'Facility Name': facility.name,
+        'Total Bookings': facility.bookings
+      }))
+    );
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Popular Facilities');
+    
+    const periodText = timePeriod === "week" ? "Week" : timePeriod === "range" ? "DateRange" : "Month";
+    XLSX.writeFile(wb, `Popular_Facilities_${periodText}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+  };
+  
+  const downloadStudentsExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      filteredStudents.map((student, index) => ({
+        'S.No': index + 1,
+        'Student Name': student.name,
+        'Bookings': student.bookings,
+        'Bookings %': `${calculatePercentage(student.bookings, totalBookings)}%`,
+        'QR Code Scans': student.qrScans,
+        'QR Scans %': `${calculatePercentage(student.qrScans, totalQrScans)}%`,
+        'Cancellations': student.cancellations,
+        'Cancellations %': `${calculatePercentage(student.cancellations, totalCancellations)}%`,
+        'Favorite Game': student.favoriteGame
+      }))
+    );
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Students Dashboard');
+    
+    const periodText = timePeriod === "week" ? "Week" : timePeriod === "range" ? "DateRange" : "Month";
+    XLSX.writeFile(wb, `Students_Dashboard_${periodText}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+  };
+  
   // Pagination logic
   const totalPages = Math.ceil(allRecentBookings.length / recordsPerPage);
   const startIndex = (currentPage - 1) * recordsPerPage;
@@ -460,10 +517,23 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Bookings</CardTitle>
-            <CardDescription>
-              {getPeriodDescription()} • Showing {startIndex + 1}-{Math.min(endIndex, allRecentBookings.length)} of {allRecentBookings.length}
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Recent Bookings</CardTitle>
+                <CardDescription>
+                  {getPeriodDescription()} • Showing {startIndex + 1}-{Math.min(endIndex, allRecentBookings.length)} of {allRecentBookings.length}
+                </CardDescription>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={downloadRecentBookingsExcel}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download Excel
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -522,10 +592,23 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Popular Facilities</CardTitle>
-            <CardDescription>
-              Most booked facilities {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"}
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Popular Facilities</CardTitle>
+                <CardDescription>
+                  Most booked facilities {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"}
+                </CardDescription>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={downloadPopularFacilitiesExcel}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download Excel
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -545,10 +628,23 @@ export default function AdminDashboard() {
       {/* Students Dashboard */}
       <Card>
         <CardHeader>
-          <CardTitle>Students Dashboard</CardTitle>
-          <CardDescription>
-            Student activity overview {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"} • Showing {studentsStartIndex + 1}-{Math.min(studentsEndIndex, filteredStudents.length)} of {filteredStudents.length} students
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Students Dashboard</CardTitle>
+              <CardDescription>
+                Student activity overview {timePeriod === "week" ? "this week" : timePeriod === "range" && dateRange?.from && dateRange?.to ? "in selected range" : "this month"} • Showing {studentsStartIndex + 1}-{Math.min(studentsEndIndex, filteredStudents.length)} of {filteredStudents.length} students
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadStudentsExcel}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download Excel
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {/* Search Input */}
