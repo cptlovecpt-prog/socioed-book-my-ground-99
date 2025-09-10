@@ -149,50 +149,31 @@ export const QRCodeDialog = ({ isOpen, onClose, booking }: QRCodeDialogProps) =>
         </div>
       </DialogContent>
       
-      {/* Full Screen QR Code View - Completely blocks background dialog interactions */}
+      {/* Full Screen QR Code View - Properly isolated with working close functionality */}
       {isFullScreenOpen && (
         <div 
-          className="fixed inset-0 bg-black/90 flex items-center justify-center"
+          className="fixed inset-0 bg-black/90 flex items-center justify-center cursor-pointer"
           style={{ zIndex: 2147483647 }}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsFullScreenOpen(false);
-          }}
-          onPointerDown={(e) => e.stopPropagation()}
-          onPointerUp={(e) => e.stopPropagation()}
+          onClick={() => setIsFullScreenOpen(false)}
         >
           <div 
             className="relative"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 setIsFullScreenOpen(false);
               }}
-              onPointerDown={(e) => e.stopPropagation()}
-              onPointerUp={(e) => e.stopPropagation()}
-              className="absolute -top-8 -right-8 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-200 hover:scale-110 border-2 border-gray-300 cursor-pointer"
-              style={{ zIndex: 2147483647 }}
+              className="absolute -top-8 -right-8 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-200 hover:scale-110 border-2 border-gray-300 cursor-pointer z-10"
             >
               <X className="h-7 w-7 text-gray-800" />
             </button>
-            <div 
-              className="p-10 bg-white rounded-3xl shadow-2xl"
-              onPointerDown={(e) => e.stopPropagation()}
-              onPointerUp={(e) => e.stopPropagation()}
-            >
+            <div className="p-10 bg-white rounded-3xl shadow-2xl">
               <img 
                 src={qrCodeUrl} 
                 alt="QR Code Full Screen" 
-                className="w-80 h-80 select-none pointer-events-none"
+                className="w-80 h-80 select-none"
                 draggable={false}
               />
             </div>
