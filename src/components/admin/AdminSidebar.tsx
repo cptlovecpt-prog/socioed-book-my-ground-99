@@ -70,7 +70,7 @@ export function AdminSidebar() {
                       to={item.url} 
                       className={getNavClassName(isActive(item.url))}
                     >
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : ''}`} />
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : ''} hover:outline hover:outline-2 hover:outline-[#8c04a4] hover:rounded-sm`} />
                       {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
