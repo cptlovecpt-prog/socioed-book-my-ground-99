@@ -794,65 +794,95 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = 
         );
 
       case 'final-confirmation':
-        const confirmationTimeSlot = timeSlots.find(s => s.id === selectedSlot);
+        const confirmationTimeSlot = isAdmin && selectedSlots.length === 1 
+          ? timeSlots.find(s => s.id === selectedSlots[0])
+          : timeSlots.find(s => s.id === selectedSlot);
         const finalDateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
                            isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
                            format(selectedDate, 'MMM dd, yyyy');
-        const finalTimeDisplay = confirmationTimeSlot ? convertTo12HourFormat(confirmationTimeSlot.time) : '';
+        const finalTimeDisplay = isAdmin && selectedSlots.length > 1
+          ? `${selectedSlots.length} slots selected`
+          : confirmationTimeSlot ? convertTo12HourFormat(confirmationTimeSlot.time) : '';
         
-        // For confirmation, assume QR is not available yet (newly created booking)
-        const isConfirmationQRAvailable = false;
+        // Show QR code instantly for admin users
+        const isConfirmationQRAvailable = isAdmin;
         
         return (
-          <div className="space-y-6 py-4">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-green-600 mb-2">Booking Confirmed!</h3>
+          <div className="bg-gray-900 text-white rounded-lg p-6 space-y-6">
+            <div className="flex items-center gap-2 text-left">
+              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-green-400">Booking Confirmed</h3>
             </div>
             
-            <div className="flex justify-center relative mb-4">
-              {qrCodeUrl && isConfirmationQRAvailable ? (
-                <div className="p-4 bg-white rounded-lg border">
-                  <img 
-                    src={qrCodeUrl} 
-                    alt="QR Code" 
-                    className="w-48 h-48"
-                  />
-                </div>
-              ) : (
-                <div className="relative w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
-                  <img 
-                    src={getImageForFacility(facility)} 
-                    alt={facility.sport}
-                    className="w-48 h-48 rounded-lg object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/90 rounded-lg flex flex-col items-center justify-center text-white text-center p-4">
-                    <div className="text-sm font-medium">QR Code will be available</div>
-                    <div className="text-sm">from 1 hr before till 20 mins after event starts</div>
+            <div className="text-left">
+              <img 
+                src={getImageForFacility(facility)} 
+                alt={facility.sport}
+                className="w-full h-48 rounded-lg object-cover mb-4"
+              />
+              
+              <div className="space-y-2">
+                <h4 className="text-xl font-semibold">{facility.name}</h4>
+                <p className="text-gray-300">
+                  {facility.location} • {getSizeForSport(facility.sport)} sq mtrs.
+                </p>
+                
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>{finalDateDisplay}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>{finalTimeDisplay}</span>
                   </div>
                 </div>
-              )}
-            </div>
-            
-            <div className="text-center space-y-2">
-              <h3 className="font-medium">{facility.name} • {facility.location}</h3>
-              <p className="text-sm text-muted-foreground">{finalDateDisplay} • {finalTimeDisplay}</p>
-              <p className="text-sm text-muted-foreground">{participantCount} participant{participantCount > 1 ? 's' : ''} • {getSizeForSport(facility.sport)} sq mtrs.</p>
-            </div>
-            
-            <div className="text-center text-sm leading-tight px-4 py-3 bg-red-50 border border-red-200 rounded-lg space-y-1">
-              <div>
-                <span className="text-red-600 font-bold">* </span>
-                <span className="text-red-800">Show this QR Code at the entrance to get access to your booked facility</span>
+                
+                {/* Show selected slots for admin */}
+                {isAdmin && selectedSlots.length > 1 && (
+                  <div className="mt-4 pt-4 border-t border-gray-700">
+                    <h5 className="font-medium mb-2">Selected Time Slots:</h5>
+                    <div className="space-y-1">
+                      {selectedSlots.map(slotId => {
+                        const slot = timeSlots.find(s => s.id === slotId);
+                        return (
+                          <div key={slotId} className="text-sm text-gray-300">
+                            • {slot ? convertTo12HourFormat(slot.time) : ''}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div>
-                <span className="text-red-600 font-bold">* </span>
-                <span className="text-red-800">QR Code is only valid from 10 mins before the booked slot to 20 mins after slot starts</span>
+            </div>
+            
+            <div className="space-y-3 text-left text-sm text-gray-300">
+              <div className="flex items-start gap-2">
+                <span className="text-orange-400 font-bold">*</span>
+                <span>QR Code will be available from 1 hr before the event till 20 mins after event starts</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-orange-400 font-bold">*</span>
+                <span>Please check Your Bookings section for QR Code</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-orange-400 font-bold">*</span>
+                <span>QR Code can be scanned at venue from 10 mins before the event till 20 mins after event starts</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-orange-400 font-bold">*</span>
+                <span>Bookings can only be cancelled up to 1 hr before event starts</span>
               </div>
             </div>
             
             <Button
               onClick={handleShareWhatsApp}
-              className="w-full flex items-center gap-2 h-12 text-white"
+              className="w-full flex items-center gap-2 h-12 text-white justify-center"
               style={{ backgroundColor: '#25D366' }}
             >
               <MessageCircle className="h-5 w-5" />
