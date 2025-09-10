@@ -23,7 +23,7 @@ interface IndexProps {
 
 const indoorFacilities = [
   {
-    id: "1",
+    id: "indoor-1",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 12,
@@ -36,7 +36,7 @@ const indoorFacilities = [
     votes: 480
   },
   {
-    id: "2",
+    id: "indoor-2",
     name: "Squash Court",
     sport: "Squash",
     capacity: 6,
@@ -49,12 +49,12 @@ const indoorFacilities = [
     votes: 187
   },
   {
-    id: "3",
+    id: "indoor-3",
     name: "Basketball Court",
     sport: "Basketball",
     capacity: 20,
     available: 15,
-    location: "K block",
+    location: "Near K block",
     nextSlot: "09:00 - 18:00",
     image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
     status: 'available' as const,
@@ -62,7 +62,7 @@ const indoorFacilities = [
     votes: 536
   },
   {
-    id: "4",
+    id: "indoor-4",
     name: "Gym",
     sport: "Gym",
     capacity: 40,
@@ -75,7 +75,7 @@ const indoorFacilities = [
     votes: 308
   },
   {
-    id: "5",
+    id: "indoor-5",
     name: "Gym",
     sport: "Gym",
     capacity: 40,
@@ -88,7 +88,7 @@ const indoorFacilities = [
     votes: 382
   },
   {
-    id: "6",
+    id: "indoor-6",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 10,
@@ -101,7 +101,7 @@ const indoorFacilities = [
     votes: 1120
   },
   {
-    id: "7",
+    id: "indoor-7",
     name: "Padel Court",
     sport: "Padel",
     capacity: 8,
@@ -114,7 +114,7 @@ const indoorFacilities = [
     votes: 832
   },
   {
-    id: "8",
+    id: "indoor-8",
     name: "Chess Room",
     sport: "Chess",
     capacity: 10,
@@ -127,7 +127,7 @@ const indoorFacilities = [
     votes: 2048
   },
   {
-    id: "9",
+    id: "indoor-9",
     name: "Table Tennis",
     sport: "Table Tennis",
     capacity: 48,
@@ -143,7 +143,7 @@ const indoorFacilities = [
 
 const outdoorFacilities = [
   {
-    id: "8",
+    id: "outdoor-1",
     name: "Football Ground",
     sport: "Football",
     capacity: 22,
@@ -156,7 +156,7 @@ const outdoorFacilities = [
     votes: 8968
   },
   {
-    id: "9",
+    id: "outdoor-2",
     name: "Cricket Ground",
     sport: "Cricket",
     capacity: 22,
@@ -169,7 +169,7 @@ const outdoorFacilities = [
     votes: 7400
   },
   {
-    id: "10",
+    id: "outdoor-3",
     name: "Basketball Court",
     sport: "Basketball",
     capacity: 20,
@@ -182,7 +182,7 @@ const outdoorFacilities = [
     votes: 1292
   },
   {
-    id: "11",
+    id: "outdoor-4",
     name: "Volleyball Court",
     sport: "Volleyball",
     capacity: 24,
@@ -195,7 +195,7 @@ const outdoorFacilities = [
     votes: 960
   },
   {
-    id: "12",
+    id: "outdoor-5",
     name: "Tennis Court",
     sport: "Tennis",
     capacity: 8,
@@ -208,7 +208,7 @@ const outdoorFacilities = [
     votes: 1338
   },
   {
-    id: "13",
+    id: "outdoor-6",
     name: "Swimming Pool",
     sport: "Swimming",
     capacity: 35,
@@ -221,7 +221,7 @@ const outdoorFacilities = [
     votes: 1474
   },
   {
-    id: "14",
+    id: "outdoor-7",
     name: "Pickleball Courts",
     sport: "Pickleball",
     capacity: 40,
@@ -234,7 +234,7 @@ const outdoorFacilities = [
     votes: 736
   },
   {
-    id: "15",
+    id: "outdoor-8",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 12,
@@ -247,7 +247,7 @@ const outdoorFacilities = [
     votes: 261
   },
   {
-    id: "16",
+    id: "outdoor-9",
     name: "Badminton Court",
     sport: "Badminton",
     capacity: 8,
@@ -260,7 +260,7 @@ const outdoorFacilities = [
     votes: 174
   },
   {
-    id: "17",
+    id: "outdoor-10",
     name: "Half Basketball Court",
     sport: "Basketball",
     capacity: 12,
