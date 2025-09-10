@@ -804,18 +804,15 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = 
           ? `${selectedSlots.length} slots selected`
           : confirmationTimeSlot ? convertTo12HourFormat(confirmationTimeSlot.time) : '';
         
-        // Show QR code instantly for admin users
-        const isConfirmationQRAvailable = isAdmin;
-        
         return (
-          <div className="bg-gray-900 text-white rounded-lg p-6 space-y-6">
+          <div className="bg-card text-card-foreground rounded-lg p-6 space-y-6 border border-border">
             <div className="flex items-center gap-2 text-left">
               <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-green-400">Booking Confirmed</h3>
+              <h3 className="text-xl font-semibold text-primary">Booking Confirmed</h3>
             </div>
             
             <div className="text-left">
@@ -827,7 +824,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = 
               
               <div className="space-y-2">
                 <h4 className="text-xl font-semibold">{facility.name}</h4>
-                <p className="text-gray-300">
+                <p className="text-muted-foreground">
                   {facility.location} • {getSizeForSport(facility.sport)} sq mtrs.
                 </p>
                 
@@ -844,13 +841,13 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = 
                 
                 {/* Show selected slots for admin */}
                 {isAdmin && selectedSlots.length > 1 && (
-                  <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="mt-4 pt-4 border-t border-border">
                     <h5 className="font-medium mb-2">Selected Time Slots:</h5>
                     <div className="space-y-1">
                       {selectedSlots.map(slotId => {
                         const slot = timeSlots.find(s => s.id === slotId);
                         return (
-                          <div key={slotId} className="text-sm text-gray-300">
+                          <div key={slotId} className="text-sm text-muted-foreground">
                             • {slot ? convertTo12HourFormat(slot.time) : ''}
                           </div>
                         );
@@ -860,23 +857,32 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn, isAdmin = 
                 )}
               </div>
             </div>
-            
-            <div className="space-y-3 text-left text-sm text-gray-300">
-              <div className="flex items-start gap-2">
-                <span className="text-orange-400 font-bold">*</span>
-                <span>QR Code will be available from 1 hr before the event till 20 mins after event starts</span>
+
+            {/* QR Code Section */}
+            {qrCodeUrl && (
+              <div className="bg-secondary/50 rounded-lg p-4 space-y-3">
+                <h5 className="font-medium text-center">Your QR Code</h5>
+                <div className="flex justify-center">
+                  <img 
+                    src={qrCodeUrl} 
+                    alt="Booking QR Code" 
+                    className="w-32 h-32 bg-white p-2 rounded-lg"
+                  />
+                </div>
+                <p className="text-xs text-center text-muted-foreground">
+                  Show this QR code at the venue for entry
+                </p>
               </div>
+            )}
+            
+            <div className="space-y-3 text-left text-sm text-muted-foreground">
               <div className="flex items-start gap-2">
-                <span className="text-orange-400 font-bold">*</span>
+                <span className="text-accent font-bold">*</span>
                 <span>Please check Your Bookings section for QR Code</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-orange-400 font-bold">*</span>
+                <span className="text-accent font-bold">*</span>
                 <span>QR Code can be scanned at venue from 10 mins before the event till 20 mins after event starts</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-orange-400 font-bold">*</span>
-                <span>Bookings can only be cancelled up to 1 hr before event starts</span>
               </div>
             </div>
             
