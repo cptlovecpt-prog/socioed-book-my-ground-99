@@ -1,7 +1,21 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, Building2, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar, Users, Building2, Shield, CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import { format, subYears, startOfDay } from "date-fns";
+import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker";
 
 export default function AdminDashboard() {
+  const [timePeriod, setTimePeriod] = useState<"week" | "month" | "range">("month");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [isDateRangeOpen, setIsDateRangeOpen] = useState(false);
+
+  const oneYearAgo = subYears(new Date(), 1);
+  const today = startOfDay(new Date());
+
   const stats = [
     {
       title: "Total Bookings",
@@ -31,11 +45,77 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
-        <p className="text-muted-foreground">
-          Overview of your sports facility management system
-        </p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
+          <p className="text-muted-foreground">
+            Overview of your sports facility management system
+          </p>
+        </div>
+        
+        {/* Time Period Selection */}
+        <div className="flex gap-2">
+          <Button
+            variant={timePeriod === "week" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setTimePeriod("week")}
+          >
+            This Week
+          </Button>
+          <Button
+            variant={timePeriod === "month" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setTimePeriod("month")}
+          >
+            This Month
+          </Button>
+          
+          {/* Date Range Picker */}
+          <Popover open={isDateRangeOpen} onOpenChange={setIsDateRangeOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant={timePeriod === "range" ? "default" : "outline"}
+                size="sm"
+                className={cn(
+                  "min-w-[120px] justify-start text-left font-normal",
+                  !dateRange && timePeriod === "range" && "text-muted-foreground"
+                )}
+                onClick={() => {
+                  setTimePeriod("range");
+                  setIsDateRangeOpen(true);
+                }}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL dd")} -{" "}
+                      {format(dateRange.to, "LLL dd")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Date Range</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComponent
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+                disabled={(date) => 
+                  date > today || date < oneYearAgo
+                }
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
