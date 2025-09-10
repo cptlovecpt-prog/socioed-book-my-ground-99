@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SignInModal from "./SignInModal";
 import HelpSupportModal from "./HelpSupportModal";
+import { LOGO_IMAGE } from "@/constants/images";
 
 interface NavigationProps {
   isSignedIn: boolean;
@@ -52,16 +53,16 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo and Name */}
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={navigateToHome}>
-            <img src="/lovable-uploads/923283f5-8027-43fb-b25c-080ee8310656.png" alt="Book My Ground" className="h-12 w-auto" />
-            <span className="text-xl font-bold hover:text-primary transition-colors">Book My Ground</span>
+          <div className="flex items-center space-x-2 sm:space-x-3 cursor-pointer" onClick={navigateToHome}>
+            <img src={LOGO_IMAGE} alt="Book My Ground" className="h-8 sm:h-12 w-auto" />
+            <span className="text-lg sm:text-xl font-bold hover:text-primary transition-colors">Book My Ground</span>
           </div>
 
           {/* Right side controls */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Dark mode toggle */}
             <Button
               variant="outline"
@@ -82,10 +83,11 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base"
                   >
                     <User className="h-4 w-4" />
-                    <span>{userData?.name}</span>
+                    <span className="hidden sm:inline">{userData?.name}</span>
+                    <span className="sm:hidden">{userData?.name?.split(' ')[0]}</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -99,10 +101,11 @@ const Navigation = ({ isSignedIn, setIsSignedIn, userData, setUserData }: Naviga
               <Button
                 variant="outline"
                 onClick={openSignInModal}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base"
               >
                 <User className="h-4 w-4" />
-                <span>Sign In</span>
+                <span className="hidden sm:inline">Sign In</span>
+                <span className="sm:hidden">Sign</span>
               </Button>
             )}
 

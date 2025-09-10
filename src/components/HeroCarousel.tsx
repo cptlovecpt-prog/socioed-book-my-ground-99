@@ -3,6 +3,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
+import { HERO_IMAGES } from "@/constants/images";
 
 const heroImages = [
   {
@@ -13,7 +14,7 @@ const heroImages = [
   },
   {
     id: 2,
-    image: "/lovable-uploads/78147606-33bf-41e6-9575-8f1950aff715.png",
+    image: HERO_IMAGES.PICKLEBALL,
     title: "Pickleball Courts",
     description: "Modern pickleball courts for competitive matches"
   },
@@ -69,7 +70,7 @@ const HeroCarousel = () => {
   }, [api]);
 
   return (
-    <section className="relative h-[350px] w-full overflow-hidden">
+    <section className="relative h-[250px] sm:h-[300px] lg:h-[350px] w-full overflow-hidden">
       <Carousel
         setApi={setApi}
         plugins={[
@@ -96,11 +97,11 @@ const HeroCarousel = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
                 <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-                  <div className="max-w-4xl px-4 space-y-4">
-                    <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+                  <div className="max-w-4xl px-4 space-y-2 sm:space-y-4">
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight">
                       {slide.title}
                     </h1>
-                    <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
+                    <p className="text-sm sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
                       {slide.description}
                     </p>
                   </div>

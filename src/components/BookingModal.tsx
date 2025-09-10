@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useBookings } from "@/contexts/BookingContext";
 import { format, addDays, isSameDay } from "date-fns";
 import QRCodeLib from "qrcode";
+import { getSportImage } from "@/constants/images";
 
 interface TimeSlot {
   id: string;
@@ -321,7 +322,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
               format(selectedDate, 'MMM dd, yyyy'),
         time: selectedTimeSlot.time,
-        image: getImageForFacility(facility),
+        image: getSportImage(facility.sport),
         participants: `${participantCount} participant${participantCount > 1 ? 's' : ''}`,
         facilitySize: getSizeForSport(facility.sport)
       };

@@ -13,6 +13,7 @@ import HeroCarousel from "@/components/HeroCarousel";
 import Footer from "@/components/Footer";
 import YourBookings from "@/components/YourBookings";
 import { useToast } from "@/hooks/use-toast";
+import { SPORT_IMAGES } from "@/constants/images";
 
 interface IndexProps {
   isSignedIn: boolean;
@@ -43,7 +44,7 @@ const indoorFacilities = [
     available: 0,
     location: "K block",
     nextSlot: "12:00 - 14:00",
-    image: "/lovable-uploads/de8033c6-2e20-42bf-8b5e-88753e101116.png",
+    image: SPORT_IMAGES.SQUASH,
     status: 'full' as const,
     rating: 4.2,
     votes: 187
@@ -56,7 +57,7 @@ const indoorFacilities = [
     available: 15,
     location: "Near K block",
     nextSlot: "09:00 - 18:00",
-    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
+    image: SPORT_IMAGES.BASKETBALL,
     status: 'available' as const,
     rating: 4.4,
     votes: 536
@@ -108,7 +109,7 @@ const indoorFacilities = [
     available: 0,
     location: "C11-C12 Block",
     nextSlot: "14:00 - 16:00",
-    image: "/lovable-uploads/30c311d0-0531-4989-b2cf-446fa8a581ed.png",
+    image: SPORT_IMAGES.PADEL,
     status: 'full' as const,
     rating: 4.1,
     votes: 832
@@ -121,7 +122,7 @@ const indoorFacilities = [
     available: 6,
     location: "C12 Block",
     nextSlot: "16:00 - 18:00",
-    image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png",
+    image: SPORT_IMAGES.CHESS,
     status: 'available' as const,
     rating: 4.1,
     votes: 2048
@@ -150,7 +151,7 @@ const outdoorFacilities = [
     available: 18,
     location: "Near K block",
     nextSlot: "14:00 - 18:00",
-    image: "/lovable-uploads/3a13d82d-5544-4379-a3e4-a65a065f42f8.png",
+    image: SPORT_IMAGES.FOOTBALL,
     status: 'available' as const,
     rating: 4.7,
     votes: 8968
@@ -163,7 +164,7 @@ const outdoorFacilities = [
     available: 18,
     location: "Old Ground",
     nextSlot: "10:00 - 12:00",
-    image: "/lovable-uploads/ab1aee87-6cbc-4ad4-ab3e-a52aae6cf731.png",
+    image: SPORT_IMAGES.CRICKET,
     status: 'available' as const,
     rating: 4.8,
     votes: 7400
@@ -176,7 +177,7 @@ const outdoorFacilities = [
     available: 0,
     location: "Near K block",
     nextSlot: "16:00 - 18:00",
-    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
+    image: SPORT_IMAGES.BASKETBALL,
     status: 'full' as const,
     rating: 4.5,
     votes: 1292
@@ -189,7 +190,7 @@ const outdoorFacilities = [
     available: 20,
     location: "Near Gate No. 3",
     nextSlot: "12:00 - 14:00",
-    image: "/lovable-uploads/f5824fb2-7c1a-4759-89eb-628b108960b7.png",
+    image: SPORT_IMAGES.VOLLEYBALL,
     status: 'available' as const,
     rating: 4.4,
     votes: 960
@@ -202,7 +203,7 @@ const outdoorFacilities = [
     available: 0,
     location: "Near K block",
     nextSlot: "18:00 - 20:00",
-    image: "/lovable-uploads/fdffe92f-f5b1-4ab3-9e26-bf822ff29b7e.png",
+    image: SPORT_IMAGES.TENNIS,
     status: 'full' as const,
     rating: 4.6,
     votes: 1338
@@ -228,7 +229,7 @@ const outdoorFacilities = [
     available: 30,
     location: "Near H block",
     nextSlot: "08:00 - 10:00",
-    image: "/lovable-uploads/75efefc8-6f39-47ce-b08c-18e3336f2ada.png",
+    image: SPORT_IMAGES.PICKLEBALL,
     status: 'available' as const,
     rating: 4.3,
     votes: 736
@@ -267,7 +268,7 @@ const outdoorFacilities = [
     available: 10,
     location: "C & D block",
     nextSlot: "14:00 - 16:00",
-    image: "/lovable-uploads/8ba8443e-fd66-4b90-842c-e8cea7b3b146.png",
+    image: SPORT_IMAGES.BASKETBALL,
     status: 'available' as const,
     rating: 4.4,
     votes: 480
@@ -331,7 +332,7 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
     if (!isSignedIn) {
       toast({
         title: "Please sign-in to continue your booking",
-        duration: 3000,
+        duration: 4000,
       });
       return;
     }
@@ -362,21 +363,21 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
       </div>
 
       {/* Book Your Sport Section */}
-      <section id="book-your-sport-section" className="py-8 px-4 scroll-mt-20">
+      <section id="book-your-sport-section" className="py-6 sm:py-8 px-3 sm:px-4 scroll-mt-20">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-foreground mb-8">Book Your Sport</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Book Your Sport</h2>
           
-          <Tabs defaultValue="outdoor" className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <Tabs defaultValue="outdoor" className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <TabsList className="grid w-full grid-cols-2 max-w-md">
-                <TabsTrigger value="outdoor" className="text-lg font-bold">Outdoor</TabsTrigger>
-                <TabsTrigger value="indoor" className="text-lg font-bold">Indoor</TabsTrigger>
+                <TabsTrigger value="outdoor" className="text-base sm:text-lg font-bold">Outdoor</TabsTrigger>
+                <TabsTrigger value="indoor" className="text-base sm:text-lg font-bold">Indoor</TabsTrigger>
               </TabsList>
               
               {/* Filters */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                 {/* Show Only Available Toggle */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-between sm:justify-start space-x-2">
                   <Switch 
                     id="show-available" 
                     checked={showOnlyAvailable}
@@ -384,7 +385,7 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
                   />
                   <label 
                     htmlFor="show-available" 
-                    className="text-sm font-medium text-foreground whitespace-nowrap"
+                    className="text-sm font-medium text-foreground"
                   >
                     Show only available
                   </label>
@@ -393,7 +394,7 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
                 {/* Sports Filter */}
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2">
+                    <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto">
                       <Filter className="h-4 w-4" />
                       Filter
                       {selectedSports.length > 0 && (
@@ -474,7 +475,7 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
             )}
             
             <TabsContent value="outdoor">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-x-6 sm:gap-y-8 lg:gap-y-12 justify-items-center">
                 {filterFacilities(outdoorFacilities).map((facility) => (
                   <FacilityCard
                     key={facility.id}
@@ -491,7 +492,7 @@ const Index = ({ isSignedIn, setIsSignedIn, userData, setUserData }: IndexProps)
             </TabsContent>
             
             <TabsContent value="indoor">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-x-6 sm:gap-y-8 lg:gap-y-12 justify-items-center">
                 {filterFacilities(indoorFacilities).map((facility) => (
                   <FacilityCard
                     key={facility.id}

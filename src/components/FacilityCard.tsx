@@ -60,9 +60,9 @@ export const FacilityCard = ({
   };
 
   return (
-    <div className="w-[278px]">
+    <div className="w-full max-w-[278px] mx-auto">
       <Card 
-        className={`booking-card group w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card relative ${
+        className={`booking-card group w-full h-[300px] sm:h-[350px] lg:h-[417px] overflow-hidden bg-card dark:bg-card relative ${
           status === 'available' ? 'cursor-pointer' : 'cursor-default'
         }`} 
         onClick={status === 'available' ? () => onBook(id) : undefined}
@@ -78,23 +78,23 @@ export const FacilityCard = ({
             <div className="absolute inset-0 bg-gray-500/90 z-10" />
           )}
           {/* Drop shadow overlay for text visibility */}
-          <div className="absolute inset-x-0 bottom-0 h-[175px] bg-gradient-to-t from-black/95 via-black/70 to-transparent z-20" />
+          <div className="absolute inset-x-0 bottom-0 h-[120px] sm:h-[150px] lg:h-[175px] bg-gradient-to-t from-black/95 via-black/70 to-transparent z-20" />
           
           <div className="absolute top-2 left-2 z-30">
             {getStatusBadge()}
           </div>
           
-          <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1 text-white z-30">
-            <p className="text-sm text-white/90">{capacity} persons</p>
-            <p className="text-sm text-white/90">{location}</p>
+          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 space-y-1 text-white z-30">
+            <p className="text-xs sm:text-sm text-white/90">{capacity} persons</p>
+            <p className="text-xs sm:text-sm text-white/90">{location}</p>
           </div>
         </div>
       </Card>
       
-      {/* Sport name and size below card - outside the 278x417 dimension */}
-      <div className="mt-3 space-y-1">
-        <p className="text-lg font-semibold text-foreground">{sport}</p>
-        <p className="text-sm text-muted-foreground">{getSizeForSport(sport)} sq mtrs.</p>
+      {/* Sport name and size below card */}
+      <div className="mt-2 sm:mt-3 space-y-1 text-center sm:text-left">
+        <p className="text-base sm:text-lg font-semibold text-foreground">{sport}</p>
+        <p className="text-xs sm:text-sm text-muted-foreground">{getSizeForSport(sport)} sq mtrs.</p>
       </div>
     </div>
   );
