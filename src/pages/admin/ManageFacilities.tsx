@@ -433,6 +433,9 @@ export default function ManageFacilities() {
                 alt={facility.name}
                 className="w-full h-full object-cover"
               />
+              {facility.status === "Down for Maintenance" && (
+                <div className="absolute inset-0 bg-gray-500/80"></div>
+              )}
               <Badge 
                 className={`absolute top-2 right-2 ${
                   facility.status === "Active" 
