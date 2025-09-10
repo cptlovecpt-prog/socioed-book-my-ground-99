@@ -103,7 +103,7 @@ export default function ManageFacilities() {
       sport: "Squash",
       size: "9.75 x 6.4",
       capacity: "6 persons",
-      status: "Active",
+      status: "Down for Maintenance",
       pricePerHour: 200,
       type: "indoor",
       area: "187",
@@ -181,7 +181,7 @@ export default function ManageFacilities() {
       sport: "Badminton",
       size: "13.4 x 6.1",
       capacity: "10 persons",
-      status: "Active",
+      status: "Down for Maintenance",
       pricePerHour: 250,
       type: "indoor",
       area: "1120",
@@ -434,8 +434,11 @@ export default function ManageFacilities() {
                 className="w-full h-full object-cover"
               />
               <Badge 
-                className="absolute top-2 right-2"
-                variant={facility.status === "Active" ? "default" : "secondary"}
+                className={`absolute top-2 right-2 ${
+                  facility.status === "Active" 
+                    ? "bg-green-500 hover:bg-green-600 text-white" 
+                    : "bg-amber-700 hover:bg-amber-800 text-white"
+                }`}
               >
                 {facility.status}
               </Badge>
