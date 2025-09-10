@@ -11,8 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function ManageFacilities() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isConfirmChangesDialogOpen, setIsConfirmChangesDialogOpen] = useState(false);
+  const [isConfirmAddDialogOpen, setIsConfirmAddDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<any>(null);
   const [deletingFacility, setDeletingFacility] = useState<any>(null);
   const { toast } = useToast();
@@ -113,6 +115,43 @@ export default function ManageFacilities() {
     setIsConfirmChangesDialogOpen(false);
   };
 
+  const handleAddFacilityClick = () => {
+    // Reset form data for new facility
+    setFormData({
+      name: "",
+      location: "",
+      sport: "",
+      size: "",
+      capacity: "",
+      image: "",
+      type: "indoor"
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleAddModalClose = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleConfirmAdd = () => {
+    setIsConfirmAddDialogOpen(true);
+  };
+
+  const handleSaveNewFacility = () => {
+    console.log("Adding new facility with data:", formData);
+    // Here you would typically add the facility to your backend/state
+    toast({
+      title: "Facility Added",
+      description: `${formData.name} has been added to Book Your Ground successfully.`,
+    });
+    setIsConfirmAddDialogOpen(false);
+    setIsAddModalOpen(false);
+  };
+
+  const handleCancelAdd = () => {
+    setIsConfirmAddDialogOpen(false);
+  };
+
   const handleModalClose = () => {
     setIsEditModalOpen(false);
     setEditingFacility(null);
@@ -149,7 +188,7 @@ export default function ManageFacilities() {
             Add, edit, and manage sports facilities
           </p>
         </div>
-        <Button>
+        <Button onClick={handleAddFacilityClick}>
           <Plus className="h-4 w-4 mr-2" />
           Add Facility
         </Button>
@@ -344,6 +383,129 @@ export default function ManageFacilities() {
         </DialogContent>
       </Dialog>
 
+      {/* Add Facility Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={handleAddModalClose}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add Facility</DialogTitle>
+            <DialogDescription>
+              Add a new facility card.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Image Section */}
+            <div className="space-y-2">
+              <Label>Facility Image</Label>
+              <div 
+                className="relative aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:border-muted-foreground/50 transition-colors overflow-hidden"
+                onClick={handleImageClick}
+              >
+                {formData.image ? (
+                  <img
+                    src={formData.image}
+                    alt="Facility"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <Camera className="h-8 w-8 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mt-2">Click to select image</p>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="text-white text-sm flex items-center">
+                    <Camera className="h-4 w-4 mr-2" />
+                    Change Image
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Maximum image size allowed is 50kb in .jpeg, .jpg or .png format only
+              </p>
+            </div>
+
+            {/* Facility Type */}
+            <div className="space-y-2">
+              <Label htmlFor="type">Facility Type</Label>
+              <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select facility type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="indoor">Indoor</SelectItem>
+                  <SelectItem value="outdoor">Outdoor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Facility Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Enter facility name"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  placeholder="Enter location"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sport">Sport</Label>
+                <Input
+                  id="sport"
+                  value={formData.sport}
+                  onChange={(e) => handleInputChange('sport', e.target.value)}
+                  placeholder="Enter sport type"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="size">Size</Label>
+                <Input
+                  id="size"
+                  value={formData.size}
+                  onChange={(e) => handleInputChange('size', e.target.value)}
+                  placeholder="Enter size (e.g., 120 x 80)"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="capacity">Capacity</Label>
+              <Input
+                id="capacity"
+                value={formData.capacity}
+                onChange={(e) => handleInputChange('capacity', e.target.value)}
+                placeholder="Enter capacity (e.g., 22 players)"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleAddModalClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmAdd}>
+              Add Facility
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={handleDeleteCancel}>
         <DialogContent className="sm:max-w-[400px]">
@@ -385,6 +547,26 @@ export default function ManageFacilities() {
             </Button>
             <Button onClick={handleSaveChanges}>
               Yes, Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Add Facility Confirmation Dialog */}
+      <Dialog open={isConfirmAddDialogOpen} onOpenChange={handleCancelAdd}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Add Facility</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to add <strong>{formData.name}</strong> to Book Your Ground?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelAdd}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveNewFacility}>
+              Yes, Add Facility
             </Button>
           </DialogFooter>
         </DialogContent>
