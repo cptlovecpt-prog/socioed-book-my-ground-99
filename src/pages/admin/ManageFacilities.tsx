@@ -601,41 +601,7 @@ export default function ManageFacilities() {
               </p>
             </div>
 
-            {/* Facility Type and Tag */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="type">Facility Type</Label>
-                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select facility type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="indoor">Indoor</SelectItem>
-                    <SelectItem value="outdoor">Outdoor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tag">Tag</Label>
-                <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select tag" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
-                  </SelectContent>
-                </Select>
-                {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Comment: {formData.maintenanceComment}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Form Fields */}
+            {/* 1st Row: Facility Name and Facility Type */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Facility Name</Label>
@@ -648,24 +614,28 @@ export default function ManageFacilities() {
               </div>
               
               <div className="space-y-2">
+                <Label htmlFor="type">Facility Type</Label>
+                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select facility type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="indoor">Indoor</SelectItem>
+                    <SelectItem value="outdoor">Outdoor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* 2nd Row: Location and Size */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <Input
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
                   placeholder="Enter location"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sport">Sport</Label>
-                <Input
-                  id="sport"
-                  value={formData.sport}
-                  onChange={(e) => handleInputChange('sport', e.target.value)}
-                  placeholder="Enter sport type"
                 />
               </div>
               
@@ -680,14 +650,49 @@ export default function ManageFacilities() {
               </div>
             </div>
 
+            {/* 3rd Row: Sport and Capacity */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sport">Sport</Label>
+                <Input
+                  id="sport"
+                  value={formData.sport}
+                  onChange={(e) => handleInputChange('sport', e.target.value)}
+                  placeholder="Enter sport type"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="capacity">Capacity</Label>
+                <Input
+                  id="capacity"
+                  value={formData.capacity}
+                  onChange={(e) => handleInputChange('capacity', e.target.value)}
+                  placeholder="Enter capacity (e.g., 22 players)"
+                />
+              </div>
+            </div>
+
+            {/* 4th Row: Tag and Maintenance Comment */}
             <div className="space-y-2">
-              <Label htmlFor="capacity">Capacity</Label>
-              <Input
-                id="capacity"
-                value={formData.capacity}
-                onChange={(e) => handleInputChange('capacity', e.target.value)}
-                placeholder="Enter capacity (e.g., 22 players)"
-              />
+              <Label htmlFor="tag">Tag</Label>
+              <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
+                </SelectContent>
+              </Select>
+              {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
+                <div 
+                  className="text-xs text-muted-foreground mt-1 w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-help" 
+                  title={formData.maintenanceComment}
+                >
+                  Comment: {formData.maintenanceComment}
+                </div>
+              )}
             </div>
           </div>
 
@@ -738,41 +743,7 @@ export default function ManageFacilities() {
               </p>
             </div>
 
-            {/* Facility Type and Tag */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="type">Facility Type <span className="text-red-500">*</span></Label>
-                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select facility type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="indoor">Indoor</SelectItem>
-                    <SelectItem value="outdoor">Outdoor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tag">Tag <span className="text-red-500">*</span></Label>
-                <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select tag" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
-                  </SelectContent>
-                </Select>
-                {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Comment: {formData.maintenanceComment}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Form Fields */}
+            {/* 1st Row: Facility Name and Facility Type */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Facility Name <span className="text-red-500">*</span></Label>
@@ -785,24 +756,28 @@ export default function ManageFacilities() {
               </div>
               
               <div className="space-y-2">
+                <Label htmlFor="type">Facility Type <span className="text-red-500">*</span></Label>
+                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select facility type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="indoor">Indoor</SelectItem>
+                    <SelectItem value="outdoor">Outdoor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* 2nd Row: Location and Size */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
                 <Input
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
                   placeholder="Enter location"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sport">Sport <span className="text-red-500">*</span></Label>
-                <Input
-                  id="sport"
-                  value={formData.sport}
-                  onChange={(e) => handleInputChange('sport', e.target.value)}
-                  placeholder="Enter sport type"
                 />
               </div>
               
@@ -817,14 +792,49 @@ export default function ManageFacilities() {
               </div>
             </div>
 
+            {/* 3rd Row: Sport and Capacity */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sport">Sport <span className="text-red-500">*</span></Label>
+                <Input
+                  id="sport"
+                  value={formData.sport}
+                  onChange={(e) => handleInputChange('sport', e.target.value)}
+                  placeholder="Enter sport type"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="capacity">Capacity <span className="text-red-500">*</span></Label>
+                <Input
+                  id="capacity"
+                  value={formData.capacity}
+                  onChange={(e) => handleInputChange('capacity', e.target.value)}
+                  placeholder="Enter capacity (e.g., 22 players)"
+                />
+              </div>
+            </div>
+
+            {/* 4th Row: Tag and Maintenance Comment */}
             <div className="space-y-2">
-              <Label htmlFor="capacity">Capacity <span className="text-red-500">*</span></Label>
-              <Input
-                id="capacity"
-                value={formData.capacity}
-                onChange={(e) => handleInputChange('capacity', e.target.value)}
-                placeholder="Enter capacity (e.g., 22 players)"
-              />
+              <Label htmlFor="tag">Tag <span className="text-red-500">*</span></Label>
+              <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
+                </SelectContent>
+              </Select>
+              {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
+                <div 
+                  className="text-xs text-muted-foreground mt-1 w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-help" 
+                  title={formData.maintenanceComment}
+                >
+                  Comment: {formData.maintenanceComment}
+                </div>
+              )}
             </div>
           </div>
 
