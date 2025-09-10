@@ -664,14 +664,15 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                                 {slot.available}/{slot.capacity} Spots Available
                               </Badge>
                             ) : (
-                              <Badge 
-                                className="text-white font-bold relative"
-                                style={{ 
-                                  backgroundColor: '#8b5cf6', 
-                                  borderColor: '#8b5cf6',
-                                  zIndex: 50 
-                                }}
-                              >
+                               <Badge 
+                                 className="font-bold relative"
+                                 style={{ 
+                                   backgroundColor: '#8b5cf6', 
+                                   borderColor: '#8b5cf6',
+                                   color: '#a434b4',
+                                   zIndex: 50 
+                                 }}
+                               >
                                 {slot.available}/{slot.capacity} Spots Available
                               </Badge>
                             )}
