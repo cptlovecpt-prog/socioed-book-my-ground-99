@@ -16,8 +16,10 @@ export default function ManageFacilities() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isConfirmChangesDialogOpen, setIsConfirmChangesDialogOpen] = useState(false);
   const [isConfirmAddDialogOpen, setIsConfirmAddDialogOpen] = useState(false);
+  const [isMaintenanceCommentDialogOpen, setIsMaintenanceCommentDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<any>(null);
   const [deletingFacility, setDeletingFacility] = useState<any>(null);
+  const [tempMaintenanceComment, setTempMaintenanceComment] = useState("");
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -26,7 +28,9 @@ export default function ManageFacilities() {
     size: "",
     capacity: "",
     image: "",
-    type: ""
+    type: "",
+    tag: "Active",
+    maintenanceComment: ""
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -276,7 +280,9 @@ export default function ManageFacilities() {
       size: facility.size,
       capacity: facility.capacity,
       image: facility.image,
-      type: facility.type || "indoor"
+      type: facility.type || "indoor",
+      tag: facility.tag || "Active",
+      maintenanceComment: facility.maintenanceComment || ""
     });
     setIsEditModalOpen(true);
   };
@@ -294,7 +300,25 @@ export default function ManageFacilities() {
   };
 
   const handleInputChange = (field: string, value: string) => {
+    if (field === 'tag' && value === 'Schedule for Maintenance') {
+      setTempMaintenanceComment("");
+      setIsMaintenanceCommentDialogOpen(true);
+      return;
+    }
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleMaintenanceCommentConfirm = () => {
+    setFormData(prev => ({ 
+      ...prev, 
+      tag: 'Schedule for Maintenance',
+      maintenanceComment: tempMaintenanceComment
+    }));
+    setIsMaintenanceCommentDialogOpen(false);
+  };
+
+  const handleMaintenanceCommentCancel = () => {
+    setIsMaintenanceCommentDialogOpen(false);
   };
 
   const handleConfirmChanges = () => {
@@ -306,7 +330,9 @@ export default function ManageFacilities() {
       formData.size !== editingFacility.size ||
       formData.capacity !== editingFacility.capacity ||
       formData.image !== editingFacility.image ||
-      formData.type !== (editingFacility.type || "indoor");
+      formData.type !== (editingFacility.type || "indoor") ||
+      formData.tag !== (editingFacility.tag || "Active") ||
+      formData.maintenanceComment !== (editingFacility.maintenanceComment || "");
 
     if (!hasChanges) {
       // No changes made, close modal directly
@@ -351,7 +377,9 @@ export default function ManageFacilities() {
       size: "",
       capacity: "",
       image: "",
-      type: "indoor"
+      type: "indoor",
+      tag: "Active",
+      maintenanceComment: ""
     });
     setIsAddModalOpen(true);
   };
@@ -362,7 +390,7 @@ export default function ManageFacilities() {
 
   const handleConfirmAdd = () => {
     // Check if all fields are filled
-    const requiredFields = ['name', 'location', 'sport', 'size', 'capacity', 'image', 'type'];
+    const requiredFields = ['name', 'location', 'sport', 'size', 'capacity', 'image', 'type', 'tag'];
     const emptyFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
     
     if (emptyFields.length > 0) {
@@ -573,18 +601,38 @@ export default function ManageFacilities() {
               </p>
             </div>
 
-            {/* Facility Type */}
-            <div className="space-y-2">
-              <Label htmlFor="type">Facility Type</Label>
-              <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select facility type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="indoor">Indoor</SelectItem>
-                  <SelectItem value="outdoor">Outdoor</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* Facility Type and Tag */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">Facility Type</Label>
+                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select facility type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="indoor">Indoor</SelectItem>
+                    <SelectItem value="outdoor">Outdoor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tag">Tag</Label>
+                <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select tag" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
+                  </SelectContent>
+                </Select>
+                {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Comment: {formData.maintenanceComment}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Form Fields */}
@@ -690,18 +738,38 @@ export default function ManageFacilities() {
               </p>
             </div>
 
-            {/* Facility Type */}
-            <div className="space-y-2">
-              <Label htmlFor="type">Facility Type <span className="text-red-500">*</span></Label>
-              <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select facility type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="indoor">Indoor</SelectItem>
-                  <SelectItem value="outdoor">Outdoor</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* Facility Type and Tag */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">Facility Type <span className="text-red-500">*</span></Label>
+                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select facility type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="indoor">Indoor</SelectItem>
+                    <SelectItem value="outdoor">Outdoor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tag">Tag <span className="text-red-500">*</span></Label>
+                <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select tag" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
+                  </SelectContent>
+                </Select>
+                {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Comment: {formData.maintenanceComment}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Form Fields */}
@@ -832,6 +900,39 @@ export default function ManageFacilities() {
             </Button>
             <Button onClick={handleSaveNewFacility}>
               Yes, Add Facility
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Maintenance Comment Dialog */}
+      <Dialog open={isMaintenanceCommentDialogOpen} onOpenChange={handleMaintenanceCommentCancel}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Schedule for Maintenance</DialogTitle>
+            <DialogDescription>
+              Please enter a comment for scheduling this facility for maintenance.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="maintenance-comment">Comment</Label>
+              <Input
+                id="maintenance-comment"
+                value={tempMaintenanceComment}
+                onChange={(e) => setTempMaintenanceComment(e.target.value)}
+                placeholder="Enter maintenance comment"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleMaintenanceCommentCancel}>
+              Cancel
+            </Button>
+            <Button onClick={handleMaintenanceCommentConfirm}>
+              Confirm
             </Button>
           </DialogFooter>
         </DialogContent>
