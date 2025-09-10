@@ -37,36 +37,13 @@ const Footer = ({ isSignedIn }: FooterProps) => {
     <>
       <footer className="bg-background border-t border-border mt-16">
         <div className="max-w-6xl mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
             {/* Company Section */}
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-3">Book My Ground</h3>
               <p className="text-muted-foreground text-sm max-w-xs">
                 Playing sports made easy for enthusiasts
               </p>
-            </div>
-            
-            {/* Features Section */}
-            <div>
-              <h4 className="text-base font-medium text-foreground mb-4">Features</h4>
-              <ul className="space-y-2">
-                <li>
-                  <button 
-                    onClick={() => scrollToSection('book-your-sport-section')}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
-                  >
-                    Facility Booking
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={handleMyBookingsClick}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
-                  >
-                    My Bookings
-                  </button>
-                </li>
-              </ul>
             </div>
             
             {/* Company Links Section */}
