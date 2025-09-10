@@ -116,15 +116,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <Moon className="h-4 w-4" />
                 )}
               </Button>
-
-              {/* Logo and title moved to left */}
-              <div className="flex items-center gap-2 ml-2">
-                <h1 className="font-semibold text-lg">Book My Ground</h1>
-                <img src={LOGO_IMAGE} alt="Book My Ground" className="h-8 w-12" />
-              </div>
             </div>
             
-            <h2 className="font-medium text-muted-foreground">Admin Panel</h2>
+            {/* Logo and title moved to extreme right */}
+            <div className="flex items-center gap-2">
+              <h1 className="font-semibold text-lg">Book My Ground</h1>
+              <img src={LOGO_IMAGE} alt="Book My Ground" className="h-8 w-12" />
+            </div>
           </header>
           <main className="flex-1 p-6">
             {children}
