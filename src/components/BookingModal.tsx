@@ -153,6 +153,11 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   
   const handleDialogClose = (open: boolean) => {
     if (!open) {
+      // Prevent dialog from closing if fullscreen QR is open
+      if (isQrFullscreen) {
+        return; // Don't close the dialog, just ignore the close attempt
+      }
+      
       if (currentStep === 'confirmation') {
         resetModal();
       } else {
@@ -864,20 +869,18 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         </DialogContent>
       </Dialog>
       
-      {/* Fullscreen QR Code Overlay - Completely blocks background interactions */}
+      {/* Fullscreen QR Code Overlay - Completely blocks background dialog interactions */}
       {isQrFullscreen && qrCodeUrl && (
         <div 
           className="fixed inset-0 bg-black/90 flex items-center justify-center"
           style={{ zIndex: 2147483647 }}
-          onMouseDown={(e) => e.stopPropagation()}
-          onMouseUp={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             setIsQrFullscreen(false);
           }}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
         >
           <div 
             className="relative"
@@ -885,10 +888,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
               e.preventDefault();
               e.stopPropagation();
             }}
-            onMouseDown={(e) => e.stopPropagation()}
-            onMouseUp={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
           >
             <button
               onClick={(e) => {
@@ -896,8 +897,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                 e.stopPropagation();
                 setIsQrFullscreen(false);
               }}
-              onMouseDown={(e) => e.stopPropagation()}
-              onMouseUp={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              onPointerUp={(e) => e.stopPropagation()}
               className="absolute -top-8 -right-8 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-200 hover:scale-110 border-2 border-gray-300 cursor-pointer"
               style={{ zIndex: 2147483647 }}
             >
@@ -905,20 +906,14 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
             </button>
             <div 
               className="bg-white p-10 rounded-3xl shadow-2xl"
-              onMouseDown={(e) => e.stopPropagation()}
-              onMouseUp={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onTouchEnd={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              onPointerUp={(e) => e.stopPropagation()}
             >
               <img 
                 src={qrCodeUrl} 
                 alt="QR Code - Full Screen" 
-                className="w-80 h-80 select-none"
+                className="w-80 h-80 select-none pointer-events-none"
                 draggable={false}
-                onMouseDown={(e) => e.stopPropagation()}
-                onMouseUp={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
               />
             </div>
           </div>
