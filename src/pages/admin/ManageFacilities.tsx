@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Edit, Trash2, MapPin, Camera } from "lucide-react";
 import { useState, useRef } from "react";
 
@@ -16,7 +17,8 @@ export default function ManageFacilities() {
     sport: "",
     size: "",
     capacity: "",
-    image: ""
+    image: "",
+    type: ""
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,7 +66,8 @@ export default function ManageFacilities() {
       sport: facility.sport,
       size: facility.size,
       capacity: facility.capacity,
-      image: facility.image
+      image: facility.image,
+      type: facility.type || "indoor"
     });
     setIsEditModalOpen(true);
   };
@@ -215,6 +218,23 @@ export default function ManageFacilities() {
                   </div>
                 </div>
               </div>
+              <p className="text-xs text-muted-foreground">
+                Maximum image size allowed is 50kb in .jpeg, .jpg or .png format only
+              </p>
+            </div>
+
+            {/* Facility Type */}
+            <div className="space-y-2">
+              <Label htmlFor="type">Facility Type</Label>
+              <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select facility type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="indoor">Indoor</SelectItem>
+                  <SelectItem value="outdoor">Outdoor</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Form Fields */}
