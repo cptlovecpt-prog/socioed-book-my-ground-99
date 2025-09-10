@@ -234,13 +234,13 @@ export default function ManageBanners() {
             <CardContent>
               <div className="pt-4 border-t">
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="flex justify-center">
+                  <div className="flex justify-start">
                     <Button variant="outline" size="sm" onClick={() => handleEditClick(banner)}>
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
                     </Button>
                   </div>
-                  <div className="flex justify-center">
+                  <div className="flex justify-end">
                     <Button variant="outline" size="sm" onClick={() => handleDeleteClick(banner)}>
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
