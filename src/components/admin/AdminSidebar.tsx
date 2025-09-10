@@ -45,7 +45,7 @@ export function AdminSidebar() {
 
   return (
     <Sidebar collapsible="icon" className={state === "collapsed" ? "w-14" : "w-60"}>
-      <div className="flex items-center justify-between p-2 border-b">
+      <div className="flex items-center justify-between h-14 px-2 border-b">
         <SidebarTrigger className="h-8 w-8 p-1">
           {state === "collapsed" ? (
             <ChevronRight className="h-4 w-4" />
