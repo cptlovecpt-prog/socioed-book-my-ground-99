@@ -1,9 +1,25 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, MapPin } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Plus, Edit, Trash2, MapPin, Camera } from "lucide-react";
+import { useState, useRef } from "react";
 
 export default function ManageFacilities() {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingFacility, setEditingFacility] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    location: "",
+    sport: "",
+    size: "",
+    capacity: "",
+    image: ""
+  });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const facilities = [
     {
       id: 1,
@@ -11,6 +27,7 @@ export default function ManageFacilities() {
       location: "Old Ground",
       sport: "Cricket",
       size: "120 x 80",
+      capacity: "22 players",
       status: "Active",
       pricePerHour: 500,
       image: "/lovable-uploads/02fe3dda-03b5-4600-9dec-0565eb90e485.png"
@@ -21,6 +38,7 @@ export default function ManageFacilities() {
       location: "New Ground",
       sport: "Football",
       size: "100 x 60",
+      capacity: "22 players",
       status: "Active",
       pricePerHour: 600,
       image: "/lovable-uploads/13f55e31-dbbf-4013-9810-91c3cbb90e0a.png"
@@ -31,11 +49,53 @@ export default function ManageFacilities() {
       location: "Sports Complex",
       sport: "Tennis",
       size: "23.77 x 8.23",
+      capacity: "4 players",
       status: "Maintenance",
       pricePerHour: 300,
       image: "/lovable-uploads/30c311d0-0531-4989-b2cf-446fa8a581ed.png"
     },
   ];
+
+  const handleEditClick = (facility: any) => {
+    setEditingFacility(facility);
+    setFormData({
+      name: facility.name,
+      location: facility.location,
+      sport: facility.sport,
+      size: facility.size,
+      capacity: facility.capacity,
+      image: facility.image
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, image: imageUrl }));
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleConfirmChanges = () => {
+    console.log("Updating facility:", editingFacility.id, "with data:", formData);
+    // Here you would typically update the facility in your backend/state
+    setIsEditModalOpen(false);
+    setEditingFacility(null);
+  };
+
+  const handleModalClose = () => {
+    setIsEditModalOpen(false);
+    setEditingFacility(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -72,7 +132,7 @@ export default function ManageFacilities() {
               <CardTitle className="flex items-center justify-between">
                 {facility.name}
                 <div className="flex space-x-1">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={() => handleEditClick(facility)}>
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button variant="ghost" size="sm">
@@ -96,6 +156,10 @@ export default function ManageFacilities() {
                   <span>{facility.size} mtrs</span>
                 </div>
                 <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Capacity:</span>
+                  <span>{facility.capacity}</span>
+                </div>
+                <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Price/Hour:</span>
                   <span className="font-medium">₹{facility.pricePerHour}</span>
                 </div>
@@ -104,6 +168,121 @@ export default function ManageFacilities() {
           </Card>
         ))}
       </div>
+
+      {/* Hidden file input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImageChange}
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
+
+      {/* Edit Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={handleModalClose}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Edit Facility</DialogTitle>
+            <DialogDescription>
+              Make changes to the facility details below.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Image Section */}
+            <div className="space-y-2">
+              <Label>Facility Image</Label>
+              <div 
+                className="relative aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:border-muted-foreground/50 transition-colors overflow-hidden"
+                onClick={handleImageClick}
+              >
+                {formData.image ? (
+                  <img
+                    src={formData.image}
+                    alt="Facility"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <Camera className="h-8 w-8 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mt-2">Click to select image</p>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="text-white text-sm flex items-center">
+                    <Camera className="h-4 w-4 mr-2" />
+                    Change Image
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Facility Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Enter facility name"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  placeholder="Enter location"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sport">Sport</Label>
+                <Input
+                  id="sport"
+                  value={formData.sport}
+                  onChange={(e) => handleInputChange('sport', e.target.value)}
+                  placeholder="Enter sport type"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="size">Size</Label>
+                <Input
+                  id="size"
+                  value={formData.size}
+                  onChange={(e) => handleInputChange('size', e.target.value)}
+                  placeholder="Enter size (e.g., 120 x 80)"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="capacity">Capacity</Label>
+              <Input
+                id="capacity"
+                value={formData.capacity}
+                onChange={(e) => handleInputChange('capacity', e.target.value)}
+                placeholder="Enter capacity (e.g., 22 players)"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleModalClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmChanges}>
+              Confirm Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
