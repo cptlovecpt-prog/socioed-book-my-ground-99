@@ -26,7 +26,7 @@ interface ParticipantData {
   enrollmentId: string;
 }
 
-type BookingStep = 'date-slot-selection' | 'participant-count' | 'participant-details' | 'confirmation';
+type BookingStep = 'date-slot-selection' | 'booking-confirmation' | 'final-confirmation';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -199,7 +199,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   
   const handleDialogClose = (open: boolean) => {
     if (!open) {
-      if (currentStep === 'confirmation') {
+      if (currentStep === 'final-confirmation') {
         resetModal();
       } else {
         setShowExitConfirm(true);
@@ -266,25 +266,29 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     // Don't change step, just update the selected date and show slots
   };
 
-  const handleSlotSelect = (slotId: string) => {
+  const handleSlotSelect = async (slotId: string) => {
     setSelectedSlot(slotId);
-    setCurrentStep('participant-count');
+    
+    // Update availability after selection (API call placeholder)
+    await updateSlotAvailability(slotId);
+    
+    setCurrentStep('booking-confirmation');
   };
 
-  const handleParticipantCountSelect = (count: number) => {
-    setParticipantCount(count);
-    const newParticipants = Array.from({ length: count }, (_, i) => 
-      participants[i] || { enrollmentId: '' }
-    );
-    setParticipants(newParticipants);
-    setCurrentStep('participant-details');
+  // Placeholder function for updating slot availability via API
+  const updateSlotAvailability = async (slotId: string) => {
+    // TODO: Replace with actual API call to update slot availability
+    console.log('Would update slot availability for:', slotId);
+    
+    // Simulate API call delay
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 500);
+    });
   };
 
-  const handleEnrollmentIdChange = (index: number, value: string) => {
-    const updatedParticipants = [...participants];
-    updatedParticipants[index].enrollmentId = value;
-    setParticipants(updatedParticipants);
-  };
+  // Removed handleParticipantCountSelect and handleEnrollmentIdChange as they're no longer needed
 
   const getSizeForSport = (sport: string) => {
     const sizes: { [key: string]: number } = {
@@ -408,7 +412,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       }
     }
     
-    setCurrentStep('confirmation');
+    setCurrentStep('final-confirmation');
   };
 
   const generateQRCode = async () => {
@@ -488,11 +492,8 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
 
   const handleGoBack = () => {
     switch (currentStep) {
-      case 'participant-count':
+      case 'booking-confirmation':
         setCurrentStep('date-slot-selection');
-        break;
-      case 'participant-details':
-        setCurrentStep('participant-count');
         break;
       default:
         break;
@@ -524,15 +525,13 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
   const getStepInfo = () => {
     switch (currentStep) {
       case 'date-slot-selection':
-        return { current: 1, total: 3, label: 'Select Date & Time' };
-      case 'participant-count':
-        return { current: 2, total: 3, label: 'Participants' };
-      case 'participant-details':
-        return { current: 3, total: 3, label: 'Details & Confirm' };
-      case 'confirmation':
-        return { current: 3, total: 3, label: 'Confirmed' };
+        return { current: 1, total: 2, label: 'Select Date & Time' };
+      case 'booking-confirmation':
+        return { current: 2, total: 2, label: 'Confirm Booking' };
+      case 'final-confirmation':
+        return { current: 2, total: 2, label: 'Confirmed' };
       default:
-        return { current: 1, total: 3, label: 'Select Date & Time' };
+        return { current: 1, total: 2, label: 'Select Date & Time' };
     }
   };
 
@@ -604,9 +603,9 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                        className={`p-3 rounded-lg border transition-all ${
                          selectedSlot === slot.id
                            ? 'border-primary bg-primary/5 cursor-pointer'
-                           : isAvailable 
-                             ? 'border-border hover:border-primary/50 cursor-pointer' 
-                             : 'border-border bg-muted cursor-default opacity-50'
+                            : isAvailable 
+                              ? 'border-border hover:border-primary/50 cursor-pointer' 
+                              : 'border-red-200 bg-red-50 cursor-default'
                        }`}
                        style={{ cursor: isAvailable ? 'pointer' : 'default' }}
                      >
@@ -662,7 +661,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                                   zIndex: 50 
                                 }}
                               >
-                                {slot.available}/{slot.capacity} Available
+                                {slot.available}/{slot.capacity} Spots Available
                               </Badge>
                             ) : (
                               <Badge 
@@ -686,144 +685,79 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
           </div>
         );
 
-      case 'participant-count':
+      case 'booking-confirmation':
         const selectedTimeSlot = timeSlots.find(s => s.id === selectedSlot);
-        // Use the sport's maximum capacity from sportConfig
-        const totalSpots = maxParticipants;
-        // Available spots based on the selected time slot
-        const availableSpots = selectedTimeSlot?.available || 0;
+        const confirmDateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
+                           isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
+                           format(selectedDate, 'MMM dd, yyyy');
+        const confirmTimeDisplay = selectedTimeSlot ? convertTo12HourFormat(selectedTimeSlot.time) : '';
         
         return (
-          <div className="flex flex-col h-full space-y-6">
-            <div>
-              <h3 className="font-medium mb-3">Select Number of Participants</h3>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{format(selectedDate, 'MMM dd, yyyy')}</span>
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-4">Confirm Your Booking</h3>
+            </div>
+            
+            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+              <div className="flex justify-center mb-4">
+                <img 
+                  src={getImageForFacility(facility)} 
+                  alt={facility.sport}
+                  className="w-24 h-24 rounded-lg object-cover"
+                />
+              </div>
+              
+              <div className="text-center space-y-2">
+                <h4 className="font-semibold text-lg">{facility.name}</h4>
+                <p className="text-muted-foreground">{facility.sport}</p>
+                <p className="text-muted-foreground">{facility.location}</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+                    <Calendar className="h-4 w-4" />
+                    <span className="text-sm">Date</span>
+                  </div>
+                  <p className="font-medium">{confirmDateDisplay}</p>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{selectedTimeSlot?.time}</span>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+                    <Clock className="h-4 w-4" />
+                    <span className="text-sm">Time</span>
+                  </div>
+                  <p className="font-medium">{confirmTimeDisplay}</p>
                 </div>
               </div>
-              {selectedTimeSlot && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {availableSpots} out of {totalSpots} spots available
-                </p>
-              )}
-            </div>
-            
-            <div className="flex-1">
-              <div 
-                className="grid grid-cols-6 gap-2 min-h-[120px]"
-                style={{ 
-                  gridAutoRows: '40px',
-                  alignContent: 'start'
-                }}
-              >
-                {Array.from({ length: totalSpots }, (_, i) => i + 1).map((count) => {
-                  const isAvailable = count <= availableSpots;
-                  const isSelected = participantCount === count;
-                  
-                  return (
-                    <Button
-                      key={count}
-                      variant={isSelected ? "default" : "outline"}
-                      className={`h-10 text-sm ${!isAvailable ? "opacity-40 cursor-not-allowed bg-muted/50 text-muted-foreground border-muted" : ""}`}
-                      onClick={() => isAvailable ? handleParticipantCountSelect(count) : undefined}
-                      disabled={!isAvailable}
-                    >
-                      {count}
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-            
-            <p className="text-sm text-muted-foreground">
-              Maximum {totalSpots} participants allowed for {facility.sport}
-            </p>
-          </div>
-        );
-        return (
-          <div className="space-y-6">
-            <h3 className="font-medium">Select Number of Participants</h3>
-            
-            <div className="grid grid-cols-5 gap-3">
-              {Array.from({ length: Math.min(maxParticipants, 20) }, (_, i) => i + 1).map((count) => (
-                <Button
-                  key={count}
-                  variant={participantCount === count ? "default" : "outline"}
-                  onClick={() => handleParticipantCountSelect(count)}
-                  className="aspect-square"
-                >
-                  {count}
-                </Button>
-              ))}
-            </div>
-            
-            <p className="text-sm text-muted-foreground">
-              Maximum {maxParticipants} participants allowed for {facility.sport}
-            </p>
-          </div>
-        );
-
-      case 'participant-details':
-        return (
-          <div className="space-y-6">
-            <h3 className="font-medium">Enter Enrollment IDs</h3>
-            
-            <div className="space-y-4 max-h-64 overflow-y-auto">
-              {participants.map((participant, index) => (
-                <div key={index}>
-                  <Label htmlFor={`enrollment-${index}`}>
-                    Participant {index + 1} Enrollment ID
-                  </Label>
-                  <Input
-                    id={`enrollment-${index}`}
-                    value={participant.enrollmentId}
-                    onChange={(e) => handleEnrollmentIdChange(index, e.target.value)}
-                    placeholder="Enter enrollment ID"
-                    className="mt-1 w-full max-w-full border-input !ring-0 !ring-offset-0 focus:!ring-0 focus:!ring-offset-0 focus:!outline-none focus:border-input active:!ring-0 active:!outline-none shadow-none focus:shadow-none"
-                    style={{ 
-                      boxSizing: 'border-box',
-                      minWidth: 0,
-                      maxWidth: '100%',
-                      outline: 'none !important',
-                      boxShadow: 'none !important'
-                    }}
-                  />
+              
+              <div className="text-center pt-2">
+                <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+                  <Users className="h-4 w-4" />
+                  <span className="text-sm">Participants</span>
                 </div>
-              ))}
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="email-confirmation"
-                checked={sendEmailConfirmation}
-                onCheckedChange={(checked) => setSendEmailConfirmation(checked as boolean)}
-              />
-              <Label htmlFor="email-confirmation" className="text-sm">
-                Send mail confirmation
-              </Label>
+                <p className="font-medium">1 participant</p>
+              </div>
+              
+              <div className="text-center pt-2">
+                <p className="text-sm text-muted-foreground">Facility Size: {getSizeForSport(facility.sport)} sq mtrs.</p>
+              </div>
             </div>
             
             <Button 
               onClick={handleConfirmBooking}
-              className="w-full bg-gradient-primary"
+              className="w-full bg-gradient-primary h-12 text-lg font-semibold"
             >
               Confirm Booking
             </Button>
           </div>
         );
 
-      case 'confirmation':
+      case 'final-confirmation':
         const confirmationTimeSlot = timeSlots.find(s => s.id === selectedSlot);
-        const dateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
+        const finalDateDisplay = isSameDay(selectedDate, new Date()) ? "Today" : 
                            isSameDay(selectedDate, addDays(new Date(), 1)) ? "Tomorrow" :
                            format(selectedDate, 'MMM dd, yyyy');
-        const timeDisplay = confirmationTimeSlot ? convertTo12HourFormat(confirmationTimeSlot.time) : '';
+        const finalTimeDisplay = confirmationTimeSlot ? convertTo12HourFormat(confirmationTimeSlot.time) : '';
         
         // For confirmation, assume QR is not available yet (newly created booking)
         const isConfirmationQRAvailable = false;
@@ -856,7 +790,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
             
             <div className="text-center space-y-2">
               <h3 className="font-medium">{facility.name}</h3>
-              <p className="text-sm text-muted-foreground">{dateDisplay} • {timeDisplay}</p>
+              <p className="text-sm text-muted-foreground">{finalDateDisplay} • {finalTimeDisplay}</p>
               <p className="text-sm text-muted-foreground">{participantCount} participant{participantCount > 1 ? 's' : ''} • {getSizeForSport(facility.sport)} sq mtrs.</p>
             </div>
             
@@ -908,7 +842,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
       <Dialog open={isOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="w-[640px] h-[700px] max-w-none max-h-none flex flex-col">
           <DialogHeader>
-            {(currentStep === 'participant-count' || currentStep === 'participant-details') && (
+            {(currentStep === 'booking-confirmation') && (
               <div className="mb-2">
                 <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground hover:text-foreground" onClick={handleGoBack}>
                   &lt; Back
@@ -925,7 +859,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
           </div>
           
           {/* Progress Indicator */}
-          {currentStep !== 'confirmation' && (
+          {currentStep !== 'final-confirmation' && (
             <div className="border-t pt-4 mt-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-muted-foreground">{stepInfo.label}</span>
