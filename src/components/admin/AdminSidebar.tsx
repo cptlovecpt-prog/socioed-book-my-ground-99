@@ -2,11 +2,9 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   Calendar,
   Home,
-  MapPin,
-  Users,
-  BarChart3,
-  Settings,
   Building2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import {
@@ -18,6 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -45,7 +44,17 @@ export function AdminSidebar() {
       : "hover:bg-accent hover:text-accent-foreground";
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className={state === "collapsed" ? "w-14" : "w-60"}>
+      <div className="flex items-center justify-between p-2 border-b">
+        <SidebarTrigger className="h-8 w-8 p-1">
+          {state === "collapsed" ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </SidebarTrigger>
+      </div>
+      
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>BookMyGround Admin</SidebarGroupLabel>

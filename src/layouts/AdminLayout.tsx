@@ -13,7 +13,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <AdminSidebar />
         <div className="flex-1 flex flex-col">
           <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-4">
-            <SidebarTrigger className="mr-4" />
             <h1 className="font-semibold">Admin Panel</h1>
           </header>
           <main className="flex-1 p-6">
