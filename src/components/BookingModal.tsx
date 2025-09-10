@@ -713,11 +713,13 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
                     value={participant.enrollmentId}
                     onChange={(e) => handleEnrollmentIdChange(index, e.target.value)}
                     placeholder="Enter enrollment ID"
-                    className="mt-1 w-full max-w-full focus:outline-none focus:ring-0 focus:border-input border-input shadow-none focus:shadow-none"
+                    className="mt-1 w-full max-w-full border-input !ring-0 !ring-offset-0 focus:!ring-0 focus:!ring-offset-0 focus:!outline-none focus:border-input active:!ring-0 active:!outline-none shadow-none focus:shadow-none"
                     style={{ 
                       boxSizing: 'border-box',
                       minWidth: 0,
-                      maxWidth: '100%'
+                      maxWidth: '100%',
+                      outline: 'none !important',
+                      boxShadow: 'none !important'
                     }}
                   />
                 </div>
@@ -869,18 +871,20 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
           style={{ zIndex: 99999 }}
           onClick={() => setIsQrFullscreen(false)}
         >
-          <div className="relative max-w-md w-full mx-4">
+          <div className="relative max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="bg-white p-8 rounded-2xl shadow-2xl">
               <img 
                 src={qrCodeUrl} 
                 alt="QR Code - Full Screen" 
                 className="w-full h-auto"
-                onClick={(e) => e.stopPropagation()}
               />
             </div>
             <button
-              onClick={() => setIsQrFullscreen(false)}
-              className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsQrFullscreen(false);
+              }}
+              className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow z-10"
             >
               <X className="h-5 w-5 text-gray-600" />
             </button>
