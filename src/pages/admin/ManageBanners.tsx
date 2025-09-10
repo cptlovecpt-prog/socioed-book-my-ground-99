@@ -176,6 +176,19 @@ export default function ManageBanners() {
   };
 
   const handleConfirmAdd = () => {
+    // Check if all fields are filled
+    const requiredFields = ['title', 'description', 'image'];
+    const emptyFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (emptyFields.length > 0) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields before adding the banner.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsConfirmAddDialogOpen(true);
   };
 
@@ -347,7 +360,7 @@ export default function ManageBanners() {
           <div className="space-y-4">
             {/* Image Section */}
             <div className="space-y-2">
-              <Label>Banner Image</Label>
+              <Label>Banner Image <span className="text-red-500">*</span></Label>
               <div 
                 className="relative aspect-[3/1] rounded-lg border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:border-muted-foreground/50 transition-colors overflow-hidden"
                 onClick={handleImageClick}
@@ -372,7 +385,7 @@ export default function ManageBanners() {
 
             {/* Form Fields */}
             <div className="space-y-2">
-              <Label htmlFor="title">Banner Title</Label>
+              <Label htmlFor="title">Banner Title <span className="text-red-500">*</span></Label>
               <Input
                 id="title"
                 value={formData.title}
@@ -382,7 +395,7 @@ export default function ManageBanners() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="description">Banner Description</Label>
+              <Label htmlFor="description">Banner Description <span className="text-red-500">*</span></Label>
               <Input
                 id="description"
                 value={formData.description}

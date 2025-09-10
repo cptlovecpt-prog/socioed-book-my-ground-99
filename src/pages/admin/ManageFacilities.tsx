@@ -361,6 +361,19 @@ export default function ManageFacilities() {
   };
 
   const handleConfirmAdd = () => {
+    // Check if all fields are filled
+    const requiredFields = ['name', 'location', 'sport', 'size', 'capacity', 'image', 'type'];
+    const emptyFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (emptyFields.length > 0) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields before adding the facility.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsConfirmAddDialogOpen(true);
   };
 
@@ -639,7 +652,7 @@ export default function ManageFacilities() {
           <div className="space-y-4">
             {/* Image Section */}
             <div className="space-y-2">
-              <Label>Facility Image</Label>
+              <Label>Facility Image <span className="text-red-500">*</span></Label>
               <div 
                 className="relative aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:border-muted-foreground/50 transition-colors overflow-hidden"
                 onClick={handleImageClick}
@@ -664,7 +677,7 @@ export default function ManageFacilities() {
 
             {/* Facility Type */}
             <div className="space-y-2">
-              <Label htmlFor="type">Facility Type</Label>
+              <Label htmlFor="type">Facility Type <span className="text-red-500">*</span></Label>
               <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select facility type" />
@@ -679,7 +692,7 @@ export default function ManageFacilities() {
             {/* Form Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Facility Name</Label>
+                <Label htmlFor="name">Facility Name <span className="text-red-500">*</span></Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -689,7 +702,7 @@ export default function ManageFacilities() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
                 <Input
                   id="location"
                   value={formData.location}
@@ -701,7 +714,7 @@ export default function ManageFacilities() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="sport">Sport</Label>
+                <Label htmlFor="sport">Sport <span className="text-red-500">*</span></Label>
                 <Input
                   id="sport"
                   value={formData.sport}
@@ -711,7 +724,7 @@ export default function ManageFacilities() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="size">Size</Label>
+                <Label htmlFor="size">Size <span className="text-red-500">*</span></Label>
                 <Input
                   id="size"
                   value={formData.size}
@@ -722,7 +735,7 @@ export default function ManageFacilities() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="capacity">Capacity</Label>
+              <Label htmlFor="capacity">Capacity <span className="text-red-500">*</span></Label>
               <Input
                 id="capacity"
                 value={formData.capacity}
