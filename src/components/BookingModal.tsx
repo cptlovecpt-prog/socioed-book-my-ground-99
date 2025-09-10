@@ -295,7 +295,7 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
     const upcomingBookings = bookings.filter(booking => booking.status === 'Upcoming');
     if (upcomingBookings.length >= 4) {
       toast({
-        title: "You already have 4 upcoming bookings, please complete one booking before booking any more slots",
+        title: "You already have 4 active bookings, you can schedule another booking after a booking completes",
         duration: 4000,
       });
       return;
