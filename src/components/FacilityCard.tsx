@@ -61,7 +61,13 @@ export const FacilityCard = ({
 
   return (
     <div className="w-[278px]">
-      <Card className="booking-card group cursor-pointer w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card relative" onClick={() => onBook(id)}>
+      <Card 
+        className={`booking-card group w-[278px] h-[417px] overflow-hidden bg-card dark:bg-card relative ${
+          status === 'available' ? 'cursor-pointer' : 'cursor-default'
+        }`} 
+        onClick={status === 'available' ? () => onBook(id) : undefined}
+        style={{ cursor: status === 'available' ? 'pointer' : 'default' }}
+      >
         <div className="relative h-full">
           <div 
             className="absolute inset-0 bg-cover bg-center"
