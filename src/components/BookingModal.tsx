@@ -864,30 +864,61 @@ export const BookingModal = ({ isOpen, onClose, facility, isSignedIn }: BookingM
         </DialogContent>
       </Dialog>
       
-      {/* Fullscreen QR Code Overlay */}
+      {/* Fullscreen QR Code Overlay - Completely blocks background interactions */}
       {isQrFullscreen && qrCodeUrl && (
         <div 
-          className="fixed inset-0 bg-black/80 flex items-center justify-center cursor-pointer"
-          style={{ zIndex: 999999 }}
-          onClick={() => setIsQrFullscreen(false)}
+          className="fixed inset-0 bg-black/90 flex items-center justify-center"
+          style={{ zIndex: 2147483647 }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsQrFullscreen(false);
+          }}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
         >
-          <div className="relative max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div 
+            className="relative"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onMouseUp={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+          >
             <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsQrFullscreen(false);
               }}
-              className="absolute -top-6 -right-6 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-110 border-2 border-gray-200 z-50"
-              style={{ zIndex: 1000000 }}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
+              className="absolute -top-8 -right-8 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-200 hover:scale-110 border-2 border-gray-300 cursor-pointer"
+              style={{ zIndex: 2147483647 }}
             >
-              <X className="h-6 w-6 text-gray-700" />
+              <X className="h-7 w-7 text-gray-800" />
             </button>
-            <div className="bg-white p-8 rounded-2xl shadow-2xl">
+            <div 
+              className="bg-white p-10 rounded-3xl shadow-2xl"
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onTouchEnd={(e) => e.stopPropagation()}
+            >
               <img 
                 src={qrCodeUrl} 
                 alt="QR Code - Full Screen" 
-                className="w-full h-auto max-w-sm"
+                className="w-80 h-80 select-none"
+                draggable={false}
+                onMouseDown={(e) => e.stopPropagation()}
+                onMouseUp={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
               />
             </div>
           </div>
