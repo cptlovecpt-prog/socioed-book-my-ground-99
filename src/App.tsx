@@ -15,6 +15,9 @@ import ManageBanners from "./pages/admin/ManageBanners";
 import ManageFacilities from "./pages/admin/ManageFacilities";
 import ManageBookings from "./pages/admin/ManageBookings";
 import AdminYourBookings from "./pages/admin/AdminYourBookings";
+import { ExternalFacilities } from "./pages/admin/ExternalFacilities";
+import { ExternalBookings } from "./pages/admin/ExternalBookings";
+import { ExternalAnalytics } from "./pages/admin/ExternalAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +81,31 @@ const AppRoutes = () => {
           element={
             <AdminLayout>
               <AdminYourBookings />
+            </AdminLayout>
+          } 
+        />
+        {/* External API Routes */}
+        <Route 
+          path="/admin/external/facilities" 
+          element={
+            <AdminLayout>
+              <ExternalFacilities />
+            </AdminLayout>
+          } 
+        />
+        <Route 
+          path="/admin/external/bookings" 
+          element={
+            <AdminLayout>
+              <ExternalBookings />
+            </AdminLayout>
+          } 
+        />
+        <Route 
+          path="/admin/external/analytics" 
+          element={
+            <AdminLayout>
+              <ExternalAnalytics />
             </AdminLayout>
           } 
         />

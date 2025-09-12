@@ -7,6 +7,9 @@ import {
   ChevronRight,
   Image,
   BookOpen,
+  Database,
+  BarChart3,
+  Globe,
 } from "lucide-react";
 
 import {
@@ -28,6 +31,12 @@ const items = [
   { title: "Manage Facilities", url: "/admin/facilities", icon: Building2 },
   { title: "Manage Bookings", url: "/admin/bookings", icon: Calendar },
   { title: "Your Bookings", url: "/admin/your-bookings", icon: BookOpen },
+];
+
+const externalItems = [
+  { title: "External Facilities", url: "/admin/external/facilities", icon: Globe },
+  { title: "External Bookings", url: "/admin/external/bookings", icon: Database },
+  { title: "External Analytics", url: "/admin/external/analytics", icon: BarChart3 },
 ];
 
 export function AdminSidebar() {
@@ -61,9 +70,31 @@ export function AdminSidebar() {
       
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Local Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
                {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url} 
+                      className={getNavClassName(isActive(item.url))}
+                    >
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white hover:outline hover:outline-1 hover:outline-black' : 'hover:text-[#941bac]'} transition-colors duration-200`} />
+                      {state !== "collapsed" && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>External API</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+               {externalItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink 
