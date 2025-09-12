@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Shield, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff, Shield, AlertTriangle, LogIn, User } from 'lucide-react';
 import { externalApiService } from '@/services/externalApi';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,88 +13,109 @@ interface TokenManagerProps {
 }
 
 export const TokenManager = ({ onTokenSet }: TokenManagerProps) => {
-  const [token, setToken] = useState('');
-  const [showToken, setShowToken] = useState(false);
-  const [isValidating, setIsValidating] = useState(false);
+  const [universityId, setUniversityId] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasToken, setHasToken] = useState(false);
+  const [adminUser, setAdminUser] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    setHasToken(externalApiService.hasAuthToken());
+    const hasAuth = externalApiService.hasAuthToken();
+    setHasToken(hasAuth);
+    if (hasAuth) {
+      setAdminUser(externalApiService.getAdminUser());
+    }
   }, []);
 
-  const handleSaveToken = async () => {
-    if (!token.trim()) {
+  const handleLogin = async () => {
+    if (!universityId.trim() || !password.trim()) {
       toast({
         title: "Error",
-        description: "Please enter a valid admin token",
+        description: "Please enter both University ID and Password",
         variant: "destructive",
       });
       return;
     }
 
-    setIsValidating(true);
+    setIsLoading(true);
     
     try {
-      // Test the token by making a simple API call
-      externalApiService.setAuthToken(token);
-      await externalApiService.getDashboardStats();
-      
-      setHasToken(true);
-      toast({
-        title: "Success",
-        description: "Admin token validated and saved successfully",
+      const response = await externalApiService.adminLogin({
+        university_id: universityId,
+        password: password
       });
       
-      onTokenSet?.();
-    } catch (error) {
-      externalApiService.removeAuthToken();
+      if (response.success) {
+        setHasToken(true);
+        setAdminUser(response.data.admin);
+        toast({
+          title: "Login Successful",
+          description: `Welcome ${response.data.admin.name}!`,
+        });
+        
+        onTokenSet?.();
+      }
+    } catch (error: any) {
       toast({
-        title: "Invalid Token",
-        description: "The provided token is invalid or expired. Please check your token.",
+        title: "Login Failed",
+        description: error.message || "Invalid credentials. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsValidating(false);
+      setIsLoading(false);
     }
   };
 
-  const handleRemoveToken = () => {
-    externalApiService.removeAuthToken();
+  const handleLogout = async () => {
+    await externalApiService.adminLogout();
     setHasToken(false);
-    setToken('');
+    setAdminUser(null);
+    setUniversityId('');
+    setPassword('');
     toast({
-      title: "Token Removed",
-      description: "Admin token has been removed from local storage",
+      title: "Logged Out",
+      description: "You have been logged out successfully",
     });
   };
 
-  if (hasToken) {
+  if (hasToken && adminUser) {
     return (
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-green-500" />
-            Token Status
+            Admin Dashboard
           </CardTitle>
           <CardDescription>
-            Admin token is configured and active
+            Logged in as {adminUser.name}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm font-medium">Connected to BU Sports API</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium">Connected to BU Sports API</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+              <User className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <div className="text-sm font-medium">{adminUser.name}</div>
+                <div className="text-xs text-muted-foreground">ID: {adminUser.university_id}</div>
+              </div>
             </div>
           </div>
           
           <Button 
             variant="outline" 
-            onClick={handleRemoveToken}
+            onClick={handleLogout}
             className="w-full"
           >
-            Remove Token
+            Logout
           </Button>
         </CardContent>
       </Card>
@@ -105,60 +126,70 @@ export const TokenManager = ({ onTokenSet }: TokenManagerProps) => {
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Shield className="w-5 h-5" />
-          API Authentication
+          <LogIn className="w-5 h-5" />
+          Admin Login
         </CardTitle>
         <CardDescription>
-          Enter your BU Sports Admin API token to access external data
+          Login to access BU Sports Admin Dashboard
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            Your token will be stored securely in your browser's local storage and never sent to our servers.
+            Your credentials are used to authenticate with the BU Sports API and generate a secure token stored locally.
           </AlertDescription>
         </Alert>
 
-        <div className="space-y-2">
-          <Label htmlFor="token">Admin Bearer Token</Label>
-          <div className="relative">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="universityId">University ID</Label>
             <Input
-              id="token"
-              type={showToken ? "text" : "password"}
-              placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              className="pr-10"
+              id="universityId"
+              type="text"
+              placeholder="ADMIN001"
+              value={universityId}
+              onChange={(e) => setUniversityId(e.target.value)}
+              disabled={isLoading}
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-              onClick={() => setShowToken(!showToken)}
-            >
-              {showToken ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </Button>
           </div>
-        </div>
 
-        <div className="space-y-2">
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+
           <Button 
-            onClick={handleSaveToken} 
-            disabled={!token.trim() || isValidating}
+            onClick={handleLogin} 
+            disabled={!universityId.trim() || !password.trim() || isLoading}
             className="w-full"
           >
-            {isValidating ? 'Validating...' : 'Save & Validate Token'}
+            {isLoading ? 'Logging in...' : 'Login'}
           </Button>
-          
-          <p className="text-xs text-muted-foreground">
-            Token format: Bearer token from your BU Sports API admin panel
-          </p>
         </div>
       </CardContent>
     </Card>

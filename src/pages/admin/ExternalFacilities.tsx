@@ -57,12 +57,21 @@ export const ExternalFacilities = () => {
       if (response.success) {
         setFacilities(response.data);
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load facilities",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      if (error.message.includes('Session expired') || error.message.includes('Authentication token not found')) {
+        setHasToken(false);
+        toast({
+          title: "Session Expired",
+          description: "Please login again to continue",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to load facilities",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

@@ -60,6 +60,21 @@ interface Sport {
   created_at: string;
 }
 
+interface AdminLoginRequest {
+  university_id: string;
+  password: string;
+}
+
+interface AdminLoginResponse {
+  token: string;
+  admin: {
+    id: number;
+    university_id: string;
+    name: string;
+    type: string;
+  };
+}
+
 interface DashboardStats {
   total_students: number;
   total_facilities: number;
@@ -107,7 +122,7 @@ class ExternalApiService {
     const token = this.getAuthToken();
     
     if (!token) {
-      throw new Error('Authentication token not found. Please set your admin token.');
+      throw new Error('Authentication token not found. Please login again.');
     }
 
     try {
@@ -119,6 +134,12 @@ class ExternalApiService {
         },
         ...options,
       });
+
+      if (response.status === 401 || response.status === 403) {
+        // Token expired or invalid, remove it
+        this.removeAuthToken();
+        throw new Error('Session expired. Please login again.');
+      }
 
       if (!response.ok) {
         throw new Error(`API Error: ${response.status} - ${response.statusText}`);
@@ -224,6 +245,45 @@ class ExternalApiService {
     return this.request<Booking[]>(endpoint);
   }
 
+  // Authentication
+  async adminLogin(credentials: AdminLoginRequest): Promise<ApiResponse<AdminLoginResponse>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Login failed: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.data.token) {
+        this.setAuthToken(data.data.token);
+        localStorage.setItem('bu_sports_admin_user', JSON.stringify(data.data.admin));
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Admin login failed:', error);
+      throw error;
+    }
+  }
+
+  async adminLogout(): Promise<void> {
+    this.removeAuthToken();
+    localStorage.removeItem('bu_sports_admin_user');
+  }
+
+  getAdminUser(): any {
+    const userStr = localStorage.getItem('bu_sports_admin_user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
   // Analytics & Reports
   async getDashboardStats(): Promise<ApiResponse<DashboardStats>> {
     return this.request<DashboardStats>('/api/admin/dashboard/stats');
@@ -240,6 +300,7 @@ class ExternalApiService {
 
   removeAuthToken(): void {
     localStorage.removeItem('bu_sports_admin_token');
+    localStorage.removeItem('bu_sports_admin_user');
   }
 
   hasAuthToken(): boolean {
@@ -248,4 +309,4 @@ class ExternalApiService {
 }
 
 export const externalApiService = new ExternalApiService();
-export type { Facility, Booking, Sport, DashboardStats, UtilizationData };
+export type { Facility, Booking, Sport, DashboardStats, UtilizationData, AdminLoginRequest, AdminLoginResponse };
