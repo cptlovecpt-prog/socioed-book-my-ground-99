@@ -27,7 +27,6 @@ import {
 
 const items = [
   { title: "Dashboard", url: "/admin", icon: Home },
-  { title: "Manage Banners", url: "/admin/banners", icon: Image },
   { title: "Manage Facilities", url: "/admin/facilities", icon: Building2 },
   { title: "Manage Bookings", url: "/admin/bookings", icon: Calendar },
   { title: "Your Bookings", url: "/admin/your-bookings", icon: BookOpen },
