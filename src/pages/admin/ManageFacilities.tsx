@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Edit, Trash2, MapPin, Camera, AlertTriangle, Clock, Users } from "lucide-react";
+import { Plus, Edit, Trash2, MapPin, Camera, AlertTriangle, Clock, Users, ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { SPORT_IMAGES } from "@/constants/images";
@@ -18,8 +18,12 @@ export default function ManageFacilities() {
   const [isConfirmChangesDialogOpen, setIsConfirmChangesDialogOpen] = useState(false);
   const [isConfirmAddDialogOpen, setIsConfirmAddDialogOpen] = useState(false);
   const [isCancelConfirmDialogOpen, setIsCancelConfirmDialogOpen] = useState(false);
+  const [isMaintenanceCommentDialogOpen, setIsMaintenanceCommentDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<any>(null);
   const [deletingFacility, setDeletingFacility] = useState<any>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [originalFormData, setOriginalFormData] = useState<any>(null);
+  const [maintenanceCommentInput, setMaintenanceCommentInput] = useState("");
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -27,19 +31,41 @@ export default function ManageFacilities() {
     sport: "",
     size: "",
     capacity: "",
+    minParticipants: "",
+    maxParticipants: "",
     image: "",
     type: "",
     tag: "Active",
     maintenanceComment: "",
+    courts: [] as Array<{
+      id: string;
+      name: string;
+      type: string;
+    }>,
     slots: [] as Array<{
       id: string;
       startTime: string;
       endTime: string;
       minParticipants: string;
       maxParticipants: string;
+    }>,
+    spots: [] as Array<{
+      id: string;
+      name: string;
+      location: string;
+      capacity: string;
     }>
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const steps = [
+    "Facility Details",
+    "Manage Courts", 
+    "Manage Slots",
+    "Manage Spots",
+    "Review Changes",
+    "Confirm"
+  ];
 
   const [facilities, setFacilities] = useState([
     {
@@ -316,18 +342,25 @@ export default function ManageFacilities() {
 
   const handleEditClick = (facility: any) => {
     setEditingFacility(facility);
-    setFormData({
+    const initialData = {
       name: facility.name,
       location: facility.location,
       sport: facility.sport,
       size: facility.size,
       capacity: facility.capacity,
+      minParticipants: facility.minParticipants || "2",
+      maxParticipants: facility.maxParticipants || "10",
       image: facility.image,
       type: facility.type || "indoor",
       tag: facility.tag || "Active",
       maintenanceComment: facility.maintenanceComment || "",
-      slots: facility.slots || []
-    });
+      courts: facility.courts || [],
+      slots: facility.slots || [],
+      spots: facility.spots || []
+    };
+    setFormData(initialData);
+    setOriginalFormData(JSON.parse(JSON.stringify(initialData)));
+    setCurrentStep(0);
     setIsEditModalOpen(true);
   };
 
@@ -344,7 +377,10 @@ export default function ManageFacilities() {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    if (field === 'tag' && value !== 'Schedule for Maintenance') {
+    if (field === 'tag' && value === 'Schedule for Maintenance') {
+      setIsMaintenanceCommentDialogOpen(true);
+      setMaintenanceCommentInput("");
+    } else if (field === 'tag' && value !== 'Schedule for Maintenance') {
       // Clear maintenance comment when changing away from maintenance
       setFormData(prev => ({ ...prev, [field]: value, maintenanceComment: "" }));
     } else {
@@ -352,6 +388,68 @@ export default function ManageFacilities() {
     }
   };
 
+  const handleMaintenanceCommentSave = () => {
+    if (maintenanceCommentInput.trim()) {
+      setFormData(prev => ({ 
+        ...prev, 
+        tag: 'Schedule for Maintenance',
+        maintenanceComment: maintenanceCommentInput 
+      }));
+      setIsMaintenanceCommentDialogOpen(false);
+    } else {
+      toast({
+        title: "Comment Required",
+        description: "Please enter a maintenance comment to proceed.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMaintenanceCommentCancel = () => {
+    setIsMaintenanceCommentDialogOpen(false);
+    // Reset tag to previous value if it was maintenance
+    if (formData.tag === 'Schedule for Maintenance') {
+      setFormData(prev => ({ ...prev, tag: "Active" }));
+    }
+  };
+
+  const nextStep = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 0) {
+      // Prevent going back if maintenance comment is required and not entered
+      if (currentStep === 0 && formData.tag === 'Schedule for Maintenance' && !formData.maintenanceComment) {
+        toast({
+          title: "Maintenance Comment Required",
+          description: "Please enter a maintenance comment before going back.",
+          variant: "destructive",
+        });
+        return;
+      }
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const getChangedFields = () => {
+    if (!originalFormData) return [];
+    const changes = [];
+    
+    Object.keys(formData).forEach(key => {
+      if (key === 'courts' || key === 'slots' || key === 'spots') {
+        if (JSON.stringify(formData[key]) !== JSON.stringify(originalFormData[key])) {
+          changes.push(key);
+        }
+      } else if (formData[key] !== originalFormData[key]) {
+        changes.push(key);
+      }
+    });
+    
+    return changes;
+  };
 
   const handleConfirmChanges = () => {
     // Check if all required fields are filled
@@ -359,7 +457,6 @@ export default function ManageFacilities() {
       { key: 'name', label: 'Facility Name' },
       { key: 'location', label: 'Location' },
       { key: 'sport', label: 'Sport' },
-      { key: 'size', label: 'Size' },
       { key: 'capacity', label: 'Capacity' },
       { key: 'image', label: 'Facility Image' },
       { key: 'type', label: 'Facility Type' },
@@ -378,16 +475,7 @@ export default function ManageFacilities() {
     }
 
     // Check if there are any changes
-    const hasChanges = 
-      formData.name !== editingFacility.name ||
-      formData.location !== editingFacility.location ||
-      formData.sport !== editingFacility.sport ||
-      formData.size !== editingFacility.size ||
-      formData.capacity !== editingFacility.capacity ||
-      formData.image !== editingFacility.image ||
-      formData.type !== (editingFacility.type || "indoor") ||
-      formData.tag !== (editingFacility.tag || "Active") ||
-      formData.maintenanceComment !== (editingFacility.maintenanceComment || "");
+    const hasChanges = getChangedFields().length > 0;
 
     if (!hasChanges) {
       // No changes made, close modal directly
@@ -396,13 +484,8 @@ export default function ManageFacilities() {
       return;
     }
 
-    // Changes detected, show confirmation dialog
-    setIsConfirmChangesDialogOpen(true);
-  };
-
-  const handleSaveChanges = () => {
+    // Save changes
     console.log("Updating facility:", editingFacility.id, "with data:", formData);
-    // Here you would typically update the facility in your backend/state
     setFacilities(prevFacilities => 
       prevFacilities.map(facility => 
         facility.id === editingFacility.id 
@@ -411,32 +494,34 @@ export default function ManageFacilities() {
       )
     );
     toast({
-      title: "Changes Saved",
+      title: "Changes Published",
       description: `${formData.name} has been updated successfully.`,
     });
-    setIsConfirmChangesDialogOpen(false);
     setIsEditModalOpen(false);
     setEditingFacility(null);
   };
 
-  const handleCancelSave = () => {
-    setIsConfirmChangesDialogOpen(false);
-  };
-
   const handleAddFacilityClick = () => {
     // Reset form data for new facility
-    setFormData({
+    const initialData = {
       name: "",
       location: "",
       sport: "",
       size: "",
       capacity: "",
+      minParticipants: "2",
+      maxParticipants: "10",
       image: "",
       type: "indoor",
       tag: "Active",
       maintenanceComment: "",
-      slots: []
-    });
+      courts: [],
+      slots: [],
+      spots: []
+    };
+    setFormData(initialData);
+    setOriginalFormData(JSON.parse(JSON.stringify(initialData)));
+    setCurrentStep(0);
     setIsAddModalOpen(true);
   };
 
@@ -494,35 +579,8 @@ export default function ManageFacilities() {
   };
 
   const handleModalClose = () => {
-    // Check if there are any changes before closing
-    const hasChanges = editingFacility && (
-      formData.name !== editingFacility.name ||
-      formData.location !== editingFacility.location ||
-      formData.sport !== editingFacility.sport ||
-      formData.size !== editingFacility.size ||
-      formData.capacity !== editingFacility.capacity ||
-      formData.image !== editingFacility.image ||
-      formData.type !== (editingFacility.type || "indoor") ||
-      formData.tag !== (editingFacility.tag || "Active") ||
-      formData.maintenanceComment !== (editingFacility.maintenanceComment || "")
-    );
-
-    if (hasChanges) {
-      setIsCancelConfirmDialogOpen(true);
-    } else {
-      setIsEditModalOpen(false);
-      setEditingFacility(null);
-    }
-  };
-
-  const handleCancelConfirm = () => {
-    setIsCancelConfirmDialogOpen(false);
     setIsEditModalOpen(false);
     setEditingFacility(null);
-  };
-
-  const handleCancelCancel = () => {
-    setIsCancelConfirmDialogOpen(false);
   };
 
   const handleDeleteClick = (facility: any) => {
@@ -532,7 +590,6 @@ export default function ManageFacilities() {
 
   const handleDeleteConfirm = () => {
     console.log("Deleting facility:", deletingFacility.id);
-    // Remove the facility from the state
     setFacilities(prevFacilities => 
       prevFacilities.filter(facility => facility.id !== deletingFacility.id)
     );
@@ -578,6 +635,65 @@ export default function ManageFacilities() {
     setFormData(prev => ({
       ...prev,
       slots: prev.slots.filter(slot => slot.id !== slotId)
+    }));
+  };
+
+  // Court management functions
+  const handleAddCourt = () => {
+    const newCourt = {
+      id: Date.now().toString(),
+      name: `Court ${formData.courts.length + 1}`,
+      type: "Standard"
+    };
+    setFormData(prev => ({
+      ...prev,
+      courts: [...prev.courts, newCourt]
+    }));
+  };
+
+  const handleCourtChange = (courtId: string, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      courts: prev.courts.map(court => 
+        court.id === courtId ? { ...court, [field]: value } : court
+      )
+    }));
+  };
+
+  const handleDeleteCourt = (courtId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      courts: prev.courts.filter(court => court.id !== courtId)
+    }));
+  };
+
+  // Spot management functions
+  const handleAddSpot = () => {
+    const newSpot = {
+      id: Date.now().toString(),
+      name: `Spot ${formData.spots.length + 1}`,
+      location: "",
+      capacity: "1"
+    };
+    setFormData(prev => ({
+      ...prev,
+      spots: [...prev.spots, newSpot]
+    }));
+  };
+
+  const handleSpotChange = (spotId: string, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      spots: prev.spots.map(spot => 
+        spot.id === spotId ? { ...spot, [field]: value } : spot
+      )
+    }));
+  };
+
+  const handleDeleteSpot = (spotId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      spots: prev.spots.filter(spot => spot.id !== spotId)
     }));
   };
 
@@ -681,13 +797,560 @@ export default function ManageFacilities() {
         style={{ display: 'none' }}
       />
 
-      {/* Edit Modal */}
+      {/* Edit Modal - Multi-step Wizard */}
       <Dialog open={isEditModalOpen} onOpenChange={handleModalClose}>
+        <DialogContent className="sm:max-w-[600px] [&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle>Edit Facility - {steps[currentStep]}</DialogTitle>
+            <DialogDescription>
+              Step {currentStep + 1} of {steps.length}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {/* Step Progress */}
+          <div className="flex items-center justify-between mb-6">
+            {steps.map((step, index) => (
+              <div key={index} className="flex items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  index <= currentStep 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted text-muted-foreground'
+                }`}>
+                  {index < currentStep ? <Check className="h-4 w-4" /> : index + 1}
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`w-8 h-0.5 ${
+                    index < currentStep ? 'bg-primary' : 'bg-muted'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+            {/* Step 0: Facility Details */}
+            {currentStep === 0 && (
+              <>
+                {/* Image Section */}
+                <div className="space-y-2">
+                  <Label>Facility Image</Label>
+                  <div 
+                    className="relative aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:border-muted-foreground/50 transition-colors overflow-hidden"
+                    onClick={handleImageClick}
+                  >
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Facility"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full">
+                        <Camera className="h-8 w-8 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground mt-2">Click to select image</p>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Camera className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Maximum image size allowed is 50kb in .jpeg, .jpg or .png format only
+                  </p>
+                </div>
+
+                {/* First row: Facility Name | Location */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Facility Name</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      placeholder="Enter facility name"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => handleInputChange('location', e.target.value)}
+                      placeholder="Enter location"
+                    />
+                  </div>
+                </div>
+
+                {/* Second row: Sport | Capacity */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="sport">Sport</Label>
+                    <Input
+                      id="sport"
+                      value={formData.sport}
+                      onChange={(e) => handleInputChange('sport', e.target.value)}
+                      placeholder="Enter sport type"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="capacity">Capacity</Label>
+                    <Input
+                      id="capacity"
+                      value={formData.capacity}
+                      onChange={(e) => handleInputChange('capacity', e.target.value)}
+                      placeholder="Enter capacity (e.g., 22 players)"
+                    />
+                  </div>
+                </div>
+
+                {/* Third row: Min Participants | Max Participants */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="minParticipants">Min Participants</Label>
+                    <Input
+                      id="minParticipants"
+                      type="number"
+                      min="1"
+                      value={formData.minParticipants}
+                      onChange={(e) => handleInputChange('minParticipants', e.target.value)}
+                      placeholder="Enter minimum participants"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="maxParticipants">Max Participants</Label>
+                    <Input
+                      id="maxParticipants"
+                      type="number"
+                      min="1"
+                      value={formData.maxParticipants}
+                      onChange={(e) => handleInputChange('maxParticipants', e.target.value)}
+                      placeholder="Enter maximum participants"
+                    />
+                  </div>
+                </div>
+
+                {/* Fourth row: Tag and comment space below */}
+                <div className="space-y-2">
+                  <Label htmlFor="tag">Tag</Label>
+                  <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select tag" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border z-50">
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
+                    <div className="mt-2 p-3 bg-muted/30 rounded-lg">
+                      <Label className="text-sm font-medium">Maintenance Comment</Label>
+                      <p className="text-sm text-muted-foreground mt-1">{formData.maintenanceComment}</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Step 1: Manage Courts */}
+            {currentStep === 1 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-base font-semibold">Manage Courts</Label>
+                    <p className="text-sm text-muted-foreground">Add, edit, or remove courts for this facility</p>
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleAddCourt}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Court
+                  </Button>
+                </div>
+                
+                <div className="space-y-3 max-h-60 overflow-y-auto">
+                  {formData.courts.map((court) => (
+                    <div key={court.id} className="border rounded-lg p-4 bg-muted/30">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label htmlFor={`courtName-${court.id}`}>Court Name</Label>
+                          <Input
+                            id={`courtName-${court.id}`}
+                            value={court.name}
+                            onChange={(e) => handleCourtChange(court.id, 'name', e.target.value)}
+                            placeholder="Enter court name"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor={`courtType-${court.id}`}>Court Type</Label>
+                          <Input
+                            id={`courtType-${court.id}`}
+                            value={court.type}
+                            onChange={(e) => handleCourtChange(court.id, 'type', e.target.value)}
+                            placeholder="Enter court type"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end mt-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteCourt(court.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Court
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {formData.courts.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No courts added yet. Click "Add Court" to get started.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Manage Slots */}
+            {currentStep === 2 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-base font-semibold">Manage Time Slots</Label>
+                    <p className="text-sm text-muted-foreground">Add, edit, or remove time slots for this facility</p>
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleAddSlot}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Slot
+                  </Button>
+                </div>
+
+                <div className="space-y-3 max-h-60 overflow-y-auto">
+                  {formData.slots.map((slot) => (
+                    <div key={slot.id} className="border rounded-lg p-4 bg-muted/30">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label htmlFor={`startTime-${slot.id}`}>Start Time</Label>
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id={`startTime-${slot.id}`}
+                              type="time"
+                              value={slot.startTime}
+                              onChange={(e) => handleSlotChange(slot.id, 'startTime', e.target.value)}
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor={`endTime-${slot.id}`}>End Time</Label>
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id={`endTime-${slot.id}`}
+                              type="time"
+                              value={slot.endTime}
+                              onChange={(e) => handleSlotChange(slot.id, 'endTime', e.target.value)}
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor={`slotMinParticipants-${slot.id}`}>Min Participants</Label>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id={`slotMinParticipants-${slot.id}`}
+                              type="number"
+                              min="1"
+                              value={slot.minParticipants}
+                              onChange={(e) => handleSlotChange(slot.id, 'minParticipants', e.target.value)}
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor={`slotMaxParticipants-${slot.id}`}>Max Participants</Label>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id={`slotMaxParticipants-${slot.id}`}
+                              type="number"
+                              min="1"
+                              value={slot.maxParticipants}
+                              onChange={(e) => handleSlotChange(slot.id, 'maxParticipants', e.target.value)}
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end mt-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteSlot(slot.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Slot
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {formData.slots.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No time slots added yet. Click "Add Slot" to get started.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Manage Spots */}
+            {currentStep === 3 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-base font-semibold">Manage Spots</Label>
+                    <p className="text-sm text-muted-foreground">Add, edit, or remove spots for this facility</p>
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleAddSpot}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Spot
+                  </Button>
+                </div>
+                
+                <div className="space-y-3 max-h-60 overflow-y-auto">
+                  {formData.spots.map((spot) => (
+                    <div key={spot.id} className="border rounded-lg p-4 bg-muted/30">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-2">
+                          <Label htmlFor={`spotName-${spot.id}`}>Spot Name</Label>
+                          <Input
+                            id={`spotName-${spot.id}`}
+                            value={spot.name}
+                            onChange={(e) => handleSpotChange(spot.id, 'name', e.target.value)}
+                            placeholder="Enter spot name"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor={`spotLocation-${spot.id}`}>Location</Label>
+                          <Input
+                            id={`spotLocation-${spot.id}`}
+                            value={spot.location}
+                            onChange={(e) => handleSpotChange(spot.id, 'location', e.target.value)}
+                            placeholder="Enter spot location"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor={`spotCapacity-${spot.id}`}>Capacity</Label>
+                          <Input
+                            id={`spotCapacity-${spot.id}`}
+                            type="number"
+                            min="1"
+                            value={spot.capacity}
+                            onChange={(e) => handleSpotChange(spot.id, 'capacity', e.target.value)}
+                            placeholder="Enter capacity"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end mt-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteSpot(spot.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Spot
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {formData.spots.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No spots added yet. Click "Add Spot" to get started.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Review Changes */}
+            {currentStep === 4 && (
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-base font-semibold">Review Changes</Label>
+                  <p className="text-sm text-muted-foreground">Review all changes before publishing</p>
+                </div>
+                
+                <div className="space-y-3">
+                  {getChangedFields().length > 0 ? (
+                    getChangedFields().map((field) => (
+                      <div key={field} className="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                          <span className="font-medium text-yellow-800 capitalize">{field.replace(/([A-Z])/g, ' $1')}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">From:</span>
+                            <p className="font-mono bg-red-100 px-2 py-1 rounded mt-1">
+                              {field === 'courts' || field === 'slots' || field === 'spots' 
+                                ? `${originalFormData?.[field]?.length || 0} items`
+                                : originalFormData?.[field] || 'Not set'
+                              }
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">To:</span>
+                            <p className="font-mono bg-green-100 px-2 py-1 rounded mt-1">
+                              {field === 'courts' || field === 'slots' || field === 'spots'
+                                ? `${formData[field].length} items`
+                                : formData[field] || 'Not set'
+                              }
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Check className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No changes detected</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Confirm */}
+            {currentStep === 5 && (
+              <div className="space-y-4 text-center">
+                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                  <Check className="h-8 w-8 text-green-600" />
+                </div>
+                <div>
+                  <Label className="text-base font-semibold">Ready to Publish</Label>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    All changes have been reviewed and are ready to be published. 
+                    Click "Publish Changes" to save your updates.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex justify-between">
+            <div className="flex gap-2">
+              {currentStep > 0 && (
+                <Button type="button" variant="outline" onClick={prevStep}>
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Previous
+                </Button>
+              )}
+            </div>
+            
+            <div className="flex gap-2">
+              {currentStep < steps.length - 1 ? (
+                <Button type="button" onClick={nextStep}>
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+              ) : (
+                <Button type="button" onClick={handleConfirmChanges}>
+                  <Check className="h-4 w-4 mr-2" />
+                  Publish Changes
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Maintenance Comment Dialog */}
+      <Dialog open={isMaintenanceCommentDialogOpen} onOpenChange={() => setIsMaintenanceCommentDialogOpen(false)}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Maintenance Comment Required</DialogTitle>
+            <DialogDescription>
+              Please enter a comment explaining the maintenance requirement.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="maintenanceComment">Comment (max 100 characters)</Label>
+              <Input
+                id="maintenanceComment"
+                value={maintenanceCommentInput}
+                onChange={(e) => setMaintenanceCommentInput(e.target.value)}
+                placeholder="Enter maintenance comment..."
+                maxLength={100}
+              />
+              <p className="text-xs text-muted-foreground">
+                {maintenanceCommentInput.length}/100 characters
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleMaintenanceCommentCancel}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={handleMaintenanceCommentSave}>
+              Save Comment
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Facility Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={handleAddModalClose}>
         <DialogContent className="sm:max-w-[500px] [&>button]:hidden">
           <DialogHeader>
-            <DialogTitle>Edit Facility</DialogTitle>
+            <DialogTitle>Add New Facility</DialogTitle>
             <DialogDescription>
-              Make changes to the facility details below.
+              Add a new sports facility to Book Your Ground.
             </DialogDescription>
           </DialogHeader>
           
@@ -720,12 +1383,11 @@ export default function ManageFacilities() {
               </p>
             </div>
 
-            {/* 1st Row: Facility Name and Facility Type */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Facility Name</Label>
+                <Label htmlFor="add-name">Facility Name</Label>
                 <Input
-                  id="name"
+                  id="add-name"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="Enter facility name"
@@ -733,48 +1395,21 @@ export default function ManageFacilities() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="type">Facility Type</Label>
-                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select facility type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="indoor">Indoor</SelectItem>
-                    <SelectItem value="outdoor">Outdoor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* 2nd Row: Location and Size */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="add-location">Location</Label>
                 <Input
-                  id="location"
+                  id="add-location"
                   value={formData.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
                   placeholder="Enter location"
                 />
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="size">Size</Label>
-                <Input
-                  id="size"
-                  value={formData.size}
-                  onChange={(e) => handleInputChange('size', e.target.value)}
-                  placeholder="Enter size (e.g., 120 x 80)"
-                />
-              </div>
             </div>
 
-            {/* 3rd Row: Sport and Capacity */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="sport">Sport</Label>
+                <Label htmlFor="add-sport">Sport</Label>
                 <Input
-                  id="sport"
+                  id="add-sport"
                   value={formData.sport}
                   onChange={(e) => handleInputChange('sport', e.target.value)}
                   placeholder="Enter sport type"
@@ -782,9 +1417,9 @@ export default function ManageFacilities() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="capacity">Capacity</Label>
+                <Label htmlFor="add-capacity">Capacity</Label>
                 <Input
-                  id="capacity"
+                  id="add-capacity"
                   value={formData.capacity}
                   onChange={(e) => handleInputChange('capacity', e.target.value)}
                   placeholder="Enter capacity (e.g., 22 players)"
@@ -792,9 +1427,47 @@ export default function ManageFacilities() {
               </div>
             </div>
 
-            {/* 4th Row: Tag */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="add-minParticipants">Min Participants</Label>
+                <Input
+                  id="add-minParticipants"
+                  type="number"
+                  min="1"
+                  value={formData.minParticipants}
+                  onChange={(e) => handleInputChange('minParticipants', e.target.value)}
+                  placeholder="Enter minimum participants"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="add-maxParticipants">Max Participants</Label>
+                <Input
+                  id="add-maxParticipants"
+                  type="number"
+                  min="1"
+                  value={formData.maxParticipants}
+                  onChange={(e) => handleInputChange('maxParticipants', e.target.value)}
+                  placeholder="Enter maximum participants"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="tag">Tag</Label>
+              <Label htmlFor="add-type">Facility Type</Label>
+              <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select facility type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="indoor">Indoor</SelectItem>
+                  <SelectItem value="outdoor">Outdoor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="add-tag">Tag</Label>
               <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select tag" />
@@ -805,321 +1478,16 @@ export default function ManageFacilities() {
                 </SelectContent>
               </Select>
               
-              {/* Fixed space for maintenance comment - always present to avoid layout shift */}
-              <div className="min-h-[2.5rem] flex items-center">
-                {formData.tag === 'Schedule for Maintenance' && (
-                  <div className="w-full">
-                    {formData.maintenanceComment ? (
-                      <div 
-                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded cursor-pointer truncate" 
-                        title={formData.maintenanceComment}
-                        onClick={() => {
-                          const newComment = prompt("Edit maintenance comment (max 100 characters):", formData.maintenanceComment);
-                          if (newComment !== null && newComment.length <= 100) {
-                            handleInputChange('maintenanceComment', newComment);
-                          }
-                        }}
-                      >
-                        {formData.maintenanceComment}
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded hover:bg-muted/50 transition-colors w-full text-left"
-                        onClick={() => {
-                          const comment = prompt("Enter maintenance comment (max 100 characters):");
-                          if (comment !== null && comment.length <= 100) {
-                            handleInputChange('maintenanceComment', comment);
-                          }
-                        }}
-                      >
-                        Click to add maintenance comment
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Slots Management Section */}
-            <Separator className="my-6" />
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-base font-semibold">Time Slots</Label>
-                  <p className="text-sm text-muted-foreground">Manage available time slots for this facility</p>
+              {formData.tag === 'Schedule for Maintenance' && formData.maintenanceComment && (
+                <div className="mt-2 p-3 bg-muted/30 rounded-lg">
+                  <Label className="text-sm font-medium">Maintenance Comment</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{formData.maintenanceComment}</p>
                 </div>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleAddSlot}
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Slot
-                </Button>
-              </div>
-
-              <div className="space-y-3 max-h-60 overflow-y-auto">
-                {formData.slots.map((slot, index) => (
-                  <div key={slot.id} className="border rounded-lg p-4 bg-muted/30">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <Label htmlFor={`startTime-${slot.id}`}>Start Time</Label>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id={`startTime-${slot.id}`}
-                            type="time"
-                            value={slot.startTime}
-                            onChange={(e) => handleSlotChange(slot.id, 'startTime', e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor={`endTime-${slot.id}`}>End Time</Label>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id={`endTime-${slot.id}`}
-                            type="time"
-                            value={slot.endTime}
-                            onChange={(e) => handleSlotChange(slot.id, 'endTime', e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor={`minParticipants-${slot.id}`}>Min Participants</Label>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id={`minParticipants-${slot.id}`}
-                            type="number"
-                            min="1"
-                            value={slot.minParticipants}
-                            onChange={(e) => handleSlotChange(slot.id, 'minParticipants', e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor={`maxParticipants-${slot.id}`}>Max Participants</Label>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id={`maxParticipants-${slot.id}`}
-                            type="number"
-                            min="1"
-                            value={slot.maxParticipants}
-                            onChange={(e) => handleSlotChange(slot.id, 'maxParticipants', e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-end mt-3">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteSlot(slot.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Slot
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                
-                {formData.slots.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No time slots added yet</p>
-                    <p className="text-sm">Click "Add Slot" to create the first time slot</p>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
 
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={handleModalClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleConfirmChanges}>
-              Confirm Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Facility Modal */}
-      <Dialog open={isAddModalOpen} onOpenChange={handleAddModalClose}>
-        <DialogContent className="sm:max-w-[500px] [&>button]:hidden">
-          <DialogHeader>
-            <DialogTitle>Add Facility</DialogTitle>
-            <DialogDescription>
-              Add a new facility card.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {/* Image Section */}
-            <div className="space-y-2">
-              <Label>Facility Image <span className="text-red-500">*</span></Label>
-              <div 
-                className="relative aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:border-muted-foreground/50 transition-colors overflow-hidden"
-                onClick={handleImageClick}
-              >
-                {formData.image ? (
-                  <img
-                    src={formData.image}
-                    alt="Facility"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <Camera className="h-8 w-8 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mt-2">Click to select image</p>
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Maximum image size allowed is 50kb in .jpeg, .jpg or .png format only
-              </p>
-            </div>
-
-            {/* 1st Row: Facility Name and Facility Type */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Facility Name <span className="text-red-500">*</span></Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Enter facility name"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="type">Facility Type <span className="text-red-500">*</span></Label>
-                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select facility type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="indoor">Indoor</SelectItem>
-                    <SelectItem value="outdoor">Outdoor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* 2nd Row: Location and Size */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="Enter location"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="size">Size <span className="text-red-500">*</span></Label>
-                <Input
-                  id="size"
-                  value={formData.size}
-                  onChange={(e) => handleInputChange('size', e.target.value)}
-                  placeholder="Enter size (e.g., 120 x 80)"
-                />
-              </div>
-            </div>
-
-            {/* 3rd Row: Sport and Capacity */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sport">Sport <span className="text-red-500">*</span></Label>
-                <Input
-                  id="sport"
-                  value={formData.sport}
-                  onChange={(e) => handleInputChange('sport', e.target.value)}
-                  placeholder="Enter sport type"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="capacity">Capacity <span className="text-red-500">*</span></Label>
-                <Input
-                  id="capacity"
-                  value={formData.capacity}
-                  onChange={(e) => handleInputChange('capacity', e.target.value)}
-                  placeholder="Enter capacity (e.g., 22 players)"
-                />
-              </div>
-            </div>
-
-            {/* 4th Row: Tag */}
-            <div className="space-y-2">
-              <Label htmlFor="tag">Tag <span className="text-red-500">*</span></Label>
-              <Select value={formData.tag} onValueChange={(value) => handleInputChange('tag', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select tag" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border z-50">
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Schedule for Maintenance">Schedule for Maintenance</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              {/* Fixed space for maintenance comment - always present to avoid layout shift */}
-              <div className="min-h-[2.5rem] flex items-center">
-                {formData.tag === 'Schedule for Maintenance' && (
-                  <div className="w-full">
-                    {formData.maintenanceComment ? (
-                      <div 
-                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded cursor-pointer truncate" 
-                        title={formData.maintenanceComment}
-                        onClick={() => {
-                          const newComment = prompt("Edit maintenance comment (max 100 characters):", formData.maintenanceComment);
-                          if (newComment !== null && newComment.length <= 100) {
-                            handleInputChange('maintenanceComment', newComment);
-                          }
-                        }}
-                      >
-                        {formData.maintenanceComment}
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        className="text-sm text-muted-foreground px-2 py-1 bg-muted/30 rounded hover:bg-muted/50 transition-colors w-full text-left"
-                        onClick={() => {
-                          const comment = prompt("Enter maintenance comment (max 100 characters):");
-                          if (comment !== null && comment.length <= 100) {
-                            handleInputChange('maintenanceComment', comment);
-                          }
-                        }}
-                      >
-                        Click to add maintenance comment
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter className="mt-6">
+          <DialogFooter>
             <Button variant="outline" onClick={handleAddModalClose}>
               Cancel
             </Button>
@@ -1155,26 +1523,6 @@ export default function ManageFacilities() {
         </DialogContent>
       </Dialog>
 
-      {/* Save Changes Confirmation Dialog */}
-      <Dialog open={isConfirmChangesDialogOpen} onOpenChange={handleCancelSave}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>Confirm Changes</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to save the changes made to <strong>{editingFacility?.name}</strong>?
-            </DialogDescription>
-          </DialogHeader>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCancelSave}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveChanges}>
-              Yes, Save Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       {/* Add Facility Confirmation Dialog */}
       <Dialog open={isConfirmAddDialogOpen} onOpenChange={handleCancelAdd}>
         <DialogContent className="sm:max-w-[400px]">
@@ -1197,7 +1545,7 @@ export default function ManageFacilities() {
       </Dialog>
 
       {/* Cancel Confirmation Dialog */}
-      <Dialog open={isCancelConfirmDialogOpen} onOpenChange={handleCancelCancel}>
+      <Dialog open={isCancelConfirmDialogOpen} onOpenChange={() => setIsCancelConfirmDialogOpen(false)}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
             <DialogTitle>Unsaved Changes</DialogTitle>
@@ -1207,10 +1555,14 @@ export default function ManageFacilities() {
           </DialogHeader>
           
           <DialogFooter>
-            <Button variant="outline" onClick={handleCancelCancel}>
+            <Button variant="outline" onClick={() => setIsCancelConfirmDialogOpen(false)}>
               Stay
             </Button>
-            <Button variant="destructive" onClick={handleCancelConfirm}>
+            <Button variant="destructive" onClick={() => {
+              setIsCancelConfirmDialogOpen(false);
+              setIsEditModalOpen(false);
+              setEditingFacility(null);
+            }}>
               Discard Changes
             </Button>
           </DialogFooter>
