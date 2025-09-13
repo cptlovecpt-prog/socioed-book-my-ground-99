@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, MapPin, Camera, AlertTriangle } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Plus, Edit, Trash2, MapPin, Camera, AlertTriangle, Clock, Users } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { SPORT_IMAGES } from "@/constants/images";
@@ -29,7 +30,14 @@ export default function ManageFacilities() {
     image: "",
     type: "",
     tag: "Active",
-    maintenanceComment: ""
+    maintenanceComment: "",
+    slots: [] as Array<{
+      id: string;
+      startTime: string;
+      endTime: string;
+      minParticipants: string;
+      maxParticipants: string;
+    }>
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -317,7 +325,8 @@ export default function ManageFacilities() {
       image: facility.image,
       type: facility.type || "indoor",
       tag: facility.tag || "Active",
-      maintenanceComment: facility.maintenanceComment || ""
+      maintenanceComment: facility.maintenanceComment || "",
+      slots: facility.slots || []
     });
     setIsEditModalOpen(true);
   };
@@ -425,7 +434,8 @@ export default function ManageFacilities() {
       image: "",
       type: "indoor",
       tag: "Active",
-      maintenanceComment: ""
+      maintenanceComment: "",
+      slots: []
     });
     setIsAddModalOpen(true);
   };
@@ -538,6 +548,37 @@ export default function ManageFacilities() {
   const handleDeleteCancel = () => {
     setIsDeleteDialogOpen(false);
     setDeletingFacility(null);
+  };
+
+  // Slot management functions
+  const handleAddSlot = () => {
+    const newSlot = {
+      id: Date.now().toString(),
+      startTime: "06:00",
+      endTime: "07:30",
+      minParticipants: "2",
+      maxParticipants: "10"
+    };
+    setFormData(prev => ({
+      ...prev,
+      slots: [...prev.slots, newSlot]
+    }));
+  };
+
+  const handleSlotChange = (slotId: string, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      slots: prev.slots.map(slot => 
+        slot.id === slotId ? { ...slot, [field]: value } : slot
+      )
+    }));
+  };
+
+  const handleDeleteSlot = (slotId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      slots: prev.slots.filter(slot => slot.id !== slotId)
+    }));
   };
 
   return (
@@ -795,6 +836,114 @@ export default function ManageFacilities() {
                         Click to add maintenance comment
                       </button>
                     )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Slots Management Section */}
+            <Separator className="my-6" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-base font-semibold">Time Slots</Label>
+                  <p className="text-sm text-muted-foreground">Manage available time slots for this facility</p>
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleAddSlot}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Slot
+                </Button>
+              </div>
+
+              <div className="space-y-3 max-h-60 overflow-y-auto">
+                {formData.slots.map((slot, index) => (
+                  <div key={slot.id} className="border rounded-lg p-4 bg-muted/30">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor={`startTime-${slot.id}`}>Start Time</Label>
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id={`startTime-${slot.id}`}
+                            type="time"
+                            value={slot.startTime}
+                            onChange={(e) => handleSlotChange(slot.id, 'startTime', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor={`endTime-${slot.id}`}>End Time</Label>
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id={`endTime-${slot.id}`}
+                            type="time"
+                            value={slot.endTime}
+                            onChange={(e) => handleSlotChange(slot.id, 'endTime', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor={`minParticipants-${slot.id}`}>Min Participants</Label>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id={`minParticipants-${slot.id}`}
+                            type="number"
+                            min="1"
+                            value={slot.minParticipants}
+                            onChange={(e) => handleSlotChange(slot.id, 'minParticipants', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor={`maxParticipants-${slot.id}`}>Max Participants</Label>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id={`maxParticipants-${slot.id}`}
+                            type="number"
+                            min="1"
+                            value={slot.maxParticipants}
+                            onChange={(e) => handleSlotChange(slot.id, 'maxParticipants', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end mt-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteSlot(slot.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Slot
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                
+                {formData.slots.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p>No time slots added yet</p>
+                    <p className="text-sm">Click "Add Slot" to create the first time slot</p>
                   </div>
                 )}
               </div>
