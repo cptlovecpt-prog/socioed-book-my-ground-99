@@ -275,7 +275,6 @@ const Index = () => {
   const [selectedFacility, setSelectedFacility] = useState<(typeof indoorFacilities[0]) | (typeof outdoorFacilities[0]) | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
-  const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
   const { toast } = useToast();
 
   const allSports = [
@@ -293,7 +292,6 @@ const Index = () => {
 
   const clearFilters = () => {
     setSelectedSports([]);
-    setShowOnlyAvailable(false);
   };
 
   const filterFacilities = (facilities: Array<{
@@ -314,11 +312,6 @@ const Index = () => {
     // Filter by selected sports
     if (selectedSports.length > 0) {
       filtered = filtered.filter(facility => selectedSports.includes(facility.sport));
-    }
-    
-    // Filter by availability
-    if (showOnlyAvailable) {
-      filtered = filtered.filter(facility => facility.status === 'available');
     }
     
     return filtered;
@@ -361,27 +354,12 @@ const Index = () => {
           <Tabs defaultValue="outdoor" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <TabsList className="grid w-full grid-cols-2 max-w-md">
-                <TabsTrigger value="outdoor" className="text-base sm:text-lg font-bold">Outdoor</TabsTrigger>
-                <TabsTrigger value="indoor" className="text-base sm:text-lg font-bold">Indoor</TabsTrigger>
+                <TabsTrigger value="outdoor" className="text-base sm:text-lg font-bold">Sports/ Games</TabsTrigger>
+                <TabsTrigger value="indoor" className="text-base sm:text-lg font-bold">Fitness</TabsTrigger>
               </TabsList>
               
               {/* Filters */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                {/* Show Only Available Toggle */}
-                <div className="flex items-center justify-between sm:justify-start space-x-2">
-                  <Switch 
-                    id="show-available" 
-                    checked={showOnlyAvailable}
-                    onCheckedChange={setShowOnlyAvailable}
-                  />
-                  <label 
-                    htmlFor="show-available" 
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Show only available
-                  </label>
-                </div>
-
                 {/* Sports Filter */}
                 <Popover>
                   <PopoverTrigger asChild>
@@ -399,7 +377,7 @@ const Index = () => {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Filter by Sports</h4>
-                        {(selectedSports.length > 0 || showOnlyAvailable) && (
+                        {selectedSports.length > 0 && (
                           <Button
                             variant="ghost"
                             size="sm"
@@ -434,20 +412,9 @@ const Index = () => {
             </div>
             
             {/* Filter Tags */}
-            {(selectedSports.length > 0 || showOnlyAvailable) && (
+            {selectedSports.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm text-muted-foreground">Active filters:</span>
-                {showOnlyAvailable && (
-                  <span className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground text-xs px-2 py-1 rounded-md">
-                    Show only available
-                    <button
-                      onClick={() => setShowOnlyAvailable(false)}
-                      className="hover:bg-secondary/80 rounded-full p-0.5"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                )}
                 {selectedSports.map((sport) => (
                   <span
                     key={sport}
@@ -475,7 +442,7 @@ const Index = () => {
                   />
                 ))}
               </div>
-              {filterFacilities(outdoorFacilities).length === 0 && (selectedSports.length > 0 || showOnlyAvailable) && (
+              {filterFacilities(outdoorFacilities).length === 0 && selectedSports.length > 0 && (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">No outdoor facilities found matching your filters.</p>
                 </div>
@@ -492,7 +459,7 @@ const Index = () => {
                   />
                 ))}
               </div>
-              {filterFacilities(indoorFacilities).length === 0 && (selectedSports.length > 0 || showOnlyAvailable) && (
+              {filterFacilities(indoorFacilities).length === 0 && selectedSports.length > 0 && (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">No indoor facilities found matching your filters.</p>
                 </div>
